@@ -4,7 +4,7 @@
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-16 (Supabase connected; "Built for change" groundwork; database schema live)
+**Last updated:** 2026-10-16 (schema live; invite-only login working locally)
 
 | Phase | What it covers | Status |
 |---|---|---|
@@ -60,6 +60,11 @@ Set up the real project so building can start. You create the GitHub, Supabase a
   - 11 tables (profiles + the 10 from §3.1; validation rules are code, problem-area tags wait for v2), types in `web/src/lib/supabase/database.types.ts`
   - Privacy: row-level security on every table, each adult sees only their own rows, child rows locked to the same adult, nothing reachable before 18+ and terms are confirmed (011), signed-out visitors get nothing. Checked with 24 tests in a throwaway database; Supabase's security advisor reports no issues
 - [ ] **Invite-only login** working, with **18+ confirmation and terms acceptance** at sign-up ([011](decisions/011-adult-only-audience.md))
+  - [x] Built (not committed): email sign-in link (`/login`, `/auth/callback`), 18+ and terms screen (`/welcome`), draft terms (`/terms`), sign-out, `proxy.ts` keeps logins fresh. Adults are added with `npm run invite -- email` in `web/` (no public sign-up)
+  - [x] `miapenbiz@gmail.com` invited
+  - [x] Supabase dashboard: public sign-up off; Site URL and Redirect URLs set
+  - [x] Tested on this Mac (sign in, 18+ and terms saved, sign out)
+  - [ ] Tested on the live site
 - [x] **Local preview:** `.claude/launch.json` updated (entries `web` and `prototype`); dev server also runs with `npm run dev` in `web/`
 
 **Done when:** an invited user can log in on the staging site, and the benchmark runs from inside the project.
@@ -105,6 +110,7 @@ Build the app described in the spec (v1.1) and backend doc.
 Online at a free Vercel address for Gabe and a few invited families ([001](decisions/001-launch-audience.md), [005](decisions/005-name-and-domain.md)).
 
 - [ ] **Legal review before launch:** Gemini's 18+ / minors terms and COPPA, against the adult-only design ([011](decisions/011-adult-only-audience.md)). If Gemini isn't allowed, benchmark Claude and switch providers
+- [ ] **Own email service** (custom SMTP) for sign-in emails. Supabase's built-in email only reaches members of the Supabase team (about 2 emails an hour) and its wording can't be changed. Once set up, switch the Magic Link template to `supabase/templates/magic_link.html` (link + code, works on phones)
 - [ ] Production deploy (`*.vercel.app`)
 - [ ] AI spending cap set in Google Cloud billing
 - [ ] Error tracking

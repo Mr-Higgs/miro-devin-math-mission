@@ -11,6 +11,7 @@ Run these from the `web/` folder:
 |---|---|
 | `npm run db:new -- add_sessions` | Creates an empty, dated file like `migrations/20261016120000_add_sessions.sql` to write the change in |
 | `npm run db:status` | Lists which migration files the live database already has |
+| `npm run db:test` | Builds a throwaway copy of the database from the migration files and checks the privacy rules (24 checks). **Run before every `npm run db:push`.** When you add a migration, add its privacy checks to `supabase/tests/privacy.test.mjs` |
 | `npm run db:push` | Applies new migration files to the live database. **Changes real data: only after the tutor says yes** |
 | `npm run db:types` | Rewrites `web/src/lib/supabase/database.types.ts` so the app's code knows the tables. Run after each push |
 
