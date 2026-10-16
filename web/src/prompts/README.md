@@ -1,0 +1,17 @@
+# Prompts
+
+Every instruction the app gives the AI lives here, one file per job (decision 007, "Built for change"). The app and the benchmark both read these files, so there's only one copy of each prompt.
+
+| File | Job | Status |
+|---|---|---|
+| `extraction.ts` | Read photos of a graded test and list every question | Benchmarked (002) |
+| `grading.ts` | Grade the student's finished work from a photo | Benchmarked (002, 003) |
+| *generation* | Write one mirrored practice question per missed question (010) | Phase 2: add a benchmark check first |
+| *hints* | Hints for the adult during review | Phase 2 |
+
+## Changing a prompt
+1. Edit the text between the backticks.
+2. Run the benchmark from `web/`: `npm run bench -- --models gemini-3.8-flash`
+3. Compare with the last run in `web/benchmark/results/`. Don't ship a change that does worse.
+
+Wording rules: feedback is written for the adult, never addressed to the student (decision 011). Never ask the AI to repeat names, schools or other personal details.

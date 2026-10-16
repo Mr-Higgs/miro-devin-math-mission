@@ -1,9 +1,11 @@
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import nextEnv from "@next/env";
 
 export const BENCH_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
-export const TEST_DATA_DIR = join(BENCH_DIR, "..", "test-data");
+export const WEB_DIR = join(BENCH_DIR, "..");
+export const TEST_DATA_DIR = join(WEB_DIR, "..", "test-data");
 
 export type Provider = "anthropic" | "openai" | "google";
 
@@ -27,22 +29,13 @@ export interface CallResult {
   ms: number;
 }
 
-/** Load benchmark/.env into process.env without overwriting existing values. Never logs values. */
+/** Load the API keys from web/.env.local, the same way the app does. Never logs values. */
 export function loadEnv(): void {
-  const path = join(BENCH_DIR, ".env");
-  if (!existsSync(path)) return;
-  for (const line of readFileSync(path, "utf8").split("\n")) {
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
-    if (m && m[2] && process.env[m[1]] === undefined) process.env[m[1]] = m[2];
-  }
+  nextEnv.loadEnvConfig(WEB_DIR, false, { info: () => {}, error: console.error });
 }
 
 export function loadModels(): ModelConfig[] {
   return JSON.parse(readFileSync(join(BENCH_DIR, "models.json"), "utf8")).models;
-}
-
-export function loadPrompt(name: "extraction" | "grading"): string {
-  return readFileSync(join(BENCH_DIR, "prompts", `${name}.md`), "utf8");
 }
 
 /**

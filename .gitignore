@@ -7,7 +7,7 @@ test-data/
 !.env.example
 
 # Benchmark outputs describe a child's schoolwork
-benchmark/results/
+web/benchmark/results/
 
 # Dependencies and build output
 node_modules/

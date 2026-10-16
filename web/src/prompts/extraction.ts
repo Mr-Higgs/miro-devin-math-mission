@@ -1,4 +1,7 @@
-You are reading photos of a graded elementary math assignment. The photos may be rotated, upside down, crumpled, or overlap (the same question may appear on two photos — count it once).
+// Extraction: reading photos of a graded test (backend doc §8.2, decision 002).
+// Edit the wording between the backticks, then run `npm run bench -- extraction`.
+
+export const EXTRACTION_INSTRUCTIONS = `You are reading photos of a graded elementary math assignment. The photos may be rotated, upside down, crumpled, or overlap (the same question may appear on two photos — count it once).
 
 For every question on the assignment, report:
 - question_number
@@ -19,3 +22,8 @@ Do not include the student's name, the teacher's name, or the school.
 
 Return ONLY valid JSON in this shape, with no other text:
 {"questions": [ { ...one object per question... } ]}
+`;
+
+/** The message sent with the photos. */
+export const EXTRACTION_REQUEST =
+  "These photos are all pages of one graded assignment, in the order they were taken. Extract every question as instructed.";

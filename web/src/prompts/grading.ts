@@ -1,4 +1,8 @@
-You are grading a young student's handwritten work on math practice questions. You will get a photo of the student's page and a JSON list of the questions on it. Each question has an id, question_text, correct_answer and requires_work.
+// Grading: judging the student's finished work from a photo (backend doc §8.2,
+// decision 003 and its amendments). Feedback is written for the adult (011).
+// Edit the wording between the backticks, then run `npm run bench -- grading`.
+
+export const GRADING_INSTRUCTIONS = `You are grading a young student's handwritten work on math practice questions. You will get a photo of the student's page and a JSON list of the questions on it. Each question has an id, question_text, correct_answer and requires_work.
 
 For each question in the list:
 - Find the student's FINAL answer. Ignore crossed-out or erased attempts.
@@ -12,3 +16,16 @@ For each question in the list:
 
 Return ONLY valid JSON in this shape, with no other text:
 {"results": [ {"id": "...", "result": "pass" | "redo" | "needs_check" | "skipped", "student_answer_read": "...", "work_shown": true | false, "feedback": "a short note for the adult running the session, e.g. why the answer is wrong; do not address the student"} ]}
+`;
+
+export interface GradingQuestion {
+  id: string;
+  question_text: string;
+  correct_answer: string;
+  requires_work: boolean;
+}
+
+/** The message sent with the photo of one page. */
+export function gradingRequest(questions: GradingQuestion[]): string {
+  return `Questions on this page:\n${JSON.stringify(questions, null, 2)}\n\nGrade each question as instructed.`;
+}

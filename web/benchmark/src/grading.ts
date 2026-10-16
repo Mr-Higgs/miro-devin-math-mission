@@ -1,8 +1,8 @@
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { TEST_DATA_DIR, loadImage, parseJsonReply, type ImageInput } from "./common.js";
-
-export type GradeResult = "pass" | "redo" | "needs_check" | "skipped";
+import type { GradeResult } from "../../src/lib/grading.js";
+import { gradingRequest } from "../../src/prompts/grading.js";
 
 export interface GradingItem {
   id: string;
@@ -44,7 +44,7 @@ export function gradingUserText(page: GradingPage): string {
   const questions = page.items.map(({ id, question_text, correct_answer, requires_work }) => ({
     id, question_text, correct_answer, requires_work,
   }));
-  return `Questions on this page:\n${JSON.stringify(questions, null, 2)}\n\nGrade each question as instructed.`;
+  return gradingRequest(questions);
 }
 
 export interface ItemOutcome {

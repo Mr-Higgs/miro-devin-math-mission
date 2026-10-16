@@ -1,0 +1,112 @@
+/*
+ * The app's look, in one place (decision 007, "Built for change").
+ * Restyle the whole app by editing the values below; screens and building
+ * blocks only use these names (bg-surface, text-ink, shadow-card, ...).
+ *
+ * Look: the Hologram HUD prototype's navy and cyan, toned down into calm,
+ * grown-up branding for the adults who use the app (decision 011).
+ * Fonts are chosen in fonts.ts; the app name is in brand.ts.
+ */
+
+/* ---- Light (default) ---- */
+:root {
+  /* Page and surfaces */
+  --page: #f5f8fc;
+  --surface: #ffffff;
+  --surface-muted: #eaf0f7;
+  --line: #d5dfea;
+
+  /* Text */
+  --ink: #0b1b2e;
+  --ink-muted: #4a5b70;
+
+  /* Brand: deep-space navy, with cyan as the accent */
+  --brand: #0a2540;
+  --brand-ink: #ffffff; /* text on brand */
+  --accent: #0e7490;
+  --accent-ink: #ffffff; /* text on accent */
+  --accent-soft: #e0f5fa;
+  --glow: rgba(34, 211, 238, 0.35);
+
+  /* Meaning (also used for grading results, decision 003) */
+  --success: #15803d;
+  --success-soft: #e7f6ec;
+  --warning: #a35a00;
+  --warning-soft: #fdf1df;
+  --danger: #b91c1c;
+  --danger-soft: #fdeaea;
+
+  /* Keyboard focus ring */
+  --focus: #0891b2;
+}
+
+/* ---- Dark (follows the device setting) ---- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #08131f;
+    --surface: #0f2033;
+    --surface-muted: #16293f;
+    --line: #24405c;
+
+    --ink: #e6eef7;
+    --ink-muted: #9fb2c7;
+
+    --brand: #0f2a47;
+    --brand-ink: #e6eef7;
+    --accent: #22d3ee;
+    --accent-ink: #062030;
+    --accent-soft: #0c3344;
+    --glow: rgba(34, 211, 238, 0.25);
+
+    --success: #4ade80;
+    --success-soft: #0f2e1d;
+    --warning: #fbbf24;
+    --warning-soft: #33260a;
+    --danger: #f87171;
+    --danger-soft: #3a1414;
+
+    --focus: #22d3ee;
+  }
+}
+
+/*
+ * Turn the values above into Tailwind classes. Tailwind's built-in color
+ * palette is switched off, so screens can't use colors from outside this file.
+ */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
+
+  /* Fonts (loaded in fonts.ts) */
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-mono: var(--font-code);
+
+  /* Corners */
+  --radius-control: 0.5rem;
+  --radius-card: 0.875rem;
+
+  /* Effects: a soft card shadow, and a faint cyan glow kept from the HUD look */
+  --shadow-card: 0 1px 2px rgba(11, 27, 46, 0.06), 0 4px 16px rgba(11, 27, 46, 0.06);
+  --shadow-glow: 0 0 0 1px var(--glow), 0 0 18px var(--glow);
+}

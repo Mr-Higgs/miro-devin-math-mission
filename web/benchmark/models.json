@@ -1,5 +1,5 @@
 {
-  "_note": "Models to compare. Entries with \"confirm\": true are IDs from web research that need checking with `npm run list-models` before the first run.",
+  "_note": "Models to compare. Entries with \"confirm\": true are IDs from web research that need checking with `npm run bench:models` before the first run.",
   "models": [
     {
       "provider": "anthropic",

@@ -2,14 +2,16 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  BENCH_DIR, loadEnv, loadModels, loadPrompt,
-  type CallResult, type ImageInput, type ModelConfig,
+  BENCH_DIR, loadEnv, loadModels,
+  type CallResult, type ImageInput,
 } from "./common.js";
 import { callAnthropic } from "./providers/anthropic.js";
 import { callOpenAI } from "./providers/openai.js";
 import { callGoogle } from "./providers/google.js";
-import { EXTRACTION_USER_TEXT, loadExtractionSamples, scoreExtraction, type ExtractionScore } from "./extraction.js";
+import { loadExtractionSamples, scoreExtraction, type ExtractionScore } from "./extraction.js";
 import { gradingUserText, loadGradingPages, scoreGradingPage, summarizeGrading, type ItemOutcome } from "./grading.js";
+import { EXTRACTION_INSTRUCTIONS, EXTRACTION_REQUEST } from "../../src/prompts/extraction.js";
+import { GRADING_INSTRUCTIONS } from "../../src/prompts/grading.js";
 
 const PROVIDERS = { anthropic: callAnthropic, openai: callOpenAI, google: callGoogle };
 
@@ -36,8 +38,8 @@ async function main() {
   const doGrading = args.task !== "extraction";
   const extractionSamples = doExtraction ? loadExtractionSamples() : [];
   const gradingPages = doGrading ? loadGradingPages() : [];
-  const extractionPrompt = loadPrompt("extraction");
-  const gradingPrompt = loadPrompt("grading");
+  const extractionPrompt = EXTRACTION_INSTRUCTIONS;
+  const gradingPrompt = GRADING_INSTRUCTIONS;
 
   const imageKb = (imgs: ImageInput[]) => Math.round(imgs.reduce((n, i) => n + i.base64.length * 0.75, 0) / 1024);
   console.log(`Models: ${models.map((m) => m.id).join(", ")}`);
@@ -93,7 +95,7 @@ async function main() {
     for (let rep = 1; rep <= args.repeat; rep++) {
       for (const s of extractionSamples) {
         console.log(`${model.id}: extraction ${s.id} (run ${rep})`);
-        await attempt(`extraction:${s.id}:${rep}`, () => call(extractionPrompt, s.images, EXTRACTION_USER_TEXT), (r) => {
+        await attempt(`extraction:${s.id}:${rep}`, () => call(extractionPrompt, s.images, EXTRACTION_REQUEST), (r) => {
           try { extractionScores.push(scoreExtraction(s.expected, r.text)); }
           catch (e: any) { errors++; console.log(`  unparseable reply: ${e.message}`); }
         });
@@ -127,7 +129,7 @@ async function main() {
     "|---|---|---|---|---|---|---|---|---|---|---|",
     ...rows,
     "",
-    "⚠️ = model ID from web research; confirm with `npm run list-models`.",
+    "⚠️ = model ID from web research; confirm with `npm run bench:models`.",
     "Details per question are in raw.json in this folder.",
   ].join("\n");
   writeFileSync(join(outDir, "summary.md"), summary + "\n");

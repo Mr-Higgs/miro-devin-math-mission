@@ -1,6 +1,6 @@
 # Benchmark: AI provider comparison (decision 002)
 
-Sends the real samples in `../test-data/` to each AI model and scores the answers against the hand-checked correct answers. Results feed [decision 002](../docs/decisions/002-ai-provider.md).
+Sends the real samples in `test-data/` (at the project root) to each AI model and scores the answers against the hand-checked correct answers. Results feed [decision 002](../docs/decisions/002-ai-provider.md).
 
 **What it tests**
 
@@ -9,7 +9,7 @@ Sends the real samples in `../test-data/` to each AI model and scores the answer
 | **Extraction:** reading a graded test | `test-data/graded-tests/` | Finds the missed questions (recall + precision), reads the student's answers, spots partial credit |
 | **Grading:** judging the student's work | `test-data/student-work/` | Gets pass / redo / needs check / skipped right, counts **wrongful redos** (the costliest error, per decision 003), skips blank questions |
 
-The prompts are in `prompts/`, taken from the backend doc §8.2. Generation (decision 010) is not tested yet.
+It uses the app's own prompts from [`web/src/prompts/`](../src/prompts/README.md), so a prompt change is tested exactly as the app will use it. Re-run it after every prompt or model change (decision 007, "Built for change"). Generation (decision 010) is not tested yet.
 
 ## One-time setup
 
@@ -17,11 +17,13 @@ The prompts are in `prompts/`, taken from the backend doc §8.2. Generation (dec
    - Anthropic: console.anthropic.com → API keys
    - OpenAI: platform.openai.com → API keys
    - Google: aistudio.google.com → Get API key. **Use a project with billing turned on**: free-tier data may be used to improve Google's products, which decision 006 rules out.
-2. **Copy `.env.example` to `.env`** in this folder and paste the keys in. `.env` stays on this computer and is never shared. You can skip a provider by leaving its line blank.
-3. **Install:** `npm install` (already done once).
-4. **Confirm model IDs:** `npm run list-models`. Entries marked `"confirm": true` in `models.json` came from web research; fix any ID that isn't in the list.
+2. **Paste the keys into `web/.env.local`** (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`). That file stays on this computer and is never shared. You can skip a provider by leaving its line blank. The Gemini key is already there.
+3. **Install:** `npm install` in `web/` (already done).
+4. **Confirm model IDs:** `npm run bench:models`. Entries marked `"confirm": true` in `models.json` came from web research; fix any ID that isn't in the list.
 
 ## Running
+
+From the `web/` folder:
 
 ```bash
 npm run bench -- --dry-run          # checks samples and scoring; no API calls, free
@@ -30,7 +32,7 @@ npm run bench -- grading --models claude-opus-5-5,gemini-3.8-flash
 npm run bench -- --repeat 3         # run each test 3 times to see consistency
 ```
 
-Each run saves `results/<date-time>/summary.md` (the comparison table) and `raw.json` (every reply and per-question detail).
+Each run saves `web/benchmark/results/<date-time>/summary.md` (the comparison table) and `raw.json` (every reply and per-question detail).
 
 **Cost:** one full run is roughly 11 calls per model (1 extraction with 6 photos, 10 grading pages). Expect cents to under a dollar per model, so a few dollars for all six. Set a spending limit in each provider's console first.
 

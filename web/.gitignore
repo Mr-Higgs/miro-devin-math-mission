@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+
+# benchmark outputs describe a child's schoolwork
+/benchmark/results/

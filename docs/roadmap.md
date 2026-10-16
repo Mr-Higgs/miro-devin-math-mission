@@ -4,7 +4,7 @@
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-16 (Supabase connected)
+**Last updated:** 2026-10-16 (Supabase connected; "Built for change" groundwork done)
 
 | Phase | What it covers | Status |
 |---|---|---|
@@ -43,19 +43,19 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 - [x] **Accounts:** GitHub, Supabase, Vercel (created by the tutor; step-by-step in the [setup guide](setup-guide.md))
 - [x] **Tools on this Mac:** Node.js 24 (official installer; broken Homebrew Node removed), GitHub CLI installed and signed in as miapen-snail
 - [x] **Tutor signed in to the Vercel and Supabase CLIs** (CLI telemetry turned off). Supabase project "Math Mission" (US East / Ohio) is active, on the tutor's credits account
-- [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with Gabe's name in it)
+- [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `web/benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with Gabe's name in it)
 - [x] **Next.js project** in `web/`: Next.js 16, React 19, TypeScript, Tailwind CSS 4 (telemetry off). Runs locally at http://localhost:3000
 - [ ] **Supabase project:** database, logins, private photo storage
   - [x] Connected: repo linked to project `mnlhcdxsobppgymkwcqi` (`supabase/` folder; confirmed empty), client code in `web/src/lib/supabase/`, keys in `web/.env.local` and Vercel (Production + Preview). Check: `/api/health` returns `{"supabase":"ok"}`
   - [ ] Logins: comes with the invite-only login item below
   - [ ] Private photo storage: comes with the schema migrations
 - [x] **Vercel hosting:** project `math-mission` (root directory `web`), connected to GitHub so every push deploys automatically; live at https://math-mission-wheat.vercel.app. Each branch/pull request gets its own preview link
-- [ ] **"Built for change" groundwork** before any screens ([007](decisions/007-tech-stack.md#built-for-change)):
-  - [ ] Theme file (colors, fonts, effects, app name in one place)
-  - [ ] Shared UI building blocks
-  - [ ] Prompts folder (move in the `benchmark/prompts/` versions)
-  - [ ] Benchmark runs against `test-data/` from inside the project
-  - [ ] Database changes as migration files
+- [x] **"Built for change" groundwork** before any screens ([007](decisions/007-tech-stack.md#built-for-change)):
+  - [x] Theme in one place: `web/src/theme/` (`theme.css` colors and effects, light and dark; `fonts.ts`; `brand.ts` app name). Tailwind's own colors are switched off, so screens can only use theme colors
+  - [x] Shared UI building blocks: `web/src/components/ui/` (button, card, text field, checkbox, message box, badges incl. grading results, progress dots, page frame). All shown at `/blocks` (hidden on the live site)
+  - [x] Prompts folder: `web/src/prompts/` (extraction, grading; text unchanged from the benchmarked versions)
+  - [x] Benchmark moved to `web/benchmark/`, uses the app's prompts and `web/.env.local`: `npm run bench` in `web/`
+  - [x] Database changes as migration files: `npm run db:new / db:status / db:push / db:types` in `web/`; rules in [supabase/README.md](../supabase/README.md)
 - [ ] **Database schema** from backend doc §3 as the first migrations
 - [ ] **Invite-only login** working, with **18+ confirmation and terms acceptance** at sign-up ([011](decisions/011-adult-only-audience.md))
 - [x] **Local preview:** `.claude/launch.json` updated (entries `web` and `prototype`); dev server also runs with `npm run dev` in `web/`

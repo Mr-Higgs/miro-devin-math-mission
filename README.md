@@ -8,7 +8,7 @@ Built first for Gabe and Auntie Mia; designed to grow into a tool for any parent
 The app is released online and publicly available. See the [roadmap](docs/roadmap.md) for the remaining work.
 
 ## Status
-**Phase 1 (foundation) in progress.** Accounts, tools and private repo done; Next.js app skeleton in `web/`. The April prototype `index.html` is the visual reference. AI provider: Gemini 3.8 Flash, with an adult-only design (decision 011).
+**Phase 1 (foundation) in progress.** Accounts, repo, Next.js app in `web/`, Vercel hosting, Supabase connection and the "Built for change" groundwork are done. Next: database schema, then invite-only login. The April prototype `index.html` is the visual reference. AI provider: Gemini 3.8 Flash, with an adult-only design (decision 011).
 
 - Roadmap (live plan and checklist): [docs/roadmap.md](docs/roadmap.md)
 - Decisions: [docs/decisions/](docs/decisions/README.md)
@@ -25,7 +25,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 | [docs/roadmap.md](docs/roadmap.md) | **The live plan:** phases 0–4 with checklists. Start here to see what's next |
 | [docs/setup-guide.md](docs/setup-guide.md) | Step-by-step guide to the accounts needed for Phase 1 (GitHub, Vercel, Supabase) |
 | [docs/decisions/](docs/decisions/) | Decision log: one file per product/technical decision, with an index of what's open |
-| [benchmark/](benchmark/) | Script that compares AI providers on `test-data/` (decision 002) |
+| [web/benchmark/](web/benchmark/README.md) | Benchmark: tests the app's prompts and AI models on `test-data/` (`npm run bench` in `web/`) |
 | [test-data/](test-data/) | Real sample photos + hand-checked expected results for testing AI (contains a child's info; keep private) |
 | [design-explorations/](design-explorations/) | Earlier design work: 3 wireframes (option 3 chosen) + feedback, and 8 visual themes `v1`–`v5` (v2b Hologram HUD chosen); `print-reference/` holds the hand-made Topic 13 sheet and key, the model for printables |
 | [serve.py](serve.py) | Tiny local server on port 3456 |

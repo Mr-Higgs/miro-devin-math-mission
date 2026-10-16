@@ -25,9 +25,6 @@ export function loadExtractionSamples(): ExtractionSample[] {
     });
 }
 
-export const EXTRACTION_USER_TEXT =
-  "These photos are all pages of one graded assignment, in the order they were taken. Extract every question as instructed.";
-
 const norm = (s: unknown) =>
   String(s ?? "")
     .toUpperCase()

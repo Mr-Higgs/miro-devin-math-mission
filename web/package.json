@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "bench": "tsx benchmark/src/run.ts",
+    "bench:models": "tsx benchmark/src/list-models.ts",
+    "db:new": "npx --yes supabase@2.121.0 --workdir .. migration new",
+    "db:status": "npx --yes supabase@2.121.0 --workdir .. migration list --linked",
+    "db:push": "npx --yes supabase@2.121.0 --workdir .. db push --linked",
+    "db:types": "npx --yes supabase@2.121.0 --workdir .. gen types typescript --linked > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -17,6 +23,8 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "@next/env": "^16.4.2",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -24,6 +32,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
