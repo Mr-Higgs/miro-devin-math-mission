@@ -4,7 +4,7 @@
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-16 (Supabase connected; "Built for change" groundwork done)
+**Last updated:** 2026-10-16 (Supabase connected; "Built for change" groundwork; database schema live)
 
 | Phase | What it covers | Status |
 |---|---|---|
@@ -48,7 +48,7 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 - [ ] **Supabase project:** database, logins, private photo storage
   - [x] Connected: repo linked to project `mnlhcdxsobppgymkwcqi` (`supabase/` folder; confirmed empty), client code in `web/src/lib/supabase/`, keys in `web/.env.local` and Vercel (Production + Preview). Check: `/api/health` returns `{"supabase":"ok"}`
   - [ ] Logins: comes with the invite-only login item below
-  - [ ] Private photo storage: comes with the schema migrations
+  - [x] Private photo storage: `uploads` bucket (private, 20 MB per file, photos/PDF only); each adult can only reach their own folder
 - [x] **Vercel hosting:** project `math-mission` (root directory `web`), connected to GitHub so every push deploys automatically; live at https://math-mission-wheat.vercel.app. Each branch/pull request gets its own preview link
 - [x] **"Built for change" groundwork** before any screens ([007](decisions/007-tech-stack.md#built-for-change)):
   - [x] Theme in one place: `web/src/theme/` (`theme.css` colors and effects, light and dark; `fonts.ts`; `brand.ts` app name). Tailwind's own colors are switched off, so screens can only use theme colors
@@ -56,7 +56,9 @@ Set up the real project so building can start. You create the GitHub, Supabase a
   - [x] Prompts folder: `web/src/prompts/` (extraction, grading; text unchanged from the benchmarked versions)
   - [x] Benchmark moved to `web/benchmark/`, uses the app's prompts and `web/.env.local`: `npm run bench` in `web/`
   - [x] Database changes as migration files: `npm run db:new / db:status / db:push / db:types` in `web/`; rules in [supabase/README.md](../supabase/README.md)
-- [ ] **Database schema** from backend doc §3 as the first migrations
+- [x] **Database schema** from backend doc §3 as the first migrations (`supabase/migrations/`, applied to the live database 2026-10-16):
+  - 11 tables (profiles + the 10 from §3.1; validation rules are code, problem-area tags wait for v2), types in `web/src/lib/supabase/database.types.ts`
+  - Privacy: row-level security on every table, each adult sees only their own rows, child rows locked to the same adult, nothing reachable before 18+ and terms are confirmed (011), signed-out visitors get nothing. Checked with 24 tests in a throwaway database; Supabase's security advisor reports no issues
 - [ ] **Invite-only login** working, with **18+ confirmation and terms acceptance** at sign-up ([011](decisions/011-adult-only-audience.md))
 - [x] **Local preview:** `.claude/launch.json` updated (entries `web` and `prototype`); dev server also runs with `npm run dev` in `web/`
 

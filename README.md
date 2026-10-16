@@ -8,7 +8,7 @@ Built first for Gabe and Auntie Mia; designed to grow into a tool for any parent
 The app is released online and publicly available. See the [roadmap](docs/roadmap.md) for the remaining work.
 
 ## Status
-**Phase 1 (foundation) in progress.** Accounts, repo, Next.js app in `web/`, Vercel hosting, Supabase connection and the "Built for change" groundwork are done. Next: database schema, then invite-only login. The April prototype `index.html` is the visual reference. AI provider: Gemini 3.8 Flash, with an adult-only design (decision 011).
+**Phase 1 (foundation) in progress.** Accounts, repo, Next.js app in `web/`, Vercel hosting, Supabase connection and the "Built for change" groundwork are done, and the database schema is live. Next: invite-only login. The April prototype `index.html` is the visual reference. AI provider: Gemini 3.8 Flash, with an adult-only design (decision 011).
 
 - Roadmap (live plan and checklist): [docs/roadmap.md](docs/roadmap.md)
 - Decisions: [docs/decisions/](docs/decisions/README.md)
