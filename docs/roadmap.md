@@ -46,7 +46,7 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 - [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with Gabe's name in it)
 - [x] **Next.js project** in `web/`: Next.js 16, React 19, TypeScript, Tailwind CSS 4 (telemetry off). Runs locally at http://localhost:3000
 - [ ] **Supabase project:** database, logins, private photo storage
-- [ ] **Vercel hosting:** staging and production, automatic deploys from GitHub, a preview link for every change
+- [x] **Vercel hosting:** project `math-mission` (root directory `web`), connected to GitHub so every push deploys automatically; live at https://math-mission-wheat.vercel.app. Each branch/pull request gets its own preview link
 - [ ] **"Built for change" groundwork** before any screens ([007](decisions/007-tech-stack.md#built-for-change)):
   - [ ] Theme file (colors, fonts, effects, app name in one place)
   - [ ] Shared UI building blocks
