@@ -1,6 +1,6 @@
 # 002 — AI provider and model
 
-**Status:** Decided
+**Status:** Decided (amended 2026-10-16, see Amendment 1)
 **Date opened:** 2026-10-12
 **Phase:** 0
 
@@ -143,3 +143,16 @@ Claude and OpenAI were **not** tested; the tutor chose not to run them. The benc
 - Accuracy drops on new samples (re-run `npm run bench` as Gabe's tests come in), especially missed questions not found
 - Google changes pricing or data terms
 - A newer Gemini model appears; test it with `--models`
+
+---
+
+## Amendment 1 — 2026-10-16: Google's terms on minors
+
+**Finding.** [Google's Gemini API terms](https://ai.google.dev/gemini-api/terms) (updated 2026-04-28) say users must be 18+ and that the API won't be used in a service *"directed towards or is likely to be accessed by individuals under the age of 18."* This wasn't considered when Gemini was chosen. (Flagged by an October 12 plan in another folder; checked against Google's page on 2026-10-16.)
+
+**Response.** Gemini 3.8 Flash stays the choice, with the app designed as **adult-only** in [decision 011](011-adult-only-audience.md): 18+ confirmation at sign-up, no student accounts, adult-facing screens, printable rather than on-screen student rewards, and feedback written for the adult.
+
+**What changes**
+- **Legal review moves earlier:** Gemini's terms and COPPA are reviewed **before the invite-only launch** (Phase 3), not only before the public launch.
+- **Backup:** if the review says Gemini isn't allowed, switch providers (one setting). Run the benchmark on Claude first. [Anthropic's guidelines for organizations serving minors](https://support.claude.com/en/articles/9307344) allow it with safeguards. OpenAI's under-13 data rules are the strictest of the three.
+- **Disclosure:** this analysis was written with Claude, which is made by Anthropic. It sticks to each company's published wording. Not legal advice.

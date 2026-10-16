@@ -11,4 +11,4 @@ For each question in the list:
 - Only judge the student's marks. Printed text and any answers already printed on the page are not the student's work.
 
 Return ONLY valid JSON in this shape, with no other text:
-{"results": [ {"id": "...", "result": "pass" | "redo" | "needs_check" | "skipped", "student_answer_read": "...", "work_shown": true | false, "feedback": "one short, encouraging sentence for the student"} ]}
+{"results": [ {"id": "...", "result": "pass" | "redo" | "needs_check" | "skipped", "student_answer_read": "...", "work_shown": true | false, "feedback": "a short note for the adult running the session, e.g. why the answer is wrong; do not address the student"} ]}

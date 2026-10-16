@@ -1,6 +1,6 @@
 # 010 — Question generation
 
-**Status:** Decided
+**Status:** Decided (amended 2026-10-16, see Amendment 1)
 **Date:** 2026-10-15
 **Phase:** 0
 **Raised by:** [009](009-no-grade-level.md)
@@ -61,3 +61,41 @@ The new numbers must:
 - **Spec §4.3:** keep the rules above; drop "Word problem character names … can optionally be varied."
 - **Decision 002:** add generation to the benchmark.
 - **Phase 2 build:** generation step, math checker, tutor review screen (Regenerate / Edit).
+
+---
+
+## Amendment 1 — 2026-10-16: "mirror the original"
+
+**Rule:** a practice question **mirrors the original in everything except what decides the answer.** The answer must come out different.
+
+| Stays the same | Changes |
+|---|---|
+| Intent and skill (e.g., subtracting across a zero) | **The numbers** in the question |
+| Wording and structure | **The diagram**, when the answer comes from it: block counts, side lengths, the shape, the underlined digit |
+| Format: multiple choice, choose-all, fill-in, explain | **The answer choices**, recalculated with the same pattern of wrong answers |
+| Layout and space for work | **Letters or words that *are* the puzzle**, e.g. "Is FRED symmetrical?" → "Is MARK symmetrical?" |
+| Visual type (blocks, chart, shape, picture) | |
+| Names and objects in word problems (Lucy, rubber bands) | |
+| Difficulty: same number of digits, same kind of numbers | |
+
+**Examples (sample 001 and 002):**
+
+| Original | Practice version |
+|---|---|
+| Value of the 8 in 287 → 80 | Value of the 5 in 352 → 50 |
+| Lucy needs 1,000, has 400 → 600 | Lucy needs 1,000, has 300 → 700 |
+| Blocks: 3 hundreds, 2 tens, 9 ones → 329 | Blocks: 2 hundreds, 4 tens, 6 ones → 246 |
+| "Is FRED symmetrical?" | "Is MARK symmetrical?" |
+
+**Answer checks** (added to the app's math check):
+- The new answer **must differ** from the original's.
+- **Exception: yes/no questions.** The new diagram decides the answer, and it isn't forced to flip, since always flipping would be predictable.
+- **Multiple choice:** the correct answer's **letter may move**, so the student can't just remember "B."
+
+**Diagrams are generated as data, not images.** The AI describes a diagram (e.g., "3 hundreds blocks, 2 tens, 9 ones"; "rectangle 10 × 6 cm"; "starburst, line horizontal"). The app draws it and computes the answer from it. That makes diagram questions checkable too.
+
+**Supersedes in this file:**
+- "Names and objects in word problems stay the same" still holds, *except* when the letters themselves are the puzzle.
+- "Questions with no numbers to change ... are reused as-is" is replaced: they get a **new diagram** (as the April hand-made Topic 13 worksheet did, e.g. a butterfly instead of a sea star).
+
+Reference: `design-explorations/print-reference/` holds the April hand-made Topic 13 practice sheet and answer key, the model for this rule and for the printable layout.

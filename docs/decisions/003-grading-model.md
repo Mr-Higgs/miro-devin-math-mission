@@ -1,6 +1,6 @@
 # 003 — Grading model
 
-**Status:** Decided (amended 2026-10-12, see [Amendment 1](#amendment-1--2026-10-12-when-work-is-required))
+**Status:** Decided (amended 2026-10-12 and 2026-10-16, see Amendments 1 and 2)
 **Date:** 2026-10-12
 **Phase:** 0
 
@@ -75,3 +75,9 @@ Real samples (see [002](002-ai-provider.md) and [test-data](../../test-data/READ
 - **Grading prompt (backend doc §8.2)** must: read the final answer, ignoring crossed-out attempts; check for work only when `requires_work` is true; return "unclear" when the work and answer conflict; skip unanswered questions instead of failing them.
 - **Resolves the open issue** raised in 002 about multiple-choice questions and work shown.
 - **Clarification (2026-10-15): drawings count as work.** Work or an explanation can be written words or numbers, or drawings and marks on the figure, even faint ones. Example: Gabe explained a symmetry answer by drawing a dotted line down the center of the shape ([sample 002](../../test-data/student-work/002-topic13-perimeter-symmetry/README.md), photo 3, Q4). The grader must look for these, and never treat a question with any student marks as "skipped."
+
+---
+
+## Amendment 2 — 2026-10-16: feedback is for the adult
+
+Per [decision 011](011-adult-only-audience.md), grading feedback is written **to the adult**, not to the student. For example: "614: likely added instead of subtracting; review regrouping across zero." The adult decides what to say to the student. The grading prompt's `feedback` field changes from "one encouraging sentence for the student" to "a short note for the adult." Celebrations and stars move to printable rewards (011).

@@ -5,7 +5,7 @@
 **Last Updated:** 2026-10-15  
 **Audience:** miapen (product/builder) + future technical co-founder
 
-> **October 2026 update:** revised to match the decision log ([docs/decisions/](decisions/README.md), decisions 001–010). Where this doc and a decision disagree, the decision wins. Main changes from the April draft: invite-only logins instead of a static API key, multi-page uploads, AI-generated practice questions with a math check (instead of rule-based templates), new grading rules, photo deletion, and the tech stack (Next.js + Supabase + Vercel). Sections 5, 6, 9 and 10 are now written.
+> **October 2026 update:** revised to match the decision log ([docs/decisions/](decisions/README.md), decisions 001–011). Where this doc and a decision disagree, the decision wins. Main changes from the April draft: invite-only logins instead of a static API key, multi-page uploads, AI-generated practice questions with a math check (instead of rule-based templates), new grading rules, photo deletion, and the tech stack (Next.js + Supabase + Vercel). Sections 5, 6, 9 and 10 are now written.
 
 ---
 
@@ -35,15 +35,15 @@ The app has no grade-level setting: whatever is on the uploaded test decides the
 - App produces a printable practice sheet (letter size, space to show work) and an answer key with worked steps
 - Student works the practice sheet on paper or a tablet; the educator uploads photos or a PDF of the work
 - AI grades each question as **pass**, **redo** or **needs tutor check**; the educator can override any result ([decision 003](decisions/003-grading-model.md))
-- Review session: hints, redo with re-upload, stars, Bonus Round, session summary
+- Review session (adult-facing): grading notes, hints, redo with re-upload, Bonus Round, session summary; student rewards are **printable** (certificate, star chart) rather than on-screen ([decision 011](decisions/011-adult-only-audience.md))
 
 **Supported math scope:** Whatever is on the uploaded test; no grade setting ([009](decisions/009-no-grade-level.md)). All samples so far are elementary math.
 
 **Submission type:** Photos, PDFs or screenshots of handwritten work, on paper or in tablet ink. No typing required.
 
-**Users:**
-- **Stage 1 (invite-only):** Gabe's tutor plus a small group of invited families/tutors. Each has their own login; their data is private to them.
-- **Stage 2 (public):** open sign-up.
+**Users:** adults only (18+): parents, guardians, tutors, teachers, mentors ([decision 011](decisions/011-adult-only-audience.md)). **Students never use, log in to, or operate the app**; the adult takes the photos and runs the session.
+- **Stage 1 (invite-only):** Gabe's tutor plus a small group of invited adults. Each has their own login, confirms they're 18+, and their data is private to them.
+- **Stage 2 (public):** open sign-up, with the same 18+ confirmation.
 
 **Session model:** One graded assignment = one session. Text and results from past sessions are kept ([006](decisions/006-upload-retention.md)), but there are no cross-session analytics yet.
 
@@ -96,7 +96,8 @@ The data model is designed around the core workflow: educator uploads a graded a
 
 **1. User (educator)**
 - The tutor or parent who logs in. Managed by Supabase Auth.
-- Fields: user_id, email, invited_by, created_at
+- Fields: user_id, email, invited_by, created_at, age_confirmed_at (18+ confirmation), terms_accepted_at
+- There is no student user. The student is only a nickname on the Assignment ([011](decisions/011-adult-only-audience.md)).
 - Every other record belongs to one user; users can only see their own data.
 
 **2. Assignment**
@@ -331,7 +332,7 @@ The API is a set of Next.js server routes under `/api/v1` ([007](decisions/007-t
       "ai_result": "pass",
       "student_answer_read": "600",
       "work_shown": true,
-      "feedback": "Great job! 400 + 600 = 1,000."
+      "feedback": "Correct: 400 + 600 = 1,000, with work shown."
     },
     {
       "generated_question_id": "gq_004",
@@ -551,15 +552,21 @@ Questions with confidence below ~0.75 are flagged in the review screen.
 
 **Generation prompt (outline)** ([010](decisions/010-question-generation.md)):
 ```
-Rewrite this missed question with new numbers.
-- Keep the exact wording, format, names and objects. Only numbers change.
+Write a practice version that mirrors this missed question.
+- Keep the intent, skill, wording, format, layout, visual type, names and
+  objects. Change only what decides the answer: the numbers, and the
+  diagram when the answer comes from it (block counts, side lengths, the
+  shape, the underlined digit; letters if the letters are the puzzle).
+- The new answer must differ from the original's (yes/no questions: let
+  the new diagram decide). The correct multiple-choice letter may move.
 - Keep the same skill (e.g., if it needs regrouping across a zero, the
   new one must too) and the same size of numbers.
 - The answer must be valid (e.g., no negative results).
 - Multiple choice: keep the pattern of wrong choices; exactly one right
   answer. Choose-all: same number of correct choices.
 - Clue questions: clues must lead to exactly one answer.
-- Describe any picture so it can be redrawn with the new numbers.
+- Describe any diagram as data (e.g. {"blocks": [3,2,9]}) so the app can
+  draw it and check the answer from it.
 Return JSON: question_text, choices, picture_spec, correct_answer,
 steps_to_solve, hint.
 ```
@@ -585,7 +592,8 @@ For each question visible in the photos:
 - Only judge the student's marks, not the tutor's (tutor ink color may be
   provided).
 Return JSON per question: result, student_answer_read, work_shown,
-feedback (one short encouraging sentence for the student).
+feedback (a short note for the adult, e.g. "614: likely added instead
+of subtracting"). Do not address the student.
 ```
 
 ---
@@ -620,7 +628,7 @@ feedback (one short encouraging sentence for the student).
 - **Business model** (decision 004) is undecided: who pays for AI costs at stage 2.
 
 ### 9.3 Scope/Complexity
-- **Children's privacy (COPPA):** legal review before stage 2. Data minimization and retention rules are in place from stage 1 ([006](decisions/006-upload-retention.md)).
+- **Google's terms on minors and children's privacy (COPPA):** Gemini's terms bar services "directed towards or likely to be accessed by" under-18s. The app is designed adult-only ([011](decisions/011-adult-only-audience.md)), and a **legal review happens before the invite-only launch (stage 1)**, re-checked before stage 2. Backup: switch to Claude after a benchmark run. Data minimization and retention rules are in place from stage 1 ([006](decisions/006-upload-retention.md)).
 - **Name:** "Math Mission" is a working name. Kahoot! has an active K–5 product called "Math Missions"; choose the final name after a US trademark search before stage 2 ([005](decisions/005-name-and-domain.md)).
 - **Rebuilding the prototype UI** in Next.js: the look carries over, the code is rewritten.
 - **Not yet tested beyond elementary math.** The app has no grade limit, but all samples so far are elementary.

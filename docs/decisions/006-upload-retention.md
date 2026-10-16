@@ -1,6 +1,6 @@
 # 006 — Upload retention
 
-**Status:** Decided
+**Status:** Decided (amended 2026-10-16, see Amendment 1)
 **Date:** 2026-10-15
 **Phase:** 0
 
@@ -43,3 +43,11 @@ The tutor can delete any single session, or everything, at any time. Deletion re
 - **Decision 002:** add AI provider data terms (no training, short retention) to the comparison.
 - **Phase 3:** privacy policy describes these rules; deletion controls in the app.
 - **Phase 1/2 build:** automatic deletion job, metadata stripping on upload.
+
+---
+
+## Amendment 1 — 2026-10-16: photos come from the adult; cover names
+
+- **Only the adult takes and uploads photos** ([decision 011](011-adult-only-audience.md)); the student never uses the app.
+- **The upload screen reminds the adult to cover or crop the student's name** before taking the photo. Metadata stripping removes hidden data like GPS, but not a name written on the page. Later: automatic name blurring.
+- **Consent:** the test samples in `test-data/` were taken and provided by Gabe's parent, who consents to their use (confirmed 2026-10-16). At public launch, the terms make clear that the adult uploading is responsible for having the right to share the student's work.
