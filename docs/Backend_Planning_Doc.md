@@ -656,5 +656,5 @@ The roadmap lives in **[docs/roadmap.md](roadmap.md)**, the single live plan wit
 - [Bug report (April prototype)](bug-report.md)
 - [Test data](../test-data/README.md) (private: contains a child's information)
 - [Roadmap](roadmap.md)
-- [Latest handoff](../handoffs/2026-10-15-handoff.md)
+- [Latest handoff](../handoffs/2026-10-16-handoff.md)
 - [Miro Board](https://miro.com/app/board/uXjVGnJ38tw=/?share_link_id=847279622783)
