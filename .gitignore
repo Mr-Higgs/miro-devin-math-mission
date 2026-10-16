@@ -1,0 +1,21 @@
+# Private: a child's name, handwriting and school (see test-data/README.md)
+test-data/
+
+# Secrets: API keys and environment files
+.env
+.env.*
+!.env.example
+
+# Benchmark outputs describe a child's schoolwork
+benchmark/results/
+
+# Dependencies and build output
+node_modules/
+.next/
+out/
+dist/
+
+# Local tool settings
+.claude/settings.local.json
+.DS_Store
+*.log

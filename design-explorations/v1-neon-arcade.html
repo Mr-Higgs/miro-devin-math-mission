@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Arcade - Neon Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0A0A0F;
+            color: #FFBE0B;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-weight: 700;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Grid background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 190, 11, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 190, 11, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* Version badge */
+        .version-badge {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 190, 11, 0.1);
+            border: 1px solid #FFBE0B;
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 3px;
+            z-index: 100;
+            box-shadow: 0 0 8px rgba(255, 190, 11, 0.4);
+        }
+
+        /* Screen containers */
+        .screen {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #FF006E;
+            box-shadow: 0 0 12px rgba(255, 0, 110, 0.4);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #00F5FF;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            text-shadow: 0 0 12px #00F5FF;
+            transform: scale(1.1);
+        }
+
+        .topbar-title {
+            font-size: 18px;
+            color: #00F5FF;
+            text-shadow: 0 0 10px #00F5FF;
+            letter-spacing: 2px;
+        }
+
+        .token-chip {
+            background: rgba(255, 190, 11, 0.15);
+            border: 1px solid #FFBE0B;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #FFBE0B;
+            box-shadow: 0 0 10px rgba(255, 190, 11, 0.3);
+            white-space: nowrap;
+        }
+
+        /* Heading styles */
+        h1 {
+            font-size: 48px;
+            color: #FF006E;
+            text-shadow: 0 0 20px #FF006E, 0 0 40px #FF006E;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #00F5FF;
+            text-shadow: 0 0 12px #00F5FF;
+            margin: 20px 0 16px 0;
+            letter-spacing: 1px;
+        }
+
+        h3 {
+            font-size: 16px;
+            color: #FFBE0B;
+            text-shadow: 0 0 8px #FFBE0B;
+            margin: 16px 0 12px 0;
+        }
+
+        /* Subtitle */
+        .subtitle {
+            font-size: 14px;
+            color: #00F5FF;
+            text-align: center;
+            margin-bottom: 24px;
+            text-shadow: 0 0 8px rgba(0, 245, 255, 0.6);
+            letter-spacing: 1px;
+        }
+
+        /* Progress bar */
+        .progress-section {
+            margin: 24px 0;
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: #FFBE0B;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: rgba(10, 10, 15, 0.8);
+            border: 2px solid #00F5FF;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.4);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 65%;
+            background: linear-gradient(90deg, #FF006E, #00F5FF);
+            box-shadow: 0 0 10px rgba(0, 245, 255, 0.8), inset 0 0 10px rgba(255, 190, 11, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0A0A0F;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        button {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #FF006E;
+            color: #0A0A0F;
+            box-shadow: 0 0 20px #FF006E, 0 0 40px #FF006E;
+            border: 2px solid #FF006E;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px #FF006E, 0 0 60px #FF006E;
+            transform: scale(1.05);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 245, 255, 0.1);
+            color: #00F5FF;
+            border: 2px solid #00F5FF;
+            box-shadow: 0 0 15px #00F5FF;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 245, 255, 0.2);
+            box-shadow: 0 0 25px #00F5FF;
+        }
+
+        .btn-success {
+            background: #00CC88;
+            color: #0A0A0F;
+            box-shadow: 0 0 20px #00CC88;
+            border: 2px solid #00CC88;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 0 30px #00CC88;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #FFBE0B;
+            border: 2px dashed #FFBE0B;
+            box-shadow: none;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 190, 11, 0.1);
+            box-shadow: 0 0 15px rgba(255, 190, 11, 0.4);
+        }
+
+        .btn-yellow {
+            background: #FFBE0B;
+            color: #0A0A0F;
+            box-shadow: 0 0 20px #FFBE0B, 0 0 40px #FFBE0B;
+            border: 2px solid #FFBE0B;
+        }
+
+        .btn-yellow:hover {
+            box-shadow: 0 0 30px #FFBE0B, 0 0 60px #FFBE0B;
+            transform: scale(1.05);
+        }
+
+        /* Forms */
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 190, 11, 0.05);
+            border: 2px solid #00F5FF;
+            color: #FFBE0B;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 20px #00F5FF;
+            border-color: #FF006E;
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 190, 11, 0.5);
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 3px dashed #00F5FF;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin: 16px 0;
+            background: rgba(0, 245, 255, 0.05);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .upload-zone:hover {
+            background: rgba(0, 245, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.4);
+        }
+
+        .upload-zone-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .upload-zone-text {
+            font-size: 14px;
+            color: #00F5FF;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone-hint {
+            font-size: 12px;
+            color: #FFBE0B;
+            margin-bottom: 12px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 0, 110, 0.05);
+            border: 2px solid #FF006E;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.2);
+        }
+
+        .card-cyan {
+            background: rgba(0, 245, 255, 0.05);
+            border: 2px solid #00F5FF;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
+        }
+
+        .card-yellow {
+            background: rgba(255, 190, 11, 0.05);
+            border: 2px solid #FFBE0B;
+            box-shadow: 0 0 15px rgba(255, 190, 11, 0.2);
+        }
+
+        /* Callout */
+        .callout {
+            background: rgba(0, 204, 136, 0.1);
+            border-left: 4px solid #00CC88;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #00CC88;
+            box-shadow: 0 0 10px rgba(0, 204, 136, 0.2);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255, 190, 11, 0.2);
+            border: 1px solid #FFBE0B;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #FFBE0B;
+            margin: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 8px rgba(255, 190, 11, 0.3);
+        }
+
+        .badge-missed {
+            background: rgba(255, 0, 110, 0.2);
+            border-color: #FF006E;
+            color: #FF006E;
+        }
+
+        .badge-pass {
+            background: rgba(0, 204, 136, 0.2);
+            border-color: #00CC88;
+            color: #00CC88;
+        }
+
+        .badge-fail {
+            background: rgba(255, 100, 100, 0.2);
+            border-color: #FF6464;
+            color: #FF6464;
+        }
+
+        /* Spinner */
+        .spinner {
+            border: 3px solid rgba(0, 245, 255, 0.2);
+            border-top: 3px solid #00F5FF;
+            border-right: 3px solid #FF006E;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Question grid */
+        .question-item {
+            background: rgba(255, 0, 110, 0.08);
+            border: 1px solid #FF006E;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .question-item-text {
+            flex: 1;
+            font-size: 13px;
+            color: #FFBE0B;
+        }
+
+        .question-number {
+            background: #FF006E;
+            color: #0A0A0F;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 0 10px #FF006E;
+            flex-shrink: 0;
+        }
+
+        .question-toggle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00F5FF;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        .question-toggle.checked {
+            background: #00F5FF;
+            color: #0A0A0F;
+        }
+
+        /* Practice section */
+        .practice-header {
+            background: rgba(0, 245, 255, 0.08);
+            border: 2px solid #00F5FF;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
+        }
+
+        .practice-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 0;
+            font-size: 13px;
+        }
+
+        .practice-question {
+            background: rgba(255, 190, 11, 0.05);
+            border: 2px solid #FFBE0B;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            box-shadow: 0 0 12px rgba(255, 190, 11, 0.2);
+        }
+
+        .question-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .question-badge {
+            background: #FFBE0B;
+            color: #0A0A0F;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 0 12px #FFBE0B;
+        }
+
+        .question-text {
+            font-size: 14px;
+            color: #FFBE0B;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: #FF006E;
+            text-shadow: 0 0 8px #FF006E;
+            font-weight: 700;
+        }
+
+        .work-box {
+            border: 2px dotted #00F5FF;
+            background: rgba(0, 245, 255, 0.02);
+            border-radius: 4px;
+            padding: 12px;
+            margin: 12px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0, 245, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .answer-line {
+            border-bottom: 2px solid #00F5FF;
+            margin: 8px 0;
+            padding: 8px 0;
+            color: rgba(255, 190, 11, 0.5);
+        }
+
+        /* Review section */
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0, 245, 255, 0.2);
+            border: 2px solid #00F5FF;
+        }
+
+        .dot.active {
+            background: #00F5FF;
+            box-shadow: 0 0 12px #00F5FF;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 13px;
+            color: #00F5FF;
+            margin: 12px 0;
+            text-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
+        }
+
+        .question-card {
+            background: rgba(255, 0, 110, 0.08);
+            border: 2px solid #FF006E;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.2);
+        }
+
+        .review-section {
+            margin: 16px 0;
+        }
+
+        .review-section-title {
+            font-size: 12px;
+            color: #FFBE0B;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 6px rgba(255, 190, 11, 0.4);
+        }
+
+        .student-work-panel {
+            background: rgba(100, 100, 120, 0.2);
+            border: 2px solid #00F5FF;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 8px 0;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0, 245, 255, 0.6);
+        }
+
+        .image-placeholder {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 245, 255, 0.1);
+            border: 2px dashed #00F5FF;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .status-badge-large {
+            font-size: 28px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 12px 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px;
+        }
+
+        .status-pass {
+            background: rgba(0, 204, 136, 0.2);
+            color: #00CC88;
+            border: 2px solid #00CC88;
+            box-shadow: 0 0 20px #00CC88;
+        }
+
+        .status-fail {
+            background: rgba(255, 100, 100, 0.2);
+            color: #FF6464;
+            border: 2px solid #FF6464;
+            box-shadow: 0 0 20px #FF6464;
+        }
+
+        .answer-key-steps {
+            background: rgba(255, 190, 11, 0.08);
+            border: 1px solid #FFBE0B;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #FFBE0B;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+        }
+
+        /* Celebration screen */
+        .celebration-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .celebration-title {
+            font-size: 36px;
+            color: #FF006E;
+            text-shadow: 0 0 30px #FF006E, 0 0 60px #FF006E;
+            margin: 20px 0;
+            line-height: 1.3;
+            letter-spacing: 2px;
+        }
+
+        .celebration-stats {
+            background: rgba(0, 245, 255, 0.1);
+            border: 2px solid #00F5FF;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+        }
+
+        .stat-item {
+            font-size: 18px;
+            color: #FFBE0B;
+            margin: 12px 0;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            color: #FF006E;
+            text-shadow: 0 0 15px #FF006E;
+        }
+
+        .prize-box {
+            background: rgba(255, 190, 11, 0.15);
+            border: 3px solid #FFBE0B;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            box-shadow: 0 0 25px rgba(255, 190, 11, 0.4);
+        }
+
+        .prize-emoji {
+            font-size: 48px;
+            margin: 12px 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Utility classes */
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="version-badge">v1 — Neon Arcade</div>
+    <div class="container">
+
+        <!-- SCREEN 1: WELCOME -->
+        <div id="s-welcome" class="screen active">
+            <h1>MATH ARCADE</h1>
+            <p class="subtitle">Upload Gabe's test. Beat your score. Earn tokens.</p>
+
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <div class="card card-cyan">
+                    <div style="text-align: center; margin-bottom: 16px;">
+                        <div style="font-size: 36px; margin-bottom: 8px;">🎮</div>
+                        <h3 style="color: #00F5FF; text-shadow: 0 0 10px #00F5FF;">HIGH SCORE</h3>
+                        <div style="font-size: 28px; color: #FF006E; text-shadow: 0 0 15px #FF006E; margin: 8px 0;">850</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-label">Progress to Next Level</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill">65%</div>
+                    </div>
+                </div>
+
+                <div class="token-chip" style="align-self: center; margin: 20px 0; font-size: 14px;">
+                    💰 1,240 Tokens
+                </div>
+
+                <button class="btn-primary mt-20" onclick="show('s-setup')" style="width: 100%; padding: 16px; font-size: 16px;">
+                    🕹️ INSERT COIN — Start Mission
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: SETUP + UPLOAD -->
+        <div id="s-setup" class="screen">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="back-btn" onclick="show('s-welcome')">←</button>
+                    <span class="topbar-title">NEW MISSION</span>
+                </div>
+                <div class="token-chip">💰 1,240</div>
+            </div>
+
+            <h2>Setup Your Mission</h2>
+
+            <label style="font-size: 12px; color: #FFBE0B; margin-top: 12px;">Student Name</label>
+            <input type="text" value="Gabe" placeholder="Student name">
+
+            <label style="font-size: 12px; color: #FFBE0B; margin-top: 12px;">Tutor Name</label>
+            <input type="text" value="Auntie Mia" placeholder="Tutor name">
+
+            <label style="font-size: 12px; color: #FFBE0B; margin-top: 12px;">Assignment Name</label>
+            <input type="text" placeholder="e.g., Chapter 4 Test">
+
+            <label style="font-size: 12px; color: #FFBE0B; margin-top: 12px;">Date</label>
+            <input type="date">
+
+            <h3 style="margin-top: 24px;">Upload Graded Test</h3>
+
+            <div class="upload-zone">
+                <div class="upload-zone-icon">📸</div>
+                <div class="upload-zone-text">Upload graded test photo or PDF</div>
+                <div class="upload-zone-hint">AI will find every missed question</div>
+                <button class="btn-yellow" style="margin: 0 auto;">Choose File</button>
+            </div>
+
+            <div class="callout">
+                💡 Pro Tip: Take a clear photo of the test page. AI works best with high contrast images.
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn-secondary" style="flex: 1;" onclick="show('s-welcome')">← Back</button>
+                <button class="btn-primary" style="flex: 1;" onclick="show('s-ai')">Scan Test →</button>
+            </div>
+
+            <button class="btn-ghost" style="width: 100%; margin-top: 12px;">Skip & Demo</button>
+        </div>
+
+        <!-- SCREEN 3: AI EXTRACTION -->
+        <div id="s-ai" class="screen">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="back-btn" onclick="show('s-setup')">←</button>
+                    <span class="topbar-title">SCANNING TEST</span>
+                </div>
+                <div class="token-chip">💰 1,240</div>
+            </div>
+
+            <h2>AI is Working...</h2>
+
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="spinner"></div>
+                <div style="text-align: center; margin: 20px 0; font-size: 14px; color: #00F5FF; text-shadow: 0 0 10px #00F5FF;">
+                    🤖 SCANNING...
+                </div>
+            </div>
+
+            <div class="card card-yellow" style="margin-top: 40px;">
+                <h3 style="color: #FFBE0B;">Score Detected</h3>
+                <div style="font-size: 32px; color: #FF006E; text-shadow: 0 0 15px #FF006E; margin: 12px 0; text-align: center;">
+                    55/100
+                </div>
+                <div style="font-size: 14px; color: #FFBE0B; text-align: center;">5 questions missed</div>
+            </div>
+
+            <h3 style="margin-top: 24px;">Missed Questions</h3>
+
+            <div class="question-item">
+                <div class="question-number">1</div>
+                <div class="question-item-text">What is 23 + 45?</div>
+                <div class="badge badge-missed">MISSED</div>
+            </div>
+
+            <div class="question-item">
+                <div class="question-number">2</div>
+                <div class="question-item-text">Draw 3/4 of a circle</div>
+                <div class="badge badge-missed">MISSED</div>
+            </div>
+
+            <div class="question-item">
+                <div class="question-number">7</div>
+                <div class="question-item-text">Count by 5s: 5, 10, __, __</div>
+                <div class="badge badge-missed">MISSED</div>
+            </div>
+
+            <div class="question-item">
+                <div class="question-number">9</div>
+                <div class="question-item-text">How many sides on 2 triangles?</div>
+                <div class="badge badge-missed">MISSED</div>
+            </div>
+
+            <div class="question-item">
+                <div class="question-number">10</div>
+                <div class="question-item-text">Word problem: Sarah has 12...</div>
+                <div class="badge badge-missed">MISSED</div>
+            </div>
+
+            <button class="btn-ghost" style="width: 100%; margin-top: 16px;">+ Add Missed Question</button>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 12px; padding: 14px;" onclick="show('s-practice')">
+                Generate Practice Mission →
+            </button>
+        </div>
+
+        <!-- SCREEN 4: PRACTICE SHEET -->
+        <div id="s-practice" class="screen">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="back-btn" onclick="show('s-ai')">←</button>
+                    <span class="topbar-title">PRACTICE SHEET</span>
+                </div>
+                <div class="token-chip">💰 1,240</div>
+            </div>
+
+            <div class="callout" style="background: rgba(0, 204, 136, 0.15); border-left-color: #00CC88; color: #00CC88;">
+                ✓ Mission Ready! 5 practice questions generated
+            </div>
+
+            <div class="practice-header">
+                <div class="practice-header-row">
+                    <strong style="color: #00F5FF;">Chapter 4 Practice</strong>
+                </div>
+                <div class="practice-header-row">
+                    <span style="color: #FFBE0B;">Student: Gabe</span>
+                    <span style="color: #FFBE0B;">Date: April 6, 2026</span>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 24px;">Practice Questions</h3>
+
+            <div class="practice-question">
+                <div class="question-label">
+                    <div class="question-badge">1</div>
+                    <span style="font-size: 13px; color: #00F5FF;">Addition with Regrouping</span>
+                </div>
+                <div class="question-text">
+                    <span class="highlight">23</span> + <span class="highlight">45</span> = ?
+                </div>
+                <div class="work-box">Show your work here</div>
+                <div style="font-size: 12px; color: #FFBE0B; margin: 8px 0;">Answer: _______</div>
+                <div class="answer-line"></div>
+            </div>
+
+            <div class="practice-question">
+                <div class="question-label">
+                    <div class="question-badge">2</div>
+                    <span style="font-size: 13px; color: #00F5FF;">Fractions</span>
+                </div>
+                <div class="question-text">
+                    Draw <span class="highlight">3/4</span> of a circle
+                </div>
+                <div class="work-box">Show your work here</div>
+                <div style="font-size: 12px; color: #FFBE0B; margin: 8px 0;">Answer: _______</div>
+                <div class="answer-line"></div>
+            </div>
+
+            <div class="practice-question">
+                <div class="question-label">
+                    <div class="question-badge">3</div>
+                    <span style="font-size: 13px; color: #00F5FF;">Skip Counting</span>
+                </div>
+                <div class="question-text">
+                    Count by <span class="highlight">5</span>s: 5, 10, __, __
+                </div>
+                <div class="work-box">Show your work here</div>
+                <div style="font-size: 12px; color: #FFBE0B; margin: 8px 0;">Answer: _______</div>
+                <div class="answer-line"></div>
+            </div>
+
+            <h3 style="margin-top: 24px; margin-bottom: 12px;">📄 Export for Print</h3>
+            <div style="font-size: 12px; color: #FFBE0B; margin-bottom: 12px;">Generates printable 8.5×11 worksheet with work space</div>
+            <button class="btn-yellow" style="width: 100%; padding: 14px; font-size: 15px; margin-bottom: 24px;">
+                📄 Export for Print
+            </button>
+
+            <h3 style="margin-bottom: 12px;">📤 Upload Gabe's Completed Work</h3>
+            <div style="font-size: 12px; color: #FFBE0B; margin-bottom: 12px;">Once Gabe finishes on paper, scan or photo his answers here</div>
+            <div class="upload-zone">
+                <div class="upload-zone-icon">📤</div>
+                <div class="upload-zone-text">Upload Gabe's Completed Work</div>
+                <div class="upload-zone-hint">Scan or photo his handwritten answers</div>
+                <button class="btn-secondary">Upload Answers</button>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 24px; padding: 14px; font-size: 15px;" onclick="show('s-review')">
+                ▶ Start Review Session
+            </button>
+        </div>
+
+        <!-- SCREEN 5: REVIEW SESSION -->
+        <div id="s-review" class="screen">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="back-btn" onclick="show('s-practice')">←</button>
+                    <span class="topbar-title">REVIEW</span>
+                </div>
+                <div class="token-chip">💰 1,240</div>
+            </div>
+
+            <div class="progress-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="progress-text">Question 3 of 5 — 2 correct so far</div>
+
+            <div class="question-card">
+                <div class="question-label">
+                    <div class="question-badge">3</div>
+                    <span style="color: #FFBE0B;">Addition with Regrouping</span>
+                </div>
+                <div class="question-text" style="border-bottom: 1px solid rgba(255, 0, 110, 0.3); padding-bottom: 12px;">
+                    <span class="highlight">23</span> + <span class="highlight">45</span> = ?
+                </div>
+            </div>
+
+            <div class="review-section">
+                <div class="review-section-title">📸 Gabe's Work</div>
+                <div class="student-work-panel">
+                    <div class="image-placeholder">📷</div>
+                    <div style="font-size: 12px;">Student's uploaded answer</div>
+                </div>
+            </div>
+
+            <div class="review-section">
+                <div class="review-section-title">Answer Status</div>
+                <div class="status-badge-large status-fail">❌ FAIL</div>
+            </div>
+
+            <div class="review-section">
+                <div class="review-section-title">🔑 Answer Key</div>
+                <div style="color: #FFBE0B; font-size: 14px; margin: 8px 0; font-weight: 700;">Correct Answer: 68</div>
+                <div class="answer-key-steps">
+                    <strong>Step 1:</strong> Start with the ones place. 3 + 5 = 8<br>
+                    <strong>Step 2:</strong> Move to tens place. 2 + 4 = 6<br>
+                    <strong>Step 3:</strong> Write the answer: 68
+                </div>
+            </div>
+
+            <div class="callout" style="background: rgba(255, 190, 11, 0.08); border-left-color: #FFBE0B; color: #FFBE0B;">
+                💡 Hint: Make sure to add ones and tens separately!
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-secondary">← Try Again</button>
+                <button class="btn-success">Correct ✓</button>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 12px;" onclick="show('s-celebrate')">
+                See Results
+            </button>
+        </div>
+
+        <!-- SCREEN 6: CELEBRATION -->
+        <div id="s-celebrate" class="screen">
+            <div class="celebration-container" style="margin-top: 20px;">
+                <div style="font-size: 60px; animation: bounce 1s infinite;">🎉</div>
+                <h1 style="font-size: 42px; margin: 20px 0;">GAME OVER</h1>
+                <h1 style="font-size: 36px;">NEW HIGH SCORE!</h1>
+
+                <div class="celebration-stats">
+                    <div class="stat-item">
+                        ✓ Correct
+                        <div class="stat-value">4</div>
+                    </div>
+                    <div class="stat-item">
+                        🔄 Redone
+                        <div class="stat-value">1</div>
+                    </div>
+                    <div class="stat-item">
+                        💰 Tokens Earned
+                        <div class="stat-value">+350</div>
+                    </div>
+                </div>
+
+                <div class="prize-box">
+                    <div style="font-size: 12px; color: #FFBE0B; text-transform: uppercase; letter-spacing: 1px;">Prize Unlocked</div>
+                    <div class="prize-emoji">🏅</div>
+                    <div style="color: #FFBE0B; font-size: 14px; font-weight: 700;">Math Master Badge!</div>
+                </div>
+
+                <button class="btn-primary" style="width: 100%; padding: 16px; font-size: 16px; margin-top: 40px;" onclick="show('s-welcome')">
+                    Play Again 🕹️
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function show(id) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            // Show target screen
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.add('active');
+            }
+        }
+
+        // Simple demo toggle for checkboxes
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('question-toggle')) {
+                e.target.classList.toggle('checked');
+                e.target.textContent = e.target.classList.contains('checked') ? '✓' : '';
+            }
+        });
+    </script>
+</body>
+</html>

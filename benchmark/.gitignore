@@ -1,0 +1,4 @@
+node_modules/
+.env
+# Raw AI outputs describe a child's schoolwork; keep them local like test-data/
+results/

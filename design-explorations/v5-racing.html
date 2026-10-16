@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATH RACER 🏁</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0C0C0E;
+            color: white;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 20px,
+                rgba(255,255,255,.02) 20px,
+                rgba(255,255,255,.02) 21px
+            );
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            width: 100%;
+            background: #0C0C0E;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(220, 38, 38, 0.3);
+            border: 2px solid rgba(220, 38, 38, 0.4);
+        }
+
+        .topbar {
+            background: linear-gradient(135deg, #1a1a1f 0%, #0C0C0E 100%);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #DC2626;
+            position: relative;
+        }
+
+        .topbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: repeating-linear-gradient(
+                90deg,
+                #DC2626 0px,
+                #DC2626 10px,
+                white 10px,
+                white 20px
+            );
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #FACC15;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            transition: transform 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .topbar-title {
+            font-weight: bold;
+            font-size: 16px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .race-points-chip {
+            background: #DC2626;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+        }
+
+        .screen {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .screen-content {
+            padding: 24px;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SCREEN 1: WELCOME */
+        .welcome-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+        }
+
+        .welcome-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 40px 0 8px;
+            background: linear-gradient(135deg, #DC2626, #FACC15);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .race-stats {
+            background: rgba(220, 38, 38, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #DC2626;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .race-stats-item {
+            font-size: 14px;
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .race-stats-label {
+            font-weight: bold;
+            color: #FACC15;
+        }
+
+        .race-stats-value {
+            color: white;
+        }
+
+        .speed-bar {
+            background: #333;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .speed-bar-fill {
+            background: linear-gradient(90deg, #DC2626, #FACC15);
+            height: 100%;
+            width: 75%;
+            border-radius: 4px;
+            animation: speedPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes speedPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #DC2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 18px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 40px;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(220, 38, 38, 0.7), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .start-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* SCREEN 2: SETUP */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            color: #FACC15;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1f;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #DC2626;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+
+        .upload-zone {
+            border: 3px dashed #DC2626;
+            border-radius: 12px;
+            padding: 32px 20px;
+            text-align: center;
+            background: rgba(220, 38, 38, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+
+        .upload-zone:hover {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: #FACC15;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .upload-text {
+            font-weight: bold;
+            color: #FACC15;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.4;
+        }
+
+        .pit-stop-tip {
+            background: rgba(250, 204, 21, 0.1);
+            border-left: 4px solid #FACC15;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #FACC15;
+            margin: 20px 0;
+        }
+
+        .skip-btn {
+            background: transparent;
+            color: #aaa;
+            border: 2px solid #555;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 12px;
+        }
+
+        .skip-btn:hover {
+            border-color: #FACC15;
+            color: #FACC15;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #DC2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.5);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.6);
+        }
+
+        /* SCREEN 3: AI EXTRACTION */
+        .ai-card {
+            background: rgba(220, 38, 38, 0.15);
+            border: 2px solid #DC2626;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .ai-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-text {
+            font-weight: bold;
+            color: #FACC15;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #DC2626, #FACC15);
+            width: 65%;
+            border-radius: 6px;
+            animation: progressing 1s ease-in-out infinite;
+        }
+
+        @keyframes progressing {
+            0%, 100% { width: 65%; }
+            50% { width: 85%; }
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 8px;
+        }
+
+        .race-score {
+            background: rgba(250, 204, 21, 0.1);
+            border: 2px solid #FACC15;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .race-score-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #FACC15;
+            margin-bottom: 8px;
+        }
+
+        .race-score-laps {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .lap-challenges {
+            margin: 20px 0;
+        }
+
+        .lap-challenge {
+            background: #1a1a1f;
+            border-left: 4px solid #DC2626;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lap-badge {
+            background: #DC2626;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .lap-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .lap-question {
+            font-size: 13px;
+            color: #ccc;
+            margin-bottom: 4px;
+        }
+
+        .lap-status {
+            display: inline-block;
+            background: #DC2626;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .lap-toggle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #DC2626;
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lap-toggle:hover {
+            background: #DC2626;
+        }
+
+        .gen-race-btn {
+            background: linear-gradient(135deg, #DC2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.5);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .gen-race-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.6);
+        }
+
+        .add-lap-btn {
+            background: transparent;
+            color: #DC2626;
+            border: 2px dashed #DC2626;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .add-lap-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        /* SCREEN 4: PRACTICE SHEET */
+        .practice-header {
+            background: rgba(34, 197, 94, 0.15);
+            border: 2px solid #22C55E;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .practice-header-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #22C55E;
+        }
+
+        .practice-info {
+            background: #1a1a1f;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #FACC15;
+        }
+
+        .practice-info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin: 6px 0;
+            color: #ccc;
+        }
+
+        .practice-info-label {
+            font-weight: bold;
+            color: #FACC15;
+        }
+
+        .question-card {
+            background: #1a1a1f;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 6px solid #DC2626;
+        }
+
+        .question-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .question-badge {
+            background: #DC2626;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .question-text {
+            font-size: 14px;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        .question-number {
+            color: #FACC15;
+        }
+
+        .pit-stop-area {
+            background: rgba(220, 38, 38, 0.05);
+            border: 2px dashed #DC2626;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .answer-line {
+            font-size: 13px;
+            color: #ccc;
+            margin-top: 12px;
+            padding: 8px 0;
+            border-bottom: 2px solid #666;
+            font-weight: 500;
+        }
+
+        .action-section {
+            background: #1a1a1f;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .action-section-title {
+            font-weight: bold;
+            color: #FACC15;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .action-section-desc {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #FACC15, #f59e0b);
+            color: #0C0C0E;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.5);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.6);
+        }
+
+        .upload-answers-btn {
+            background: transparent;
+            color: #FACC15;
+            border: 2px dashed #DC2626;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .upload-answers-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: #FACC15;
+        }
+
+        .review-btn {
+            background: linear-gradient(135deg, #DC2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.5);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .review-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.6);
+        }
+
+        /* SCREEN 5: REVIEW SESSION */
+        .progress-track {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            align-items: center;
+        }
+
+        .checkpoint {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #ccc;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .checkpoint.active {
+            background: #DC2626;
+            color: white;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+        }
+
+        .checkpoint-line {
+            flex: 1;
+            height: 2px;
+            background: #333;
+            margin: 0 4px;
+        }
+
+        .checkpoint-info {
+            background: rgba(220, 38, 38, 0.15);
+            border: 2px solid #DC2626;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #FACC15;
+        }
+
+        .review-section {
+            background: #1a1a1f;
+            border: 2px solid #333;
+            border-left: 6px solid #DC2626;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .review-section-title {
+            font-weight: bold;
+            color: #FACC15;
+            font-size: 13px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lap-challenge-review {
+            background: rgba(220, 38, 38, 0.2);
+            border: 2px solid #DC2626;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .racer-work {
+            background: #2a2a2f;
+            border: 2px dashed #666;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #888;
+            margin-bottom: 12px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .racer-work-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .racer-work-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .lap-result {
+            background: rgba(220, 38, 38, 0.2);
+            border: 3px solid #DC2626;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .lap-result-badge {
+            font-size: 32px;
+            font-weight: bold;
+            color: #DC2626;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .race-computer-solution {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid #22C55E;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .solution-title {
+            font-weight: bold;
+            color: #22C55E;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .solution-step {
+            background: #1a1a1f;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #ccc;
+            border-left: 3px solid #22C55E;
+        }
+
+        .solution-step-label {
+            color: #22C55E;
+            font-weight: bold;
+        }
+
+        .pit-stop-hint {
+            background: rgba(250, 204, 21, 0.1);
+            border-left: 4px solid #FACC15;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #FACC15;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .complete-btn {
+            flex: 1;
+            background: #22C55E;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .complete-btn:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .redo-btn {
+            flex: 1;
+            background: transparent;
+            color: #FACC15;
+            border: 2px solid #FACC15;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .redo-btn:hover {
+            background: rgba(250, 204, 21, 0.1);
+        }
+
+        /* SCREEN 6: CELEBRATION */
+        .checkered-banner {
+            width: 100%;
+            height: 30px;
+            background: repeating-linear-gradient(
+                90deg,
+                #DC2626 0px,
+                #DC2626 20px,
+                white 20px,
+                white 40px
+            );
+            margin-bottom: 24px;
+            border-radius: 4px;
+        }
+
+        .celebration-title {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            color: #FACC15;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .celebration-subtitle {
+            font-size: 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .celebration-icon {
+            font-size: 64px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .stats-grid {
+            background: #1a1a1f;
+            border: 2px solid #DC2626;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .stats-item {
+            background: rgba(220, 38, 38, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .stats-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stats-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .stats-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FACC15;
+        }
+
+        .level-unlock {
+            background: linear-gradient(135deg, #FACC15, #f59e0b);
+            color: #0C0C0E;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .prize-box {
+            background: rgba(220, 38, 38, 0.2);
+            border: 2px dashed #FACC15;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .prize-text {
+            font-size: 14px;
+            color: #FACC15;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .new-race-btn {
+            background: linear-gradient(135deg, #DC2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.5);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        .new-race-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- SCREEN 1: WELCOME -->
+        <div id="s-welcome" class="screen active">
+            <div class="topbar">
+                <div></div>
+                <div class="topbar-title">🏁 MATH RACER</div>
+                <div class="race-points-chip">v5</div>
+            </div>
+            <div class="screen-content welcome-content">
+                <div>
+                    <div class="welcome-title">🏁 MATH RACER 🏁</div>
+                    <div class="welcome-subtitle">Upload Gabe's test. Race through questions. Win the championship!</div>
+                </div>
+
+                <div class="race-stats">
+                    <div class="race-stats-item">
+                        <span class="race-stats-label">🏆 Racer:</span>
+                        <span class="race-stats-value">Gabe — CHAMPION LEVEL 4</span>
+                    </div>
+                    <div class="race-stats-item">
+                        <span class="race-stats-label">Lap Progress:</span>
+                    </div>
+                    <div class="speed-bar">
+                        <div class="speed-bar-fill"></div>
+                    </div>
+                    <div class="race-stats-item">
+                        <span class="race-stats-label">⭐ Race Points:</span>
+                        <span class="race-stats-value">240</span>
+                    </div>
+                </div>
+
+                <button class="start-btn" onclick="show('s-setup')">🏎️ START RACE</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: SETUP + UPLOAD -->
+        <div id="s-setup" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-welcome')">←</button>
+                <div class="topbar-title">🏎️ PRE-RACE SETUP</div>
+                <div class="race-points-chip">240⭐</div>
+            </div>
+            <div class="screen-content">
+                <div class="form-group">
+                    <label class="form-label">Racer Name</label>
+                    <input type="text" class="form-input" value="Gabe" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Crew Chief</label>
+                    <input type="text" class="form-input" value="Auntie Mia" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Assignment Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Addition Practice">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input">
+                </div>
+
+                <div class="upload-zone">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">Upload Graded Test</div>
+                    <div class="upload-hint">Pit Stop Scan — AI will find every missed question before race start</div>
+                </div>
+
+                <div class="pit-stop-tip">
+                    🔧 PIT STOP TIP: Make sure all marks are clearly visible!
+                </div>
+
+                <button class="skip-btn" onclick="show('s-ai')">Skip — Use Sample Test Data</button>
+                <button class="primary-btn" onclick="show('s-ai')">📤 UPLOAD & ANALYZE</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: AI EXTRACTION -->
+        <div id="s-ai" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-setup')">←</button>
+                <div class="topbar-title">SCANNING RACE DATA 🔍</div>
+                <div></div>
+            </div>
+            <div class="screen-content">
+                <div class="ai-card">
+                    <div class="ai-icon">⚙️</div>
+                    <div class="ai-text">Race Computer Analyzing...</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill"></div>
+                    </div>
+                    <div class="progress-text">Processing 10 questions...</div>
+                </div>
+
+                <div class="race-score">
+                    <div class="race-score-number">55/100</div>
+                    <div class="race-score-laps">5 LAPS TO REDO</div>
+                </div>
+
+                <div class="lap-challenges">
+                    <div class="lap-challenge">
+                        <div class="lap-badge">1</div>
+                        <div class="lap-content">
+                            <div class="lap-question">Q1: What is 23 + 15?</div>
+                            <span class="lap-status">MISSED LAP</span>
+                        </div>
+                        <input type="checkbox" class="lap-toggle" checked>
+                    </div>
+                    <div class="lap-challenge">
+                        <div class="lap-badge">2</div>
+                        <div class="lap-content">
+                            <div class="lap-question">Q2: Solve 48 - 19</div>
+                            <span class="lap-status">MISSED LAP</span>
+                        </div>
+                        <input type="checkbox" class="lap-toggle" checked>
+                    </div>
+                    <div class="lap-challenge">
+                        <div class="lap-badge">3</div>
+                        <div class="lap-content">
+                            <div class="lap-question">Q7: What is 6 × 7?</div>
+                            <span class="lap-status">MISSED LAP</span>
+                        </div>
+                        <input type="checkbox" class="lap-toggle" checked>
+                    </div>
+                    <div class="lap-challenge">
+                        <div class="lap-badge">4</div>
+                        <div class="lap-content">
+                            <div class="lap-question">Q9: 36 ÷ 4 = ?</div>
+                            <span class="lap-status">MISSED LAP</span>
+                        </div>
+                        <input type="checkbox" class="lap-toggle" checked>
+                    </div>
+                    <div class="lap-challenge">
+                        <div class="lap-badge">5</div>
+                        <div class="lap-content">
+                            <div class="lap-question">Q10: What is 81 ÷ 9?</div>
+                            <span class="lap-status">MISSED LAP</span>
+                        </div>
+                        <input type="checkbox" class="lap-toggle" checked>
+                    </div>
+                </div>
+
+                <button class="add-lap-btn">+ ADD LAP</button>
+                <button class="gen-race-btn" onclick="show('s-practice')">🏎️ GEN RACE COURSE</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: PRACTICE SHEET -->
+        <div id="s-practice" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-ai')">←</button>
+                <div class="topbar-title">RACE COURSE SHEET 📋</div>
+                <div></div>
+            </div>
+            <div class="screen-content">
+                <div class="practice-header">
+                    <div class="practice-header-text">🏁 RACE COURSE READY!</div>
+                </div>
+
+                <div class="practice-info">
+                    <div class="practice-info-row">
+                        <span class="practice-info-label">Assignment:</span>
+                        <span>Math Practice #5</span>
+                    </div>
+                    <div class="practice-info-row">
+                        <span class="practice-info-label">Racer:</span>
+                        <span>Gabe</span>
+                    </div>
+                    <div class="practice-info-row">
+                        <span class="practice-info-label">Crew Chief:</span>
+                        <span>Auntie Mia</span>
+                    </div>
+                    <div class="practice-info-row">
+                        <span class="practice-info-label">Date:</span>
+                        <span>04/06/2026</span>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-badge">1</div>
+                        <div class="question-text">What is <span class="question-number">23</span> + <span class="question-number">15</span>?</div>
+                    </div>
+                    <div class="pit-stop-area">SHOW YOUR WORK — PIT STOP AREA</div>
+                    <div class="answer-line">YOUR ANSWER: ___</div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-badge">2</div>
+                        <div class="question-text">Solve <span class="question-number">48</span> - <span class="question-number">19</span></div>
+                    </div>
+                    <div class="pit-stop-area">SHOW YOUR WORK — PIT STOP AREA</div>
+                    <div class="answer-line">YOUR ANSWER: ___</div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-badge">3</div>
+                        <div class="question-text">What is <span class="question-number">6</span> × <span class="question-number">7</span>?</div>
+                    </div>
+                    <div class="pit-stop-area">SHOW YOUR WORK — PIT STOP AREA</div>
+                    <div class="answer-line">YOUR ANSWER: ___</div>
+                </div>
+
+                <div class="action-section">
+                    <div class="action-section-title">📄 PRINT RACE COURSE</div>
+                    <div class="action-section-desc">Prints 8×11 paper worksheet with room to show all work</div>
+                    <button class="print-btn" onclick="window.print()">📄 PRINT RACE COURSE</button>
+                </div>
+
+                <div class="action-section">
+                    <div class="action-section-title">📸 UPLOAD GABE'S RACE ANSWERS</div>
+                    <div class="action-section-desc">After Gabe completes the course on paper, upload a photo of his answers here</div>
+                    <div class="upload-zone" style="margin: 12px 0;">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-hint">Tap to upload photo</div>
+                    </div>
+                    <button class="upload-answers-btn">📤 UPLOAD ANSWERS</button>
+                </div>
+
+                <button class="review-btn" onclick="show('s-review')">🏁 START REVIEW RACE</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: REVIEW SESSION -->
+        <div id="s-review" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-practice')">←</button>
+                <div class="topbar-title">REVIEW RACE 🏎️</div>
+                <div class="race-points-chip">240⭐</div>
+            </div>
+            <div class="screen-content">
+                <div class="progress-track">
+                    <div class="checkpoint">1</div>
+                    <div class="checkpoint-line"></div>
+                    <div class="checkpoint">2</div>
+                    <div class="checkpoint-line"></div>
+                    <div class="checkpoint active">3</div>
+                    <div class="checkpoint-line"></div>
+                    <div class="checkpoint">4</div>
+                    <div class="checkpoint-line"></div>
+                    <div class="checkpoint">5</div>
+                </div>
+
+                <div class="checkpoint-info">
+                    CHECKPOINT 3 OF 5 — 2 LAPS COMPLETE
+                </div>
+
+                <div class="review-section">
+                    <div class="review-section-title">LAP CHALLENGE</div>
+                    <div class="lap-challenge-review">
+                        <div class="lap-badge">3</div>
+                        <div>
+                            <div style="font-weight: bold; color: #ccc; margin-bottom: 6px;">What is 6 × 7?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <div class="review-section-title">📸 GABE'S RACE ANSWERS</div>
+                    <div class="racer-work">
+                        <div class="racer-work-icon">📸</div>
+                        <div class="racer-work-label">Racer's uploaded pit stop work</div>
+                    </div>
+                </div>
+
+                <div class="lap-result">
+                    <div class="lap-result-badge">❌ LAP FAILED — REDO!</div>
+                </div>
+
+                <div class="pit-stop-hint">
+                    🔧 PIT STOP HINT: When you multiply, you're combining groups. 6 groups of 7 is the same as 7+7+7+7+7+7. What do you get?
+                </div>
+
+                <div class="review-section">
+                    <div class="review-section-title">🔑 RACE COMPUTER SOLUTION</div>
+                    <div class="solution-step">
+                        <span class="solution-step-label">Lap Step 1:</span> We need 6 groups of 7
+                    </div>
+                    <div class="solution-step">
+                        <span class="solution-step-label">Lap Step 2:</span> Count: 7, 14, 21, 28, 35, 42
+                    </div>
+                    <div class="solution-step">
+                        <span class="solution-step-label">Lap Step 3:</span> The answer is <strong>42</strong>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="complete-btn" onclick="show('s-review')">✅ LAP COMPLETE! +20⭐</button>
+                    <button class="redo-btn" onclick="show('s-review')">🔄 REDO LAP</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: CELEBRATION -->
+        <div id="s-celebrate" class="screen">
+            <div class="topbar">
+                <div></div>
+                <div class="topbar-title">🏆 FINISH LINE</div>
+                <div class="race-points-chip">340⭐</div>
+            </div>
+            <div class="screen-content">
+                <div class="checkered-banner"></div>
+
+                <div class="celebration-icon">🏆</div>
+
+                <div class="celebration-title">RACE COMPLETE</div>
+                <div class="celebration-subtitle">🥇 PODIUM FINISH!</div>
+
+                <div style="text-align: center; font-size: 18px; color: white; margin-bottom: 24px;">
+                    🎉 INCREDIBLE RACE, GABE!<br>YOU'RE A CHAMPION! 🎉
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stats-item">
+                        <div class="stats-label">Questions Correct</div>
+                        <div class="stats-value">5</div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-label">Laps Redone</div>
+                        <div class="stats-value">5</div>
+                    </div>
+                    <div class="stats-item">
+                        <div class="stats-label">Race Points Earned</div>
+                        <div class="stats-value">+100⭐</div>
+                    </div>
+                </div>
+
+                <div class="level-unlock">
+                    🚀 LEVEL 5 RACE CHAMPION UNLOCKED!
+                </div>
+
+                <div class="prize-box">
+                    <div class="prize-text">🎁 TROPHY PRIZE UNLOCKED</div>
+                    <div style="font-size: 12px; color: #ccc;">Claim from Auntie Mia!</div>
+                </div>
+
+                <button class="new-race-btn" onclick="show('s-welcome')">🏎️ NEW RACE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function show(screenId) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show target screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HERO MATH — Superhero Academy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1a2332 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: #0F172A;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
+            border: 3px solid #3B82F6;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(180deg, rgba(59, 130, 246, 0.4) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #EF4444;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            border: 2px solid #FCA5A5;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .screen.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3B82F6;
+        }
+
+        .topbar-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #3B82F6;
+            letter-spacing: 2px;
+        }
+
+        .power-chip {
+            background: linear-gradient(135deg, #EF4444, #F59E0B);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 2px solid #FCA5A5;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+        }
+
+        /* WELCOME SCREEN */
+        #s-welcome {
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6, #F59E0B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
+        }
+
+        .tagline {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #FCA5A5;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .hero-rank-display {
+            background: rgba(59, 130, 246, 0.1);
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #F59E0B;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .hero-rank-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #F59E0B;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .power-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #3B82F6;
+            border-radius: 8px;
+            height: 16px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .power-bar-fill {
+            background: linear-gradient(90deg, #3B82F6, #60A5FA);
+            height: 100%;
+            width: 80%;
+            box-shadow: 0 0 10px #3B82F6;
+        }
+
+        .power-level-text {
+            font-size: 11px;
+            color: #A5F3FC;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .power-counter-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0;
+            border: 3px solid #FBBF24;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+        }
+
+        .btn-hero {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: 3px solid #60A5FA;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .btn-hero:hover {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 1);
+            transform: scale(1.05);
+        }
+
+        .btn-hero:active {
+            transform: scale(0.98);
+        }
+
+        /* SETUP SCREEN */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #F59E0B;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #F59E0B;
+            background: rgba(59, 130, 246, 0.05);
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-input::placeholder {
+            color: #7DD3FC;
+        }
+
+        .upload-zone {
+            border: 3px dashed #3B82F6;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #60A5FA;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #3B82F6;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #A5F3FC;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-tip {
+            background: rgba(245, 158, 11, 0.1);
+            border: 3px solid #F59E0B;
+            border-left: 6px solid #F59E0B;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 16px 0;
+            font-size: 12px;
+            color: #FCD34D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+            border: 2px solid #3B82F6;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* AI EXTRACTION SCREEN */
+        .ai-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(239, 68, 68, 0.1));
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #60A5FA;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .ai-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: inline-block;
+            animation: heroFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .ai-text {
+            font-size: 14px;
+            font-weight: bold;
+            color: #60A5FA;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #3B82F6;
+            border-radius: 8px;
+            height: 20px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #3B82F6, #60A5FA);
+            height: 100%;
+            width: 65%;
+            box-shadow: 0 0 10px #3B82F6;
+            animation: progress 2s ease-in-out;
+        }
+
+        @keyframes progress {
+            from { width: 0%; }
+            to { width: 65%; }
+        }
+
+        .score-banner {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            border: 3px solid #FBBF24;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .score-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #1F2937;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #1F2937;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+
+        .challenges-section {
+            margin: 20px 0;
+        }
+
+        .challenge-item {
+            background: rgba(59, 130, 246, 0.05);
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #EF4444;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .challenge-badge {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+            border: 2px solid #FCA5A5;
+        }
+
+        .challenge-text {
+            flex: 1;
+            font-size: 12px;
+            color: #E0E7FF;
+        }
+
+        .challenge-toggle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3B82F6;
+            border-radius: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .challenge-toggle.checked {
+            background: #3B82F6;
+            position: relative;
+        }
+
+        .challenge-toggle.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-add {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+            border: 2px dashed #3B82F6;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .btn-add:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: 3px solid #60A5FA;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
+            transform: scale(1.02);
+        }
+
+        /* PRACTICE SCREEN */
+        .mission-ready {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.05));
+            border: 3px solid #22C55E;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #86EFAC;
+            letter-spacing: 1px;
+        }
+
+        .practice-header {
+            background: rgba(59, 130, 246, 0.1);
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #F59E0B;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #A5F3FC;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .practice-question {
+            background: rgba(59, 130, 246, 0.08);
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #60A5FA;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .q-number {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border: 2px solid #60A5FA;
+        }
+
+        .q-text {
+            font-size: 13px;
+            color: white;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        .q-highlight {
+            color: #F59E0B;
+            font-weight: 900;
+        }
+
+        .work-space {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed #7DD3FC;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 10px 0;
+            min-height: 60px;
+            font-size: 11px;
+            color: #A5F3FC;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .answer-line {
+            border-bottom: 2px solid #3B82F6;
+            height: 24px;
+            margin-top: 8px;
+        }
+
+        .action-section {
+            background: rgba(59, 130, 246, 0.05);
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #F59E0B;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .action-title {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #F59E0B;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            border: 3px solid #FBBF24;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .btn-print:hover {
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
+            transform: scale(1.05);
+        }
+
+        .print-hint {
+            font-size: 11px;
+            color: #FCD34D;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .upload-work-zone {
+            border: 3px dashed #3B82F6;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .upload-work-title {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #3B82F6;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .upload-work-hint {
+            font-size: 11px;
+            color: #A5F3FC;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: 2px solid #60A5FA;
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-upload:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        /* REVIEW SCREEN */
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .progress-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #3B82F6;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #A5F3FC;
+        }
+
+        .progress-dot.active {
+            background: linear-gradient(135deg, #3B82F6, #60A5FA);
+            border-color: #60A5FA;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+        }
+
+        .challenge-header {
+            background: rgba(59, 130, 246, 0.1);
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #F59E0B;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #A5F3FC;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .comic-panel {
+            background: rgba(59, 130, 246, 0.08);
+            border: 3px solid #3B82F6;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        .panel-label {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #F59E0B;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .panel-content {
+            font-size: 13px;
+            color: #E0E7FF;
+            line-height: 1.5;
+        }
+
+        .gabe-work-box {
+            background: #333333;
+            border: 2px dashed #999999;
+            border-radius: 4px;
+            min-height: 100px;
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999999;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .result-badge {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            border: 3px solid #FCA5A5;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 14px 0;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .result-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .result-text {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .solution-steps {
+            background: rgba(34, 197, 94, 0.08);
+            border: 3px solid #22C55E;
+            border-left: 6px solid #22C55E;
+            border-radius: 6px;
+            padding: 14px;
+            margin: 14px 0;
+        }
+
+        .solution-title {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #86EFAC;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .solution-list {
+            font-size: 12px;
+            color: #E0E7FF;
+            line-height: 1.6;
+        }
+
+        .solution-list li {
+            list-style: none;
+            margin-bottom: 8px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .solution-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #22C55E;
+            font-weight: bold;
+        }
+
+        .hint-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid #F59E0B;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 12px 0;
+            font-size: 11px;
+            color: #FCD34D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .btn-unlock {
+            flex: 1;
+            background: linear-gradient(135deg, #22C55E, #16A34A);
+            color: white;
+            border: 2px solid #86EFAC;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-unlock:hover {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.7);
+        }
+
+        .btn-retry {
+            flex: 1;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            border: 2px solid #FBBF24;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-retry:hover {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+        }
+
+        /* CELEBRATE SCREEN */
+        .celebration-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #F59E0B;
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .celebration-message {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(59, 130, 246, 0.1));
+            border: 3px solid #F59E0B;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #FCD34D;
+            letter-spacing: 1px;
+        }
+
+        .stats-box {
+            background: rgba(59, 130, 246, 0.08);
+            border: 3px solid #3B82F6;
+            border-left: 6px solid #F59E0B;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #A5F3FC;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 900;
+            color: #F59E0B;
+        }
+
+        .level-up {
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+            border: 3px solid #FBBF24;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-up::before {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            font-size: 60px;
+            opacity: 0.3;
+        }
+
+        .level-up-text {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: white;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-bar-celebrate {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #3B82F6;
+            border-radius: 8px;
+            height: 20px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill-celebrate {
+            background: linear-gradient(90deg, #3B82F6, #60A5FA);
+            height: 100%;
+            width: 90%;
+            box-shadow: 0 0 10px #3B82F6;
+        }
+
+        .prize-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+            border: 3px solid #22C55E;
+            border-radius: 8px;
+            padding: 14px;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .prize-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .prize-text {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #86EFAC;
+            letter-spacing: 1px;
+        }
+
+        .btn-new-mission {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: 3px solid #60A5FA;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .btn-new-mission:hover {
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="version-badge">v3 — Superhero Academy</div>
+
+        <!-- SCREEN 1: WELCOME -->
+        <div id="s-welcome" class="screen active">
+            <div class="hero-title">HERO MATH</div>
+            <div class="tagline">TRAIN YOUR MATH POWERS. DEFEAT WRONG ANSWERS.</div>
+
+            <div class="hero-rank-display">
+                <div class="hero-rank-title">⚡ HERO GABE — RANK 4: MATH GUARDIAN</div>
+                <div class="power-bar">
+                    <div class="power-bar-fill"></div>
+                </div>
+                <div class="power-level-text">80% TO RANK 5</div>
+            </div>
+
+            <div class="power-counter-badge">⚡ 240 POWER</div>
+
+            <button class="btn-hero" onclick="show('s-setup')">⚡ BEGIN HERO TRAINING</button>
+        </div>
+
+        <!-- SCREEN 2: SETUP -->
+        <div id="s-setup" class="screen">
+            <div class="topbar">
+                <div class="topbar-title">🛡️ TRAINING SETUP</div>
+                <div class="power-chip">⚡ 240 POWER</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">STUDENT</label>
+                <input type="text" class="form-input" value="Gabe" placeholder="Student Name">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">TUTOR</label>
+                <input type="text" class="form-input" value="Auntie Mia" placeholder="Tutor Name">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">ASSIGNMENT NAME</label>
+                <input type="text" class="form-input" placeholder="e.g., Chapter 3 Test">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">DATE</label>
+                <input type="date" class="form-input">
+            </div>
+
+            <div class="upload-zone">
+                <div class="upload-icon">📋</div>
+                <div class="upload-text">UPLOAD TEST MISSION</div>
+                <div class="upload-hint">AI WILL SCAN AND DETECT ALL WRONG ANSWERS</div>
+            </div>
+
+            <div class="hero-tip">
+                🎯 HERO TIP: Make sure all teacher marks are visible
+            </div>
+
+            <button class="btn-secondary" onclick="show('s-ai')">SKIP & CONTINUE</button>
+        </div>
+
+        <!-- SCREEN 3: AI EXTRACTION -->
+        <div id="s-ai" class="screen">
+            <div class="topbar">
+                <div class="topbar-title">SCANNING MISSION</div>
+                <div class="power-chip">⚡ 240 POWER</div>
+            </div>
+
+            <div class="ai-card">
+                <div class="ai-icon">🦸</div>
+                <div class="ai-text">AI HERO DETECTOR ACTIVATED...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="score-banner">
+                <div class="score-title">HERO SCORE</div>
+                <div class="score-value">55/100 — 5 POWERS TO UNLOCK</div>
+            </div>
+
+            <div class="challenges-section">
+                <div class="challenge-item">
+                    <div class="challenge-badge">1</div>
+                    <div class="challenge-text">What is 24 ÷ 6? Student answer: 3</div>
+                    <div class="challenge-toggle checked"></div>
+                </div>
+                <div class="challenge-item">
+                    <div class="challenge-badge">2</div>
+                    <div class="challenge-text">Solve: 15 + 28 = ___. Student answer: 42</div>
+                    <div class="challenge-toggle checked"></div>
+                </div>
+                <div class="challenge-item">
+                    <div class="challenge-badge">3</div>
+                    <div class="challenge-text">5 × 7 = ___. Student answer: 30</div>
+                    <div class="challenge-toggle checked"></div>
+                </div>
+                <div class="challenge-item">
+                    <div class="challenge-badge">4</div>
+                    <div class="challenge-text">Count by 2s: 2, 4, 6, ___, 10. Student answer: 7</div>
+                    <div class="challenge-toggle checked"></div>
+                </div>
+                <div class="challenge-item">
+                    <div class="challenge-badge">5</div>
+                    <div class="challenge-text">What time is 3 hours after 2:00? Student answer: 6:00</div>
+                    <div class="challenge-toggle"></div>
+                </div>
+            </div>
+
+            <button class="btn-add">+ ADD CHALLENGE</button>
+            <button class="btn-primary" onclick="show('s-practice')">GENERATE TRAINING MISSION</button>
+        </div>
+
+        <!-- SCREEN 4: PRACTICE -->
+        <div id="s-practice" class="screen">
+            <div class="topbar">
+                <div class="topbar-title">TRAINING WORKSHEET</div>
+                <div class="power-chip">⚡ 240 POWER</div>
+            </div>
+
+            <div class="mission-ready">✅ MISSION READY!</div>
+
+            <div class="practice-header">
+                📝 PRACTICE SHEET — DEFEAT 5 MATH CHALLENGES
+            </div>
+
+            <div class="practice-question">
+                <div class="q-number">1</div>
+                <div class="q-text">What is <span class="q-highlight">24 ÷ 6</span>?</div>
+                <div class="work-space">SHOW YOUR HERO WORK HERE</div>
+                <div class="answer-line"></div>
+            </div>
+
+            <div class="practice-question">
+                <div class="q-number">2</div>
+                <div class="q-text">Solve: <span class="q-highlight">15 + 28</span> = ___</div>
+                <div class="work-space">SHOW YOUR HERO WORK HERE</div>
+                <div class="answer-line"></div>
+            </div>
+
+            <div class="practice-question">
+                <div class="q-number">3</div>
+                <div class="q-text"><span class="q-highlight">5 × 7</span> = ___</div>
+                <div class="work-space">SHOW YOUR HERO WORK HERE</div>
+                <div class="answer-line"></div>
+            </div>
+
+            <div class="action-section">
+                <div class="action-title">📄 EXPORT & PRINT</div>
+                <button class="btn-print">📄 PRINT TRAINING SHEET</button>
+                <div class="print-hint">Prints 8×11 paper worksheet with space to show work</div>
+            </div>
+
+            <div class="action-section">
+                <div class="action-title">📸 UPLOAD STUDENT WORK</div>
+                <div class="upload-work-zone">
+                    <div class="upload-work-title">📸 UPLOAD HERO'S COMPLETED WORK</div>
+                    <div class="upload-work-hint">After Gabe finishes on paper, upload a photo of his answers</div>
+                    <button class="btn-upload">UPLOAD ANSWERS</button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="show('s-review')">⚡ START REVIEW BATTLE</button>
+        </div>
+
+        <!-- SCREEN 5: REVIEW -->
+        <div id="s-review" class="screen">
+            <div class="topbar">
+                <div class="topbar-title">REVIEW BATTLE</div>
+                <div class="power-chip">⚡ 240 POWER</div>
+            </div>
+
+            <div class="progress-dots">
+                <div class="progress-dot">1</div>
+                <div class="progress-dot">2</div>
+                <div class="progress-dot active">3</div>
+                <div class="progress-dot">4</div>
+                <div class="progress-dot">5</div>
+            </div>
+
+            <div class="challenge-header">
+                CHALLENGE 3 OF 5 — 2 DEFEATED
+            </div>
+
+            <!-- A. Challenge -->
+            <div class="comic-panel">
+                <div class="panel-label">⚔️ CHALLENGE 3</div>
+                <div class="panel-content"><span class="q-highlight">5 × 7</span> = ___</div>
+            </div>
+
+            <!-- B. Hero's Work -->
+            <div class="comic-panel">
+                <div class="panel-label">📸 GABE'S WORK</div>
+                <div class="gabe-work-box">
+                    Hero's submitted answers (uploaded)
+                </div>
+            </div>
+
+            <!-- C. Result -->
+            <div class="result-badge">
+                <div class="result-icon">❌</div>
+                <div class="result-text">POWER NOT UNLOCKED</div>
+            </div>
+
+            <!-- D. Power Unlock (Answer Key) -->
+            <div class="solution-steps">
+                <div class="solution-title">🔑 CORRECT ANSWER + SOLUTION STEPS</div>
+                <div class="panel-content"><strong>Correct Answer: 35</strong></div>
+                <ul class="solution-list">
+                    <li>Count the groups: We have 7 groups of 5</li>
+                    <li>Count by 5s: 5, 10, 15, 20, 25, 30, 35</li>
+                    <li>Or use repeated addition: 5 + 5 + 5 + 5 + 5 + 5 + 5 = 35</li>
+                    <li><strong>Answer: 35</strong></li>
+                </ul>
+            </div>
+
+            <div class="hint-box">
+                💡 HERO HINT: Multiplication is repeated addition!
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-unlock" onclick="show('s-celebrate')">✅ POWER UNLOCKED! +20⚡</button>
+                <button class="btn-retry">🔄 RETRY CHALLENGE</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: CELEBRATE -->
+        <div id="s-celebrate" class="screen">
+            <div class="celebration-title">🏆 TRAINING COMPLETE!</div>
+
+            <div class="celebration-message">
+                INCREDIBLE HERO GABE! YOU'VE UNLOCKED NEW POWERS!
+            </div>
+
+            <div class="stats-box">
+                <div class="stat-row">
+                    <span class="stat-label">CHALLENGES DEFEATED</span>
+                    <span class="stat-value">4 / 5</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">RETRIED</span>
+                    <span class="stat-value">2</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">TOTAL POWER EARNED</span>
+                    <span class="stat-value">80 ⚡</span>
+                </div>
+            </div>
+
+            <div class="level-up">
+                <div class="level-up-text">🌟 RANK 5 UNLOCKED: MATH SUPERHERO! 🌟</div>
+            </div>
+
+            <div class="progress-bar-celebrate">
+                <div class="progress-fill-celebrate"></div>
+            </div>
+
+            <div class="prize-box">
+                <div class="prize-icon">🎁</div>
+                <div class="prize-text">PRIZE POWER UNLOCKED — Claim from Auntie Mia!</div>
+            </div>
+
+            <button class="btn-new-mission" onclick="show('s-welcome')">⚡ NEW MISSION</button>
+        </div>
+    </div>
+
+    <script>
+        function show(id) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show the requested screen
+            const screen = document.getElementById(id);
+            if (screen) {
+                screen.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

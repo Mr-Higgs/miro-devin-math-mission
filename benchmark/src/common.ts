@@ -1,0 +1,80 @@
+import { readFileSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+export const BENCH_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
+export const TEST_DATA_DIR = join(BENCH_DIR, "..", "test-data");
+
+export type Provider = "anthropic" | "openai" | "google";
+
+export interface ModelConfig {
+  provider: Provider;
+  id: string;
+  label: string;
+  confirm?: boolean;
+}
+
+export interface ImageInput {
+  label: string; // e.g. "Photo 1 of 6"
+  mediaType: "image/jpeg" | "image/png";
+  base64: string;
+}
+
+export interface CallResult {
+  text: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  ms: number;
+}
+
+/** Load benchmark/.env into process.env without overwriting existing values. Never logs values. */
+export function loadEnv(): void {
+  const path = join(BENCH_DIR, ".env");
+  if (!existsSync(path)) return;
+  for (const line of readFileSync(path, "utf8").split("\n")) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+    if (m && m[2] && process.env[m[1]] === undefined) process.env[m[1]] = m[2];
+  }
+}
+
+export function loadModels(): ModelConfig[] {
+  return JSON.parse(readFileSync(join(BENCH_DIR, "models.json"), "utf8")).models;
+}
+
+export function loadPrompt(name: "extraction" | "grading"): string {
+  return readFileSync(join(BENCH_DIR, "prompts", `${name}.md`), "utf8");
+}
+
+/**
+ * Remove EXIF (APP1) and IPTC (APP13) segments from a JPEG, which can carry GPS
+ * location and device details (decision 006). Image data is left untouched.
+ */
+export function stripJpegMetadata(buf: Buffer): Buffer {
+  if (buf[0] !== 0xff || buf[1] !== 0xd8) return buf;
+  const parts: Buffer[] = [buf.subarray(0, 2)];
+  let i = 2;
+  while (i + 4 <= buf.length && buf[i] === 0xff) {
+    const marker = buf[i + 1];
+    if (marker === 0xda) break; // start of scan: the rest is image data
+    const len = buf.readUInt16BE(i + 2);
+    if (marker !== 0xe1 && marker !== 0xed) parts.push(buf.subarray(i, i + 2 + len));
+    i += 2 + len;
+  }
+  parts.push(buf.subarray(i));
+  return Buffer.concat(parts);
+}
+
+export function loadImage(path: string, label: string): ImageInput {
+  const raw = readFileSync(path);
+  const isPng = path.toLowerCase().endsWith(".png");
+  const data = isPng ? raw : stripJpegMetadata(raw);
+  return { label, mediaType: isPng ? "image/png" : "image/jpeg", base64: data.toString("base64") };
+}
+
+/** Pull the first JSON object out of a model's reply (tolerates code fences or stray text). */
+export function parseJsonReply(text: string): any {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start === -1 || end <= start) throw new Error("No JSON object in reply");
+  return JSON.parse(text.slice(start, end + 1));
+}

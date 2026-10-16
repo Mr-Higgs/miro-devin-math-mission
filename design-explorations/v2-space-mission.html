@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Mission — Space Tutoring App for Gabe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #03071E 0%, #0D1B2A 100%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Star particles background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(1px 1px at 20% 30%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 60% 70%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 80% 10%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 40% 80%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 90% 50%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 10% 60%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 70% 20%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 50% 45%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 25% 85%, white, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 85% 75%, white, rgba(255,255,255,0));
+            background-size: 200% 200%, 150% 150%, 180% 180%, 220% 220%, 190% 190%, 170% 170%, 210% 210%, 160% 160%, 200% 200%, 175% 175%;
+            background-position: 0 0, 10% 20%, 30% 40%, 50% 60%, 70% 80%, 15% 35%, 45% 75%, 25% 55%, 80% 15%, 35% 25%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px 20px;
+            border-radius: 20px;
+            background: rgba(13, 27, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid #4CC9F0;
+            box-shadow: 0 8px 32px rgba(76, 201, 240, 0.15);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 107, 53, 0.3);
+            border: 1px solid #FF6B35;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #FFD60A;
+        }
+
+        /* === TOPBAR === */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(76, 201, 240, 0.4);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #4CC9F0;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #FF6B35;
+            transform: scale(1.1);
+        }
+
+        .topbar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFD60A;
+        }
+
+        .star-chip {
+            background: rgba(255, 214, 10, 0.15);
+            border: 1px solid #FFD60A;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #FFD60A;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* === WELCOME SCREEN === */
+        .hero-title {
+            font-size: 42px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFD60A, #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.4);
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #CCCCCC;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .rank-bar {
+            background: rgba(76, 201, 240, 0.1);
+            border: 1px solid #4CC9F0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .rank-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4CC9F0;
+            margin-bottom: 8px;
+        }
+
+        .stars-count {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFD60A;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 214, 10, 0.1);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B35, #FFD60A);
+            width: 40%;
+            border-radius: 4px;
+        }
+
+        .cta-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-btn-primary {
+            background: linear-gradient(135deg, #FF6B35, #FFD60A);
+            color: #03071E;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+        }
+
+        .cta-btn-primary:hover {
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.8);
+            transform: scale(1.02);
+        }
+
+        .cta-btn-secondary {
+            background: transparent;
+            color: #4CC9F0;
+            border: 2px solid #4CC9F0;
+            box-shadow: none;
+        }
+
+        .cta-btn-secondary:hover {
+            background: rgba(76, 201, 240, 0.1);
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.3);
+        }
+
+        /* === SETUP SCREEN === */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #FFD60A;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #4CC9F0;
+            background: rgba(76, 201, 240, 0.05);
+            color: #FFFFFF;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+            background: rgba(255, 107, 53, 0.05);
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
+        }
+
+        .upload-zone {
+            border: 2px dashed #4CC9F0;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            background: rgba(76, 201, 240, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .upload-zone:hover {
+            border-color: #FF6B35;
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4CC9F0;
+            margin-bottom: 5px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #999999;
+        }
+
+        .callout {
+            background: rgba(255, 214, 10, 0.1);
+            border-left: 4px solid #FFD60A;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #FFD60A;
+            line-height: 1.5;
+        }
+
+        .ghost-btn {
+            background: transparent;
+            color: #4CC9F0;
+            border: 1px dashed #4CC9F0;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .ghost-btn:hover {
+            background: rgba(76, 201, 240, 0.1);
+        }
+
+        /* === AI SCREEN === */
+        .ai-card {
+            background: rgba(76, 201, 240, 0.1);
+            border: 1px solid #4CC9F0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .ai-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .ai-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4CC9F0;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-animated {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 214, 10, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill-animated {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B35, #FFD60A, #FF6B35);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+            border-radius: 3px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: 0 0; }
+        }
+
+        .score-banner {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid #FF6B35;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .score-title {
+            font-size: 12px;
+            color: #999999;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #FFD60A;
+            margin-bottom: 5px;
+        }
+
+        .score-subtitle {
+            font-size: 12px;
+            color: #4CC9F0;
+        }
+
+        .targets-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFD60A;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 214, 10, 0.3);
+        }
+
+        .target-item {
+            background: rgba(76, 201, 240, 0.05);
+            border: 1px solid rgba(76, 201, 240, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .target-item:hover {
+            background: rgba(255, 107, 53, 0.05);
+            border-color: #FF6B35;
+        }
+
+        .target-badge {
+            background: #FF6B35;
+            color: #03071E;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .target-text {
+            flex: 1;
+            font-size: 13px;
+            color: #CCCCCC;
+        }
+
+        .target-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4CC9F0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .target-checkbox:hover {
+            border-color: #FF6B35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .target-checkbox.checked {
+            background: #FFD60A;
+            border-color: #FFD60A;
+            color: #03071E;
+            font-weight: 800;
+        }
+
+        /* === PRACTICE SCREEN === */
+        .mission-ready {
+            background: rgba(76, 201, 240, 0.2);
+            border: 2px solid #4CC9F0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4CC9F0;
+        }
+
+        .practice-header {
+            background: rgba(76, 201, 240, 0.1);
+            border: 1px solid #4CC9F0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .practice-header-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .practice-header-label {
+            color: #999999;
+            font-weight: 600;
+        }
+
+        .practice-header-value {
+            color: #FFD60A;
+            font-weight: 700;
+        }
+
+        .question-card {
+            background: rgba(76, 201, 240, 0.05);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: #FF6B35;
+            color: #03071E;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 14px;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .number-highlight {
+            background: rgba(255, 214, 10, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+            color: #FFD60A;
+        }
+
+        .work-space {
+            border: 2px dotted #4CC9F0;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 60px;
+            background: rgba(76, 201, 240, 0.03);
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .answer-line {
+            border-bottom: 2px solid #FFD60A;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #999999;
+        }
+
+        .export-section {
+            background: rgba(255, 214, 10, 0.1);
+            border: 2px solid #FFD60A;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .export-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFD60A;
+            margin-bottom: 5px;
+        }
+
+        .export-description {
+            font-size: 12px;
+            color: #999999;
+            margin-bottom: 12px;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #FFD60A, #FF6B35);
+            color: #03071E;
+            padding: 12px 20px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 14px;
+            box-shadow: 0 0 15px rgba(255, 214, 10, 0.4);
+        }
+
+        .print-btn:hover {
+            box-shadow: 0 0 25px rgba(255, 214, 10, 0.6);
+            transform: scale(1.02);
+        }
+
+        .upload-student-section {
+            background: rgba(76, 201, 240, 0.05);
+            border: 2px dashed #4CC9F0;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .upload-student-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #4CC9F0;
+            margin-bottom: 5px;
+        }
+
+        .upload-student-hint {
+            font-size: 12px;
+            color: #999999;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .transmit-btn {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4CC9F0;
+            padding: 10px 16px;
+            font-weight: 600;
+            border: 1px solid #4CC9F0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 13px;
+        }
+
+        .transmit-btn:hover {
+            background: rgba(76, 201, 240, 0.3);
+        }
+
+        /* === REVIEW SCREEN === */
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(76, 201, 240, 0.3);
+            border: 1px solid #4CC9F0;
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: #FF6B35;
+            border-color: #FF6B35;
+            box-shadow: 0 0 12px rgba(255, 107, 53, 0.6);
+            width: 16px;
+            height: 16px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 13px;
+            color: #999999;
+            margin-bottom: 25px;
+        }
+
+        .objective-badge {
+            display: inline-block;
+            background: #FF6B35;
+            color: #03071E;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .review-card {
+            background: rgba(76, 201, 240, 0.05);
+            border: 1px solid #4CC9F0;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .review-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFD60A;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .review-section {
+            margin-bottom: 20px;
+        }
+
+        .review-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .objective-text {
+            font-size: 14px;
+            color: #FFFFFF;
+            line-height: 1.6;
+        }
+
+        .work-display {
+            background: #1a2a3a;
+            border: 1px solid #4CC9F0;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999999;
+            font-size: 13px;
+        }
+
+        .work-icon {
+            font-size: 32px;
+            color: #4CC9F0;
+        }
+
+        .mission-status {
+            display: block;
+            background: #8B0000;
+            color: #FFFFFF;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .mission-status.failed {
+            background: #8B0000;
+        }
+
+        .mission-status.success {
+            background: #228B22;
+        }
+
+        .answer-key {
+            background: rgba(76, 201, 240, 0.1);
+            border-left: 3px solid #4CC9F0;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .answer-key-text {
+            font-size: 13px;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .step {
+            font-size: 12px;
+            color: #CCCCCC;
+            margin-bottom: 6px;
+            padding-left: 15px;
+        }
+
+        .step::before {
+            content: '→ ';
+            color: #FFD60A;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        .mission-hint {
+            background: rgba(255, 214, 10, 0.1);
+            border: 1px solid #FFD60A;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #FFD60A;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn.complete {
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            color: #FFFFFF;
+            box-shadow: 0 0 15px rgba(34, 139, 34, 0.4);
+        }
+
+        .action-btn.complete:hover {
+            box-shadow: 0 0 25px rgba(34, 139, 34, 0.6);
+        }
+
+        .action-btn.retry {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4CC9F0;
+            border: 1px solid #4CC9F0;
+        }
+
+        .action-btn.retry:hover {
+            background: rgba(76, 201, 240, 0.3);
+        }
+
+        /* === CELEBRATE SCREEN === */
+        .celebration {
+            text-align: center;
+        }
+
+        .celebration-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .celebration-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #FFD60A;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .celebration-subtitle {
+            font-size: 18px;
+            color: #FFFFFF;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(76, 201, 240, 0.1);
+            border: 1px solid #4CC9F0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999999;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #FFD60A;
+        }
+
+        .level-up {
+            background: rgba(255, 214, 10, 0.15);
+            border: 2px solid #FFD60A;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .level-up-text {
+            font-size: 13px;
+            color: #FFD60A;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .xp-bar {
+            background: rgba(255, 214, 10, 0.1);
+            border: 1px solid #FFD60A;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B35, #FFD60A);
+            width: 75%;
+            border-radius: 4px;
+        }
+
+        .prize-box {
+            background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 107, 53, 0.2));
+            border: 2px dashed #FFD60A;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .prize-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .prize-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFD60A;
+        }
+
+        .final-cta {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FF6B35, #FFD60A);
+            color: #03071E;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .final-cta:hover {
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.8);
+            transform: scale(1.02);
+        }
+
+        /* Hidden file input */
+        input[type="file"] {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="version-badge">v2 — Space Mission</div>
+
+    <!-- SCREEN 1: WELCOME -->
+    <div id="s-welcome" class="screen active">
+        <div class="hero-title">Math Mission</div>
+        <div class="hero-subtitle">Upload Gabe's test. Navigate the mission. Earn stars.</div>
+
+        <div class="rank-bar">
+            <div class="rank-text">Cadet Gabe — Level 4 Math Astronaut</div>
+            <div class="stars-count">⭐ 145 Stars</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 40%;"></div>
+            </div>
+        </div>
+
+        <button class="cta-btn cta-btn-primary" onclick="show('s-setup')">🚀 Launch Mission</button>
+    </div>
+
+    <!-- SCREEN 2: SETUP + UPLOAD -->
+    <div id="s-setup" class="screen">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="back-btn" onclick="show('s-welcome')">← Back</button>
+                <div class="topbar-title">Mission Briefing</div>
+            </div>
+            <div class="star-chip">⭐ 145</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Student</label>
+            <input type="text" class="form-input" value="Gabe" readonly>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Tutor</label>
+            <input type="text" class="form-input" value="Auntie Mia" readonly>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Assignment Name</label>
+            <input type="text" class="form-input" placeholder="Math Quiz #3">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input">
+        </div>
+
+        <div class="form-group">
+            <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                <div class="upload-icon">📡</div>
+                <div class="upload-text">Transmit Test to Mission Control</div>
+                <div class="upload-hint">Click or drag PDF/image here</div>
+            </div>
+            <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+
+        <div class="callout">
+            ⚠️ <strong>Mission Critical:</strong> Ensure all grading marks are visible!
+        </div>
+
+        <button class="cta-btn cta-btn-primary" onclick="show('s-ai')">📡 Transmit</button>
+        <button class="ghost-btn" onclick="show('s-ai')">+ Use Sample Mission Data</button>
+    </div>
+
+    <!-- SCREEN 3: AI EXTRACTION -->
+    <div id="s-ai" class="screen">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="back-btn" onclick="show('s-setup')">← Back</button>
+                <div class="topbar-title">Scanning Transmission</div>
+            </div>
+            <div class="star-chip">⭐ 145</div>
+        </div>
+
+        <div class="ai-card">
+            <div class="ai-icon">🛸</div>
+            <div class="ai-text">Mission Control Analyzing...</div>
+            <div class="progress-bar-animated">
+                <div class="progress-fill-animated"></div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div class="score-title">Mission Score</div>
+            <div class="score-value">55/100</div>
+            <div class="score-subtitle">5 targets identified</div>
+        </div>
+
+        <div class="targets-header">🎯 Mission Targets</div>
+
+        <div class="target-item">
+            <div class="target-badge">MISSED</div>
+            <div class="target-text">Q1: Add two 2-digit numbers</div>
+            <div class="target-checkbox" onclick="toggleTarget(this)">✓</div>
+        </div>
+
+        <div class="target-item">
+            <div class="target-badge">MISSED</div>
+            <div class="target-text">Q2: Subtraction story problem</div>
+            <div class="target-checkbox" onclick="toggleTarget(this)">✓</div>
+        </div>
+
+        <div class="target-item">
+            <div class="target-badge">MISSED</div>
+            <div class="target-text">Q7: Telling time to quarter hour</div>
+            <div class="target-checkbox" onclick="toggleTarget(this)">✓</div>
+        </div>
+
+        <div class="target-item">
+            <div class="target-badge">MISSED</div>
+            <div class="target-text">Q9: Skip counting by 5s</div>
+            <div class="target-checkbox" onclick="toggleTarget(this)">✓</div>
+        </div>
+
+        <div class="target-item">
+            <div class="target-badge">MISSED</div>
+            <div class="target-text">Q10: Measurement in inches</div>
+            <div class="target-checkbox" onclick="toggleTarget(this)">✓</div>
+        </div>
+
+        <button class="cta-btn cta-btn-primary" style="margin-top: 20px;" onclick="show('s-practice')">🚀 Launch Practice Mission</button>
+        <button class="ghost-btn">+ Add Target</button>
+    </div>
+
+    <!-- SCREEN 4: PRACTICE SHEET -->
+    <div id="s-practice" class="screen">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="back-btn" onclick="show('s-ai')">← Back</button>
+                <div class="topbar-title">Mission Worksheet</div>
+            </div>
+            <div class="star-chip">⭐ 145</div>
+        </div>
+
+        <div class="mission-ready">✅ Mission Ready!</div>
+
+        <div class="practice-header">
+            <div class="practice-header-row">
+                <span class="practice-header-label">Assignment:</span>
+                <span class="practice-header-value">Math Quiz #3</span>
+            </div>
+            <div class="practice-header-row">
+                <span class="practice-header-label">Student:</span>
+                <span class="practice-header-value">Gabe</span>
+            </div>
+            <div class="practice-header-row">
+                <span class="practice-header-label">Date:</span>
+                <span class="practice-header-value">2026-04-06</span>
+            </div>
+        </div>
+
+        <!-- Questions -->
+        <div class="question-card">
+            <div class="question-number">1</div>
+            <div class="question-text">Add <span class="number-highlight">24</span> + <span class="number-highlight">35</span></div>
+            <div class="work-space">Show your work here</div>
+            <div class="answer-line">Answer: ___________</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-number">2</div>
+            <div class="question-text">Sarah has <span class="number-highlight">18</span> stickers. She gives <span class="number-highlight">7</span> to her friend. How many does she have left?</div>
+            <div class="work-space">Show your work here</div>
+            <div class="answer-line">Answer: ___________</div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-number">3</div>
+            <div class="question-text">What time is shown on the clock? (Quarter past <span class="number-highlight">3</span>)</div>
+            <div class="work-space">Show your work here</div>
+            <div class="answer-line">Answer: ___________</div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <div class="export-title">📄 Print Mission Worksheet</div>
+            <div class="export-description">Generates printable 8×11 paper with work space</div>
+            <button class="print-btn" onclick="alert('Print function would open print dialog')">🖨️ Print Worksheet</button>
+        </div>
+
+        <!-- Upload Student Work Section -->
+        <div class="upload-student-section">
+            <div class="upload-student-title">📸 Upload Gabe's Mission Report</div>
+            <div class="upload-student-hint">Once Gabe completes the worksheet on paper, upload a photo of his answers here</div>
+            <button class="transmit-btn" onclick="document.getElementById('student-work-input').click()">📤 Upload Photo</button>
+            <input type="file" id="student-work-input" accept=".jpg,.jpeg,.png,.pdf">
+        </div>
+
+        <button class="cta-btn cta-btn-primary" onclick="show('s-review')">▶ Begin Review Mission</button>
+    </div>
+
+    <!-- SCREEN 5: REVIEW SESSION -->
+    <div id="s-review" class="screen">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="back-btn" onclick="show('s-practice')">← Back</button>
+                <div class="topbar-title">Mission Review</div>
+            </div>
+            <div class="star-chip">⭐ 145</div>
+        </div>
+
+        <div class="progress-dots">
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+
+        <div class="progress-text">Objective 3 of 5 — 2 objectives complete</div>
+
+        <!-- A. Objective -->
+        <div class="review-card">
+            <span class="objective-badge">Objective 3</span>
+            <div class="review-section">
+                <span class="review-section-title">📋 Question</span>
+                <div class="objective-text">What time is shown on the clock? (Quarter past 3)</div>
+            </div>
+
+            <!-- B. Cadet's Work -->
+            <div class="review-section">
+                <span class="review-section-title">📸 Gabe's Transmitted Work</span>
+                <div class="work-display">
+                    <div>
+                        <div class="work-icon">🖼️</div>
+                        <div>Cadet's uploaded mission report</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C. Mission Status -->
+            <span class="mission-status failed">❌ MISSION FAILED</span>
+
+            <!-- D. Mission Debrief (Answer Key) -->
+            <div class="review-section">
+                <span class="review-section-title">🎓 Mission Debrief (Answer Key)</span>
+                <div class="answer-key">
+                    <div class="answer-key-text"><strong>Correct Answer: 3:15</strong></div>
+                    <div class="step">Identify the hour hand (short hand) — it points between 3 and 4</div>
+                    <div class="step">Identify the minute hand (long hand) — it points to 3, which is 15 minutes</div>
+                    <div class="step">Combine: 3 hours and 15 minutes = 3:15</div>
+                </div>
+            </div>
+
+            <div class="mission-hint">💡 <strong>Mission Hint:</strong> The minute hand points to each number for 5 minutes</div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn complete" onclick="show('s-celebrate')">✅ Objective Complete +20⭐</button>
+            <button class="action-btn retry" onclick="alert('Retry mode activated')">🔄 Retry</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 6: CELEBRATION -->
+    <div id="s-celebrate" class="screen">
+        <div class="celebration">
+            <div class="celebration-icon">🚀</div>
+            <div class="celebration-title">Mission Complete!</div>
+            <div class="celebration-subtitle">Outstanding work, Cadet Gabe!</div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Objectives Correct</div>
+                    <div class="stat-value">3</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Objectives Redone</div>
+                    <div class="stat-value">2</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Stars Earned</div>
+                    <div class="stat-value">100</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Mission Time</div>
+                    <div class="stat-value">23 min</div>
+                </div>
+            </div>
+
+            <div class="level-up">
+                <div class="level-up-text">🎖️ Promoted to Level 5 Space Ranger!</div>
+                <div class="xp-bar">
+                    <div class="xp-fill" style="width: 75%;"></div>
+                </div>
+            </div>
+
+            <div class="prize-box">
+                <div class="prize-icon">🎁</div>
+                <div class="prize-text">Prize Unlocked — Claim from Auntie Mia!</div>
+            </div>
+
+            <button class="final-cta" onclick="show('s-welcome')">🚀 Launch New Mission</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function show(screenId) {
+        // Hide all screens
+        const screens = document.querySelectorAll('.screen');
+        screens.forEach(screen => screen.classList.remove('active'));
+
+        // Show target screen
+        const targetScreen = document.getElementById(screenId);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
+        }
+    }
+
+    function toggleTarget(element) {
+        element.classList.toggle('checked');
+        if (element.classList.contains('checked')) {
+            element.textContent = '✓';
+        } else {
+            element.textContent = '✓';
+        }
+    }
+</script>
+
+</body>
+</html>

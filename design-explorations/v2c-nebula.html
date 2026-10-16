@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Mission — Gabe's Cosmic Math Adventure</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(168, 0, 255, 0.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(255, 0, 128, 0.2) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 20%, rgba(0, 200, 255, 0.2) 0%, transparent 40%),
+        #0A0015;
+      background-attachment: fixed;
+      position: relative;
+    }
+
+    /* Stars background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(1px 1px at 10% 20%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 80% 10%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+        radial-gradient(2px 2px at 90% 60%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 30% 70%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 60% 20%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 15% 80%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+        radial-gradient(2px 2px at 75% 75%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 40% 10%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 85% 40%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 25% 55%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 70% 85%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(2px 2px at 5% 45%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 95% 25%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 35% 35%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 65% 65%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 12% 12%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+        radial-gradient(2px 2px at 88% 88%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 42% 92%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 58% 8%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 78% 48%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 22% 68%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+        radial-gradient(2px 2px at 92% 72%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 48% 38%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 18% 28%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 72% 18%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 38% 82%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)),
+        radial-gradient(2px 2px at 82% 62%, white, rgba(255, 255, 255, 0)),
+        radial-gradient(1.5px 1.5px at 8% 92%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0)),
+        radial-gradient(1px 1px at 62% 42%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+      background-size: 100% 100%;
+      background-attachment: fixed;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Shooting star */
+    .shooting-star {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, white, transparent);
+      pointer-events: none;
+      z-index: 1;
+      animation: shoot 3s ease-in-out infinite;
+      animation-delay: 2s;
+    }
+
+    @keyframes shoot {
+      0% {
+        transform: translateX(-100px) translateY(100px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(400px) translateY(-400px);
+        opacity: 0;
+      }
+    }
+
+    /* Main container with porthole effect */
+    .container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 480px;
+      height: 90vh;
+      background: rgba(20, 10, 40, 0.85);
+      border: 5px solid #4A5568;
+      border-radius: 24px;
+      box-shadow:
+        0 0 0 3px #2D3748,
+        0 0 60px rgba(155, 89, 182, 0.5),
+        0 0 100px rgba(255, 0, 128, 0.2),
+        inset 0 0 40px rgba(0, 0, 0, 0.6),
+        inset 0 0 20px rgba(100, 50, 150, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: linear-gradient(90deg, #6A0DAD, #9B59B6, #6A0DAD);
+      color: white;
+      padding: 12px 16px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid rgba(255, 0, 128, 0.3);
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .version-badge {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* Content area */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+    }
+
+    /* Cards & styling */
+    .card {
+      background: rgba(155, 89, 182, 0.15);
+      border: 1.5px solid rgba(155, 89, 182, 0.5);
+      border-radius: 16px;
+      padding: 16px;
+      color: white;
+    }
+
+    .card.purple-glow {
+      border-color: rgba(155, 89, 182, 0.7);
+      box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
+    }
+
+    .card.pink-glow {
+      background: rgba(255, 0, 128, 0.1);
+      border-color: rgba(255, 0, 128, 0.5);
+      box-shadow: 0 0 20px rgba(255, 0, 128, 0.2);
+    }
+
+    .card.teal-glow {
+      background: rgba(0, 212, 170, 0.1);
+      border-color: rgba(0, 212, 170, 0.5);
+      box-shadow: 0 0 20px rgba(0, 212, 170, 0.2);
+    }
+
+    .card.gold-glow {
+      background: rgba(255, 215, 0, 0.1);
+      border-color: rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    }
+
+    /* Buttons */
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #9B59B6;
+      color: white;
+      box-shadow: 0 0 20px rgba(155, 89, 182, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: #B76FBF;
+      box-shadow: 0 0 30px rgba(155, 89, 182, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-gold {
+      background: #FFD700;
+      color: #0A0015;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+      font-weight: 700;
+    }
+
+    .btn-gold:hover {
+      background: #FFED4E;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-teal {
+      background: #00D4AA;
+      color: #0A0015;
+      box-shadow: 0 0 20px rgba(0, 212, 170, 0.4);
+      font-weight: 700;
+    }
+
+    .btn-teal:hover {
+      background: #33E5BB;
+      box-shadow: 0 0 30px rgba(0, 212, 170, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      font-size: 12px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Welcome Screen */
+    .welcome-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .rocket-icon {
+      font-size: 80px;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(155, 89, 182, 0.6));
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .app-title {
+      font-size: 42px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #9B59B6, #FF006E, #00D4AA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(155, 89, 182, 0.3);
+      letter-spacing: 2px;
+    }
+
+    .app-subtitle {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.5;
+    }
+
+    .cosmic-rank {
+      background: rgba(0, 212, 170, 0.2);
+      border: 1.5px solid rgba(0, 212, 170, 0.5);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #00D4AA;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF006E, #9B59B6, #00D4AA, #FFD700);
+      width: 75%;
+      animation: shimmer 2s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .btn-primary.large {
+      font-size: 18px;
+      padding: 16px 32px;
+      border-radius: 20px;
+      width: 100%;
+    }
+
+    /* Setup Screen */
+    .setup-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(155, 89, 182, 0.4);
+      border-radius: 10px;
+      color: white;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      background: rgba(155, 89, 182, 0.2);
+      border-color: rgba(155, 89, 182, 0.8);
+      box-shadow: 0 0 15px rgba(155, 89, 182, 0.3);
+    }
+
+    .upload-zone {
+      border: 2px dashed rgba(155, 89, 182, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      background: rgba(155, 89, 182, 0.08);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .upload-zone:hover {
+      border-color: rgba(255, 0, 128, 0.8);
+      background: rgba(255, 0, 128, 0.1);
+      box-shadow: 0 0 20px rgba(255, 0, 128, 0.2);
+    }
+
+    .upload-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .upload-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .upload-subtext {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4px;
+    }
+
+    .tip-box {
+      background: rgba(0, 212, 170, 0.15);
+      border-left: 3px solid #00D4AA;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.5;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 10px;
+    }
+
+    /* AI Extraction Screen */
+    .ai-scanning {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .galaxy-emoji {
+      font-size: 48px;
+      animation: spin 4s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .scan-text {
+      font-size: 16px;
+      font-weight: 600;
+      background: linear-gradient(90deg, #9B59B6, #FF006E);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .progress-bar-large {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(155, 89, 182, 0.4);
+    }
+
+    .progress-fill-large {
+      height: 100%;
+      background: linear-gradient(90deg, #9B59B6, #FF006E, #00D4AA);
+      width: 65%;
+      animation: progress 2s ease-in-out infinite;
+    }
+
+    @keyframes progress {
+      0%, 100% { width: 65%; }
+      50% { width: 85%; }
+    }
+
+    .cosmic-score {
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.2), rgba(255, 0, 128, 0.2));
+      border: 1.5px solid rgba(255, 0, 128, 0.5);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFD700;
+    }
+
+    .missed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .missed-item {
+      background: rgba(255, 0, 128, 0.1);
+      border: 1px solid rgba(255, 0, 128, 0.4);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .missed-badge {
+      background: #FF006E;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .toggle-btn {
+      background: rgba(0, 212, 170, 0.2);
+      color: #00D4AA;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      border: 1px solid rgba(0, 212, 170, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(0, 212, 170, 0.4);
+      box-shadow: 0 0 10px rgba(0, 212, 170, 0.2);
+    }
+
+    .add-btn {
+      background: rgba(0, 212, 170, 0.15);
+      border: 1.5px dashed rgba(0, 212, 170, 0.5);
+      color: #00D4AA;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+      background: rgba(0, 212, 170, 0.25);
+      border-color: rgba(0, 212, 170, 0.8);
+    }
+
+    /* Practice Screen */
+    .practice-heading {
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(155, 89, 182, 0.2));
+      border-left: 4px solid #00D4AA;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #00D4AA;
+      text-align: center;
+    }
+
+    .question-block {
+      background: rgba(155, 89, 182, 0.12);
+      border: 1.5px solid rgba(155, 89, 182, 0.4);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .question-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF006E, #9B59B6);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .number-highlight {
+      background: rgba(255, 215, 0, 0.3);
+      color: #FFD700;
+      padding: 0 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .work-zone {
+      border: 2px dashed rgba(0, 212, 170, 0.5);
+      border-radius: 10px;
+      padding: 14px;
+      background: rgba(0, 212, 170, 0.05);
+      margin-bottom: 12px;
+      text-align: center;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: rgba(0, 212, 170, 0.7);
+      font-style: italic;
+    }
+
+    .answer-line {
+      background: rgba(255, 255, 255, 0.08);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 12px;
+    }
+
+    .action-section {
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .action-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .print-section {
+      background: rgba(255, 215, 0, 0.12);
+      border: 1.5px solid rgba(255, 215, 0, 0.4);
+    }
+
+    .print-desc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .upload-section {
+      background: rgba(0, 212, 170, 0.12);
+      border: 1.5px solid rgba(0, 212, 170, 0.4);
+    }
+
+    .upload-section-desc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .upload-zone-small {
+      border: 2px dashed rgba(0, 212, 170, 0.6);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      background: rgba(0, 212, 170, 0.08);
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .upload-zone-small:hover {
+      border-color: rgba(0, 212, 170, 0.9);
+      background: rgba(0, 212, 170, 0.15);
+    }
+
+    /* Review Screen */
+    .progress-dots {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .progress-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(200, 200, 200, 0.3);
+      border: 1.5px solid rgba(200, 200, 200, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .progress-dot.done {
+      background: rgba(0, 212, 170, 0.5);
+      border-color: #00D4AA;
+      color: #00D4AA;
+    }
+
+    .progress-dot.current {
+      background: rgba(255, 0, 128, 0.5);
+      border-color: #FF006E;
+      color: #FF006E;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    .mission-counter {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 12px;
+    }
+
+    .question-card {
+      background: rgba(100, 50, 180, 0.15);
+      border: 1.5px solid rgba(155, 89, 182, 0.5);
+      border-radius: 14px;
+      padding: 14px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .q-section {
+      background: rgba(155, 89, 182, 0.1);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .q-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 6px;
+    }
+
+    .q-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #FFD700, #FF006E);
+      color: #0A0015;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    .q-text {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.5;
+    }
+
+    .work-received {
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.4);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      color: #00D4AA;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .work-placeholder {
+      background: rgba(100, 100, 100, 0.2);
+      border: 1.5px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .verdict-badge {
+      display: inline-block;
+      background: #FF4A6E;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 0 15px rgba(255, 74, 110, 0.4);
+      margin-bottom: 8px;
+    }
+
+    .verdict-badge.correct {
+      background: #00D4AA;
+      box-shadow: 0 0 15px rgba(0, 212, 170, 0.4);
+    }
+
+    .hint-box {
+      background: rgba(155, 89, 182, 0.2);
+      border-left: 3px solid rgba(155, 89, 182, 0.8);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.4;
+    }
+
+    .solution-steps {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.6;
+      font-family: 'Courier New', monospace;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      padding-top: 10px;
+      margin-top: auto;
+    }
+
+    .btn-star {
+      background: rgba(0, 212, 170, 0.2);
+      color: #00D4AA;
+      border: 1.5px solid rgba(0, 212, 170, 0.5);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .btn-star:hover {
+      background: rgba(0, 212, 170, 0.4);
+      box-shadow: 0 0 15px rgba(0, 212, 170, 0.3);
+    }
+
+    .btn-tryagain {
+      background: rgba(255, 165, 0, 0.2);
+      color: #FFA500;
+      border: 1.5px solid rgba(255, 165, 0, 0.5);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .btn-tryagain:hover {
+      background: rgba(255, 165, 0, 0.4);
+      box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
+    }
+
+    /* Celebration Screen */
+    .celebration-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .confetti {
+      font-size: 24px;
+      animation: confetti-fall 3s ease-in-out infinite;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(300px) rotate(360deg); opacity: 0; }
+    }
+
+    .celebration-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #00D4AA;
+      text-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+      line-height: 1.3;
+    }
+
+    .trophy-emoji {
+      font-size: 60px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .level-unlock {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(0, 212, 170, 0.2));
+      border: 1.5px solid rgba(255, 215, 0, 0.5);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFD700;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .stat-cell {
+      background: rgba(155, 89, 182, 0.15);
+      border: 1.5px solid rgba(155, 89, 182, 0.4);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFD700;
+      margin-bottom: 2px;
+    }
+
+    .prize-box {
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.25), rgba(255, 0, 128, 0.15));
+      border: 2px solid rgba(255, 0, 128, 0.6);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 0 30px rgba(255, 0, 128, 0.3);
+    }
+
+    .prize-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #FF006E;
+      margin-bottom: 8px;
+    }
+
+    .prize-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* Scrollbar styling */
+    .content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .content::-webkit-scrollbar-track {
+      background: rgba(100, 100, 100, 0.1);
+      border-radius: 10px;
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: rgba(155, 89, 182, 0.4);
+      border-radius: 10px;
+    }
+
+    .content::-webkit-scrollbar-thumb:hover {
+      background: rgba(155, 89, 182, 0.6);
+    }
+
+    .question-card::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .question-card::-webkit-scrollbar-track {
+      background: rgba(100, 100, 100, 0.1);
+      border-radius: 10px;
+    }
+
+    .question-card::-webkit-scrollbar-thumb {
+      background: rgba(155, 89, 182, 0.4);
+      border-radius: 10px;
+    }
+
+    .question-card::-webkit-scrollbar-thumb:hover {
+      background: rgba(155, 89, 182, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="shooting-star"></div>
+
+  <div class="container">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title">MISSION HQ</div>
+      <div class="version-badge">v2c — Nebula Galaxy</div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content">
+      <!-- SCREEN 1: WELCOME -->
+      <div id="s-welcome" class="screen active">
+        <div class="welcome-content">
+          <div class="rocket-icon">🚀</div>
+          <div class="app-title">MATH MISSION</div>
+          <div class="app-subtitle">Gabe's Cosmic Math Adventure — Launch into Learning!</div>
+          <div class="cosmic-rank">
+            ⭐ COSMIC CADET GABE — LEVEL 4
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+          </div>
+          <button class="btn-primary large" onclick="show('s-setup')">🚀 BLAST OFF!</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: SETUP -->
+      <div id="s-setup" class="screen">
+        <div class="setup-form">
+          <div class="form-group">
+            <label class="form-label">📅 Date of Test</label>
+            <input type="date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">📝 Subject/Topic</label>
+            <input type="text" class="form-input" placeholder="e.g., Addition & Subtraction">
+          </div>
+          <div class="form-group">
+            <label class="form-label">📸 Upload Test Image</label>
+            <div class="upload-zone">
+              <div class="upload-icon">📸</div>
+              <div class="upload-text">Beam Your Test to Mission HQ</div>
+              <div class="upload-subtext">Click to upload or drag & drop</div>
+            </div>
+          </div>
+          <div class="tip-box">
+            💡 <strong>TIP:</strong> Take a clear photo of the test paper. Make sure all numbers are readable for our AI!
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" style="flex: 1;" onclick="show('s-ai')">📤 UPLOAD & SCAN</button>
+            <button class="btn-secondary" onclick="show('s-practice')">⏭️ SKIP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: AI EXTRACTION -->
+      <div id="s-ai" class="screen">
+        <div class="card purple-glow">
+          <div class="ai-scanning">
+            <div class="galaxy-emoji">🌌</div>
+            <div class="scan-text">GALACTIC AI SCANNING...</div>
+            <div class="progress-bar-large">
+              <div class="progress-fill-large"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card pink-glow">
+          <div class="cosmic-score">COSMIC SCORE: 55/100 — 5 NEBULAS TO EXPLORE</div>
+        </div>
+
+        <div>
+          <div class="card pink-glow">
+            <div style="font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">MISSED QUESTIONS</div>
+            <div class="missed-list">
+              <div class="missed-item">
+                <span>Q1: 7 + 8 = ?</span>
+                <span class="missed-badge">MISSED</span>
+              </div>
+              <div class="missed-item">
+                <span>Q3: 15 - 9 = ?</span>
+                <span class="missed-badge">MISSED</span>
+              </div>
+              <div class="missed-item">
+                <span>Q4: 6 × 4 = ?</span>
+                <span class="missed-badge">MISSED</span>
+              </div>
+              <div class="missed-item">
+                <span>Q6: 20 ÷ 5 = ?</span>
+                <span class="missed-badge">MISSED</span>
+              </div>
+              <div class="missed-item">
+                <span>Q8: 12 + 13 = ?</span>
+                <span class="missed-badge">MISSED</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-primary" style="flex: 1;" onclick="show('s-practice')">🚀 GENERATE COSMIC MISSION</button>
+          <button class="add-btn" style="flex: 0.4;">➕</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: PRACTICE SHEET -->
+      <div id="s-practice" class="screen">
+        <div class="practice-heading">
+          🌟 MISSION READY — COSMIC QUESTIONS GENERATED!
+        </div>
+
+        <div class="question-block">
+          <div class="question-badge">Q1</div>
+          <div class="question-text">
+            If you have <span class="number-highlight">7</span> red stars and <span class="number-highlight">8</span> blue stars, how many stars do you have altogether?
+          </div>
+          <div class="work-zone">SHOW YOUR COSMIC WORK HERE ✨</div>
+          <div class="answer-line">Answer: ___</div>
+        </div>
+
+        <div class="question-block">
+          <div class="question-badge">Q2</div>
+          <div class="question-text">
+            Auntie Mia has <span class="number-highlight">15</span> chocolate coins. She gives <span class="number-highlight">9</span> to Gabe. How many does she have left?
+          </div>
+          <div class="work-zone">SHOW YOUR COSMIC WORK HERE ✨</div>
+          <div class="answer-line">Answer: ___</div>
+        </div>
+
+        <div class="action-section print-section">
+          <div class="action-title">📄 PRINT COSMIC WORKSHEET</div>
+          <div class="print-desc">Print 8×11 paper worksheet with space to show all work</div>
+          <button class="btn-gold" style="width: 100%;">📄 PRINT NOW</button>
+        </div>
+
+        <div class="action-section upload-section">
+          <div class="action-title">📸 UPLOAD GABE'S ANSWERS</div>
+          <div class="upload-section-desc">After Gabe finishes on paper, beam his answers back to mission HQ!</div>
+          <div class="upload-zone-small">
+            <div class="upload-icon" style="font-size: 24px;">📸</div>
+            <div class="upload-text">Click to upload answers</div>
+          </div>
+          <button class="btn-teal" style="width: 100%;">BEAM UP 📡</button>
+        </div>
+
+        <button class="btn-primary" style="width: 100%; margin-top: auto;" onclick="show('s-review')">⭐ BEGIN COSMIC REVIEW!</button>
+      </div>
+
+      <!-- SCREEN 5: REVIEW SESSION -->
+      <div id="s-review" class="screen">
+        <div class="progress-dots">
+          <div class="progress-dot done">✓</div>
+          <div class="progress-dot done">✓</div>
+          <div class="progress-dot current">3</div>
+          <div class="progress-dot">4</div>
+          <div class="progress-dot">5</div>
+        </div>
+
+        <div class="mission-counter">MISSION 3 OF 5 — 2 STARS COLLECTED ⭐</div>
+
+        <div class="question-card">
+          <div class="q-section">
+            <div class="q-section-title">A. Question</div>
+            <span class="q-badge">Question 3 🌟</span>
+            <div class="q-text">If you have 7 red stars and 8 blue stars, how many stars do you have altogether?</div>
+          </div>
+
+          <div class="q-section">
+            <div class="q-section-title">B. Gabe's Work</div>
+            <div class="work-received">📸 GABE'S COSMIC WORK RECEIVED</div>
+            <div class="work-placeholder">📄 Cadet's transmitted answer sheet</div>
+          </div>
+
+          <div class="q-section">
+            <div class="q-section-title">C. Cosmic Verdict</div>
+            <div class="verdict-badge">❌ NOT QUITE — TRY AGAIN!</div>
+            <div style="font-size: 12px; color: rgba(255, 255, 255, 0.8); line-height: 1.5;">
+              Gabe's answer didn't match the correct solution. Let's explore the mission key together!
+            </div>
+          </div>
+
+          <div class="q-section">
+            <div class="q-section-title">D. Mission Answer Key</div>
+            <div style="font-size: 12px; font-weight: 700; color: #FFD700; margin-bottom: 8px;">🔑 MISSION KEY — CORRECT PATH:</div>
+            <div class="solution-steps">
+Start with 7 red stars.
+Add 8 blue stars to your group.
+7 + 8 = 15 ✨
+Answer: 15 stars total
+            </div>
+          </div>
+
+          <div class="hint-box">
+            ✨ <strong>COSMIC HINT:</strong> Try drawing the stars on paper or using fingers to count!
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn-star">✅ STAR COLLECTED! +20⭐</button>
+            <button class="btn-tryagain">🔄 TRY AGAIN!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 6: CELEBRATION -->
+      <div id="s-celebrate" class="screen">
+        <div class="celebration-content">
+          <div class="confetti">🎆</div>
+          <div class="celebration-title">🎆 MISSION COMPLETE — ALL STARS COLLECTED!</div>
+          <div class="trophy-emoji">🏆</div>
+
+          <div class="stats-grid">
+            <div class="stat-cell">
+              <div class="stat-value">5</div>
+              <div>Missions Mastered</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-value">20</div>
+              <div>⭐ Stars Earned</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-value">100%</div>
+              <div>Accuracy</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-value">12 min</div>
+              <div>Time Spent</div>
+            </div>
+          </div>
+
+          <div class="level-unlock">
+            🌟 LEVEL 5 GALAXY EXPLORER UNLOCKED!
+            <div class="progress-bar" style="margin-top: 8px;">
+              <div class="progress-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="prize-box">
+            <div class="prize-title">🎁 PRIZE UNLOCKED</div>
+            <div class="prize-text">CLAIM FROM AUNTIE MIA!</div>
+          </div>
+
+          <button class="btn-primary large" onclick="show('s-welcome')">🚀 NEW ADVENTURE!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function show(screenId) {
+      // Hide all screens
+      const screens = document.querySelectorAll('.screen');
+      screens.forEach(screen => screen.classList.remove('active'));
+
+      // Show the requested screen
+      const targetScreen = document.getElementById(screenId);
+      if (targetScreen) {
+        targetScreen.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>

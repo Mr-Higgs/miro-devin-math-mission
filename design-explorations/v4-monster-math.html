@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Math - Math Tutoring App for Gabe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Trebuchet MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #1A0533 0%, #2d1b4e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Blob decorations */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(6, 214, 160, 0.15) 0%, transparent 70%);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -100px;
+            left: -80px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(199, 125, 255, 0.1) 0%, transparent 70%);
+            border-radius: 20% 80% 30% 70% / 60% 40% 60% 40%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            background: rgba(26, 5, 51, 0.95);
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(6, 214, 160, 0.3);
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(6, 214, 160, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(6, 214, 160, 0.8); }
+        }
+
+        .wiggle {
+            animation: wiggle 0.6s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .spin {
+            animation: spin 2s linear infinite;
+        }
+
+        .bounce {
+            animation: bounce 1.5s ease-in-out infinite;
+        }
+
+        /* === SCREENS === */
+        .screen {
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* === TOPBAR === */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(6, 214, 160, 0.4);
+        }
+
+        .topbar-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD166;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .monster-chip {
+            background: linear-gradient(135deg, #FF4D94, #C77DFF);
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 77, 148, 0.4);
+        }
+
+        .back-btn {
+            background: rgba(6, 214, 160, 0.2);
+            border: 2px solid #06D6A0;
+            color: #06D6A0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #06D6A0;
+            color: #1A0533;
+            transform: scale(1.05);
+        }
+
+        /* === WELCOME SCREEN === */
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .monster-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .app-title {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #C77DFF 0%, #06D6A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+        }
+
+        .app-subtitle {
+            font-size: 16px;
+            color: #FFD166;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .monster-pet {
+            background: rgba(199, 125, 255, 0.2);
+            border: 2px solid #C77DFF;
+            padding: 16px;
+            border-radius: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pet-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #06D6A0;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06D6A0, #FFD166);
+            width: 80%;
+            border-radius: 12px;
+        }
+
+        .points-counter {
+            background: rgba(255, 77, 148, 0.2);
+            border: 2px solid #FF4D94;
+            padding: 16px;
+            border-radius: 24px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* === BUTTONS === */
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 28px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #06D6A0, #00b88d);
+            color: #1A0533;
+            width: 100%;
+            font-size: 18px;
+            padding: 18px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(6, 214, 160, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #FF4D94, #ff2d7f);
+            color: white;
+            width: 100%;
+            font-size: 18px;
+            padding: 18px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(255, 77, 148, 0.4);
+        }
+
+        .btn-yellow {
+            background: linear-gradient(135deg, #FFD166, #ffc940);
+            color: #1A0533;
+            width: 100%;
+            font-size: 18px;
+            padding: 18px;
+            font-weight: bold;
+        }
+
+        .btn-yellow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(255, 209, 102, 0.4);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 2px dashed #C77DFF;
+            color: #C77DFF;
+            padding: 14px 28px;
+            font-size: 14px;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(199, 125, 255, 0.1);
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        /* === SETUP SCREEN === */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #FFD166;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #C77DFF;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FF4D94;
+            box-shadow: 0 0 15px rgba(255, 77, 148, 0.3);
+            background: rgba(255, 77, 148, 0.1);
+        }
+
+        .upload-zone {
+            border: 3px dashed #06D6A0;
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(6, 214, 160, 0.1);
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            background: rgba(6, 214, 160, 0.2);
+            border-color: #FFD166;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .upload-text {
+            font-weight: bold;
+            color: #06D6A0;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: #C77DFF;
+            margin-bottom: 16px;
+        }
+
+        .tip-box {
+            background: rgba(199, 125, 255, 0.15);
+            border-left: 4px solid #C77DFF;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .tip-emoji {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .skip-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid rgba(6, 214, 160, 0.3);
+            color: #06D6A0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            border-color: #06D6A0;
+            background: rgba(6, 214, 160, 0.1);
+        }
+
+        /* === AI SCREEN === */
+        .ai-card {
+            background: rgba(199, 125, 255, 0.15);
+            border: 2px solid #C77DFF;
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .ai-spinner {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .ai-text {
+            font-weight: bold;
+            font-size: 16px;
+            color: #06D6A0;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar-animated {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .progress-fill-animated {
+            height: 100%;
+            background: linear-gradient(90deg, #FF4D94, #06D6A0, #FFD166);
+            background-size: 200% 100%;
+            animation: shimmer 2s ease-in-out infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: 0% 0; }
+        }
+
+        .score-banner {
+            background: linear-gradient(135deg, #FF4D94, #C77DFF);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 77, 148, 0.3);
+        }
+
+        .monster-list {
+            margin-bottom: 25px;
+        }
+
+        .monster-item {
+            background: rgba(6, 214, 160, 0.1);
+            border: 2px solid rgba(6, 214, 160, 0.4);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .monster-item:hover {
+            background: rgba(6, 214, 160, 0.2);
+            border-color: #06D6A0;
+        }
+
+        .monster-item.active {
+            border-color: #FF4D94;
+            background: rgba(255, 77, 148, 0.1);
+        }
+
+        .monster-q {
+            font-weight: bold;
+            color: #FFD166;
+            display: inline-block;
+            background: #FF4D94;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .monster-text {
+            flex: 1;
+            font-size: 14px;
+            color: #C77DFF;
+        }
+
+        .defeat-badge {
+            background: #FF4D94;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* === PRACTICE SCREEN === */
+        .practice-callout {
+            background: linear-gradient(135deg, #06D6A0, #00d49a);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #1A0533;
+            box-shadow: 0 6px 20px rgba(6, 214, 160, 0.3);
+        }
+
+        .practice-sheet {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #C77DFF;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 25px;
+        }
+
+        .sheet-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(6, 214, 160, 0.3);
+        }
+
+        .sheet-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #06D6A0;
+            margin-bottom: 4px;
+        }
+
+        .sheet-meta {
+            font-size: 12px;
+            color: #C77DFF;
+        }
+
+        .practice-question {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px dashed rgba(255, 209, 102, 0.4);
+        }
+
+        .practice-question:last-child {
+            border-bottom: none;
+        }
+
+        .q-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #FF4D94;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 12px;
+            margin-bottom: 8px;
+        }
+
+        .q-number.green {
+            background: #06D6A0;
+        }
+
+        .q-text {
+            font-size: 15px;
+            color: white;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .number-highlight {
+            background: #FFD166;
+            color: #1A0533;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .work-space {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dotted rgba(199, 125, 255, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            min-height: 80px;
+            margin-bottom: 12px;
+            color: #C77DFF;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .answer-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #FFD166;
+            font-weight: bold;
+        }
+
+        .answer-blank {
+            flex: 1;
+            border-bottom: 2px solid #FFD166;
+            min-height: 30px;
+        }
+
+        .action-card {
+            background: rgba(6, 214, 160, 0.15);
+            border: 2px solid #06D6A0;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .action-card.upload {
+            background: rgba(255, 77, 148, 0.15);
+            border: 2px dashed #FF4D94;
+        }
+
+        .action-title {
+            font-weight: bold;
+            color: #FFD166;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .action-desc {
+            font-size: 13px;
+            color: #C77DFF;
+            margin-bottom: 14px;
+        }
+
+        /* === REVIEW SCREEN === */
+        .review-progress {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(199, 125, 255, 0.3);
+            border: 2px solid #C77DFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: linear-gradient(135deg, #FF4D94, #C77DFF);
+            border-color: #FF4D94;
+            box-shadow: 0 0 15px rgba(255, 77, 148, 0.5);
+            animation: glow 1s ease-in-out infinite;
+        }
+
+        .progress-dot.completed {
+            background: #06D6A0;
+            border-color: #06D6A0;
+        }
+
+        .review-status {
+            text-align: center;
+            font-weight: bold;
+            color: #06D6A0;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .question-card {
+            background: rgba(199, 125, 255, 0.1);
+            border: 2px solid #C77DFF;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(6, 214, 160, 0.3);
+        }
+
+        .card-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-label {
+            font-weight: bold;
+            color: #FFD166;
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .q-badge {
+            background: linear-gradient(135deg, #FF4D94, #C77DFF);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 15px;
+            color: white;
+            line-height: 1.6;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+
+        .work-upload {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dashed #06D6A0;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .work-placeholder {
+            font-size: 32px;
+            margin-bottom: 8px;
+            opacity: 0.6;
+        }
+
+        .work-text {
+            font-size: 13px;
+            color: #C77DFF;
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+        }
+
+        .result-badge.fail {
+            background: linear-gradient(135deg, #FF4D94, #ff2d7f);
+        }
+
+        .result-badge.success {
+            background: linear-gradient(135deg, #06D6A0, #00b88d);
+        }
+
+        .answer-key {
+            background: rgba(6, 214, 160, 0.15);
+            border-left: 4px solid #06D6A0;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #C77DFF;
+        }
+
+        .answer-key-title {
+            font-weight: bold;
+            color: #06D6A0;
+            margin-bottom: 8px;
+        }
+
+        .answer-key-step {
+            margin: 8px 0;
+            padding-left: 16px;
+        }
+
+        .hint-box {
+            background: rgba(255, 209, 102, 0.15);
+            border-left: 4px solid #FFD166;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #FFD166;
+            margin-top: 20px;
+        }
+
+        .review-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #06D6A0, #00b88d);
+            color: #1A0533;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 25px rgba(6, 214, 160, 0.4);
+        }
+
+        .btn-retry {
+            background: linear-gradient(135deg, #FFD166, #ffc940);
+            color: #1A0533;
+        }
+
+        .btn-retry:hover {
+            box-shadow: 0 8px 25px rgba(255, 209, 102, 0.4);
+        }
+
+        /* === CELEBRATION SCREEN === */
+        .celebration-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .celebration-emoji {
+            font-size: 90px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .win-text {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF4D94, #06D6A0, #FFD166);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .stats-box {
+            background: rgba(199, 125, 255, 0.15);
+            border: 2px solid #C77DFF;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stat {
+            font-size: 14px;
+            color: #C77DFF;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #06D6A0;
+        }
+
+        .stat:last-child {
+            margin-bottom: 0;
+        }
+
+        .level-up {
+            background: linear-gradient(135deg, #FFD166, #ffc940);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1A0533;
+        }
+
+        .level-up-text {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .level-up-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .level-up-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF4D94, #C77DFF);
+            width: 90%;
+            border-radius: 12px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .level-badge {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1A0533;
+        }
+
+        .prize-box {
+            background: linear-gradient(135deg, #FF4D94, #C77DFF, #06D6A0);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 77, 148, 0.3);
+        }
+
+        .prize-emoji {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .prize-text {
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 400px) {
+            .container {
+                padding: 20px;
+            }
+
+            .app-title {
+                font-size: 36px;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 14px;
+            }
+
+            .win-text {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SCREEN 1: WELCOME -->
+        <div id="s-welcome" class="screen active">
+            <div class="welcome-header">
+                <div class="monster-emoji wiggle">👾</div>
+                <div class="app-title">Monster Math</div>
+                <div class="app-subtitle">Help Gabe defeat the math monsters and level up!</div>
+            </div>
+
+            <div class="monster-pet">
+                <div class="pet-name">🐉 Gabe's Monster — Level 4 Math Beast!</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div style="font-size: 12px; color: #06D6A0;">80% to Level 5</div>
+            </div>
+
+            <div class="points-counter">
+                💎 240 Monster Points
+            </div>
+
+            <button class="btn btn-primary" onclick="show('s-setup')">
+                👾 Start Monster Battle!
+            </button>
+        </div>
+
+        <!-- SCREEN 2: SETUP + UPLOAD -->
+        <div id="s-setup" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-welcome')">← Back</button>
+                <div class="topbar-title">New Battle Setup 👾</div>
+                <div class="monster-chip">💎 240</div>
+            </div>
+
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Student Name</label>
+                    <input type="text" class="form-input" value="Gabe" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tutor Name</label>
+                    <input type="text" class="form-input" value="Auntie Mia" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Assignment Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Addition & Subtraction Quiz">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input">
+                </div>
+
+                <div class="upload-zone" onclick="alert('📸 Upload test image (wireframe)')">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">Upload Gabe's Graded Test</div>
+                    <div class="upload-hint">Your AI Monster Coach will find all missed questions!</div>
+                    <button type="button" class="btn btn-secondary btn-small">Upload Test 📤</button>
+                </div>
+
+                <div class="tip-box">
+                    <span class="tip-emoji">👾</span>
+                    <strong>Monster Tip:</strong> Make sure all marks are visible!
+                </div>
+            </form>
+
+            <button class="skip-btn" onclick="show('s-ai')">Skip & Continue →</button>
+        </div>
+
+        <!-- SCREEN 3: AI EXTRACTION -->
+        <div id="s-ai" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-setup')">← Back</button>
+                <div class="topbar-title">Monster Coach Scanning...</div>
+                <div class="monster-chip">💎 240</div>
+            </div>
+
+            <div class="ai-card">
+                <div class="ai-spinner spin">🔍</div>
+                <div class="ai-text">Your Monster Coach is scanning the test!</div>
+                <div class="progress-bar-animated">
+                    <div class="progress-fill-animated"></div>
+                </div>
+            </div>
+
+            <div class="score-banner">
+                🎯 Monster Score: 55/100 — 5 Monsters to Defeat!
+            </div>
+
+            <div class="monster-list">
+                <div class="monster-item">
+                    <span>
+                        <span class="monster-q">Q1</span>
+                        <span class="monster-text">2 + 7 = ?</span>
+                    </span>
+                    <span class="defeat-badge">DEFEAT!</span>
+                </div>
+
+                <div class="monster-item">
+                    <span>
+                        <span class="monster-q">Q2</span>
+                        <span class="monster-text">15 - 6 = ?</span>
+                    </span>
+                    <span class="defeat-badge">DEFEAT!</span>
+                </div>
+
+                <div class="monster-item active">
+                    <span>
+                        <span class="monster-q">Q7</span>
+                        <span class="monster-text">9 + 4 = ?</span>
+                    </span>
+                    <span class="defeat-badge">DEFEAT!</span>
+                </div>
+
+                <div class="monster-item">
+                    <span>
+                        <span class="monster-q">Q9</span>
+                        <span class="monster-text">20 - 8 = ?</span>
+                    </span>
+                    <span class="defeat-badge">DEFEAT!</span>
+                </div>
+
+                <div class="monster-item">
+                    <span>
+                        <span class="monster-q">Q10</span>
+                        <span class="monster-text">3 + 5 + 2 = ?</span>
+                    </span>
+                    <span class="defeat-badge">DEFEAT!</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-primary" onclick="show('s-practice')" style="flex: 1;">
+                    Generate Monster Battle! 🔥
+                </button>
+                <button class="btn btn-ghost" style="flex: 0;">+ Add Monster</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: PRACTICE SHEET -->
+        <div id="s-practice" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-ai')">← Back</button>
+                <div class="topbar-title">Battle Worksheet 📋</div>
+                <div class="monster-chip">💎 240</div>
+            </div>
+
+            <div class="practice-callout">
+                ⚔️ Battle Ready! Let's help Gabe conquer these monsters!
+            </div>
+
+            <div class="practice-sheet">
+                <div class="sheet-header">
+                    <div class="sheet-title">Monster Math Battle Practice</div>
+                    <div class="sheet-meta">Name: Gabe | Date: April 6, 2026 | Tutor: Auntie Mia</div>
+                </div>
+
+                <div class="practice-question">
+                    <div style="margin-bottom: 8px;">
+                        <span class="q-number">1</span>
+                    </div>
+                    <div class="q-text">
+                        What is <span class="number-highlight">2</span> + <span class="number-highlight">7</span>?
+                    </div>
+                    <div class="work-space">📝 Show your work here! 🖊️</div>
+                    <div class="answer-line">
+                        Answer: <div class="answer-blank"></div>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div style="margin-bottom: 8px;">
+                        <span class="q-number green">2</span>
+                    </div>
+                    <div class="q-text">
+                        Subtract <span class="number-highlight">6</span> from <span class="number-highlight">15</span>. What do you get?
+                    </div>
+                    <div class="work-space">📝 Show your work here! 🖊️</div>
+                    <div class="answer-line">
+                        Answer: <div class="answer-blank"></div>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div style="margin-bottom: 8px;">
+                        <span class="q-number">3</span>
+                    </div>
+                    <div class="q-text">
+                        Add <span class="number-highlight">9</span> + <span class="number-highlight">4</span> together. What's the sum?
+                    </div>
+                    <div class="work-space">📝 Show your work here! 🖊️</div>
+                    <div class="answer-line">
+                        Answer: <div class="answer-blank"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-card">
+                <div class="action-title">📄 Print Battle Sheet</div>
+                <div class="action-desc">Print an 8×11 worksheet so Gabe can show all his work on paper!</div>
+                <button class="btn btn-yellow" onclick="alert('🖨️ Print dialog would open')">
+                    📄 Print Battle Sheet
+                </button>
+            </div>
+
+            <div class="action-card upload">
+                <div class="action-title">📸 Upload Gabe's Answers</div>
+                <div class="action-desc">After Gabe finishes on paper, take a photo and upload it here!</div>
+                <div class="upload-zone" style="margin-bottom: 14px; cursor: pointer;" onclick="alert('📸 File upload (wireframe)')">
+                    <div style="font-size: 32px; margin-bottom: 8px;">📤</div>
+                    <div style="font-size: 13px; color: #FF4D94;">Click to upload photo</div>
+                </div>
+                <button class="btn btn-secondary" onclick="show('s-review')">
+                    Upload Answers 📤
+                </button>
+            </div>
+
+            <button class="btn btn-primary" onclick="show('s-review')" style="margin-top: 20px;">
+                ⚔️ Start Battle Review!
+            </button>
+        </div>
+
+        <!-- SCREEN 5: REVIEW SESSION -->
+        <div id="s-review" class="screen">
+            <div class="topbar">
+                <button class="back-btn" onclick="show('s-practice')">← Back</button>
+                <div class="topbar-title">Monster Battle Review ⚔️</div>
+                <div class="monster-chip">💎 240</div>
+            </div>
+
+            <div class="review-progress">
+                <div class="progress-dot completed">👾</div>
+                <div class="progress-dot completed">👾</div>
+                <div class="progress-dot active">👾</div>
+                <div class="progress-dot">👾</div>
+                <div class="progress-dot">👾</div>
+            </div>
+
+            <div class="review-status">
+                Monster 3 of 5 — 2 Defeated! 🎉
+            </div>
+
+            <div class="question-card">
+                <!-- A. Question -->
+                <div class="card-section">
+                    <div class="section-label">
+                        <span class="q-badge">Question 3 👾</span>
+                    </div>
+                    <div class="question-text">
+                        Add <strong>9</strong> + <strong>4</strong> together. What's the sum?
+                    </div>
+                </div>
+
+                <!-- B. Gabe's Work -->
+                <div class="card-section">
+                    <div class="section-label">
+                        📸 Gabe's Work
+                    </div>
+                    <div class="work-upload">
+                        <div class="work-placeholder">📷</div>
+                        <div class="work-text">Gabe's uploaded answers</div>
+                    </div>
+                </div>
+
+                <!-- C. Result -->
+                <div class="card-section">
+                    <div class="section-label">Result</div>
+                    <span class="result-badge fail">❌ Needs More Training!</span>
+                </div>
+
+                <!-- D. Monster Coach's Answer Key -->
+                <div class="card-section">
+                    <div class="section-label">🔑 Monster Coach Says:</div>
+                    <div class="answer-key">
+                        <div class="answer-key-title">✅ Correct Answer: 13</div>
+                        <div class="answer-key-step">👉 <strong>Step 1:</strong> Start with 9</div>
+                        <div class="answer-key-step">👉 <strong>Step 2:</strong> Count 4 more: 10, 11, 12, 13</div>
+                        <div class="answer-key-step">👉 <strong>Step 3:</strong> We got 13! That's our answer!</div>
+                        <div class="answer-key-step">👉 <strong>Fun Fact:</strong> 9 + 4 is the same as 10 + 3!</div>
+                    </div>
+                </div>
+
+                <div class="hint-box">
+                    👾 <strong>Hint from your Monster Coach:</strong> Try counting on your fingers starting from 9!
+                </div>
+            </div>
+
+            <div class="review-actions">
+                <button class="btn btn-success btn-small" onclick="show('s-celebrate')">
+                    ✅ Monster Defeated! +20💎
+                </button>
+                <button class="btn btn-retry btn-small" onclick="alert('🔄 Reload question (wireframe)')">
+                    🔄 Try Again!
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: CELEBRATION -->
+        <div id="s-celebrate" class="screen">
+            <div class="celebration-header">
+                <div class="celebration-emoji">🎉</div>
+                <div class="win-text">MONSTERS DEFEATED!</div>
+                <div class="win-text" style="font-size: 28px; margin-top: 10px;">YOU WIN!</div>
+            </div>
+
+            <div class="stats-box">
+                <div class="stat">
+                    <div style="color: #06D6A0; font-size: 12px;">Correct Answers</div>
+                    <div class="stat-value">3 out of 5</div>
+                </div>
+                <div class="stat">
+                    <div style="color: #06D6A0; font-size: 12px;">Retried & Mastered</div>
+                    <div class="stat-value">2 Questions</div>
+                </div>
+                <div class="stat">
+                    <div style="color: #06D6A0; font-size: 12px;">Total Monster Points Earned</div>
+                    <div class="stat-value">+75 💎</div>
+                </div>
+            </div>
+
+            <div class="level-up">
+                <div class="level-up-text">🐉 Your Monster Leveled Up!</div>
+                <div class="level-up-bar">
+                    <div class="level-up-fill"></div>
+                </div>
+                <div class="level-badge">🎯 Level 5 Unlocked!</div>
+            </div>
+
+            <div class="prize-box">
+                <div class="prize-emoji">🎁</div>
+                <div class="prize-text">
+                    PRIZE UNLOCKED!<br>
+                    Go claim it from Auntie Mia!
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="show('s-welcome')">
+                Play Again! 👾
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function show(screenId) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+
+            // Show selected screen
+            const selectedScreen = document.getElementById(screenId);
+            if (selectedScreen) {
+                selectedScreen.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+    </script>
+</body>
+</html>

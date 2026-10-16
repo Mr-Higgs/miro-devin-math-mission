@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option 1 — Bright & Playful</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #F0EFFE; min-height: 100vh; }
+
+  /* NAV LABEL */
+  .option-badge {
+    position: fixed; top: 12px; right: 12px; z-index: 999;
+    background: #6C63FF; color: white; font-size: 11px; font-weight: 700;
+    padding: 6px 12px; border-radius: 20px; letter-spacing: .5px;
+  }
+
+  /* SCREEN SYSTEM */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* TOP BAR */
+  .topbar {
+    background: linear-gradient(135deg, #6C63FF, #9B93FF);
+    padding: 14px 20px; display: flex; align-items: center;
+    justify-content: space-between; box-shadow: 0 4px 20px rgba(108,99,255,.3);
+  }
+  .topbar-title { color: white; font-size: 1.1rem; font-weight: 700; }
+  .star-pill {
+    background: #FFD93D; color: #333; font-weight: 800;
+    padding: 6px 14px; border-radius: 20px; font-size: .95rem;
+  }
+
+  /* CONTENT */
+  .content { flex: 1; padding: 20px; max-width: 420px; margin: 0 auto; width: 100%; }
+
+  /* CARDS */
+  .card {
+    background: white; border-radius: 20px; padding: 22px;
+    margin-bottom: 16px; box-shadow: 0 4px 16px rgba(108,99,255,.12);
+  }
+  .card-accent { border-left: 5px solid #6C63FF; }
+  .card-green  { border-left: 5px solid #6BCB77; background: #f0fdf4; }
+  .card-yellow { border-left: 5px solid #FFD93D; background: #fffde7; }
+  .card-orange { border-left: 5px solid #FF9B3D; background: #fff5ea; }
+
+  /* BUTTONS */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 15px; border: none; border-radius: 16px;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    margin-bottom: 12px; transition: transform .1s, opacity .15s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-purple { background: #6C63FF; color: white; }
+  .btn-green  { background: #6BCB77; color: white; }
+  .btn-orange { background: #FF9B3D; color: white; }
+  .btn-ghost  { background: #eee; color: #555; }
+  .btn-sm { padding: 10px 20px; width: auto; border-radius: 12px; font-size: .9rem; }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 3px dashed #B8B3FF; border-radius: 20px; padding: 36px 20px;
+    text-align: center; background: #f8f7ff; cursor: pointer;
+    transition: background .2s;
+  }
+  .upload-zone:hover { background: #f0effe; }
+  .upload-icon { font-size: 3rem; margin-bottom: 10px; }
+  .upload-label { font-size: 1rem; color: #6C63FF; font-weight: 600; }
+  .upload-sub { font-size: .85rem; color: #999; margin-top: 4px; }
+
+  /* QUESTION ITEM */
+  .q-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: white; border-radius: 14px; padding: 14px;
+    margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    border: 2px solid #eee;
+  }
+  .q-badge {
+    background: #6C63FF; color: white; font-weight: 700;
+    border-radius: 50%; width: 28px; height: 28px; min-width: 28px;
+    display: flex; align-items: center; justify-content: center; font-size: .8rem;
+  }
+  .q-body { flex: 1; }
+  .q-text { font-size: .95rem; color: #333; line-height: 1.4; }
+  .q-type { font-size: .75rem; color: #9B93FF; font-weight: 600; margin-top: 3px; }
+  .q-toggle { font-size: 1.2rem; cursor: pointer; }
+
+  /* MISSED BADGE */
+  .missed-tag {
+    display: inline-block; background: #FFE5E5; color: #E53E3E;
+    font-size: .72rem; font-weight: 700; padding: 2px 8px;
+    border-radius: 10px; margin-left: 6px;
+  }
+
+  /* PRACTICE QUESTION */
+  .pq { background: white; border-radius: 18px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+  .pq-num { display: inline-flex; align-items: center; justify-content: center; background: #6C63FF; color: white; border-radius: 50%; width: 32px; height: 32px; font-weight: 800; font-size: .9rem; margin-bottom: 10px; }
+  .pq-text { font-size: 1.05rem; font-weight: 600; color: #222; line-height: 1.5; margin-bottom: 14px; }
+  .work-box { border: 2px dashed #D4D0FF; border-radius: 12px; height: 72px; display: flex; align-items: center; justify-content: center; color: #bbb; font-style: italic; font-size: .88rem; margin-bottom: 10px; }
+  .answer-row { display: flex; align-items: center; gap: 8px; padding-top: 8px; border-top: 1px dashed #eee; }
+  .answer-row span { font-weight: 600; font-size: .9rem; color: #555; }
+  .answer-blank { flex: 1; border-bottom: 2px solid #333; height: 24px; }
+
+  /* MC OPTIONS */
+  .mc-opt { display: flex; align-items: center; gap: 10px; border: 2px solid #eee; border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; font-size: .95rem; }
+  .mc-box { width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 4px; flex-shrink: 0; }
+
+  /* REVIEW QUESTION */
+  .review-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(108,99,255,.15); border-left: 6px solid #6C63FF; margin-bottom: 16px; }
+  .review-q { font-size: 1.3rem; font-weight: 700; color: #222; line-height: 1.5; }
+
+  /* PROGRESS DOTS */
+  .prog-dots { display: flex; gap: 8px; margin-bottom: 18px; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: #ddd; }
+  .dot.done-correct { background: #6BCB77; }
+  .dot.done-redo    { background: #FF9B3D; }
+  .dot.active       { background: #6C63FF; box-shadow: 0 0 0 3px rgba(108,99,255,.3); }
+
+  /* HINT BOX */
+  .hint-box { background: #fffde7; border-left: 4px solid #FFD93D; border-radius: 12px; padding: 14px; margin-top: 12px; }
+  .hint-label { font-weight: 700; color: #c9a000; margin-bottom: 4px; font-size: .9rem; }
+  .hint-text { font-size: .92rem; color: #555; }
+
+  /* WELCOME */
+  .welcome-hero { text-align: center; padding: 40px 20px 20px; }
+  .hero-emoji { font-size: 5rem; display: block; margin-bottom: 12px; }
+  .hero-title { font-size: 2.2rem; font-weight: 900; color: #6C63FF; margin-bottom: 6px; }
+  .hero-sub { font-size: 1rem; color: #888; margin-bottom: 32px; }
+
+  /* CELEBRATION */
+  .cel-screen { text-align: center; padding: 40px 20px; background: linear-gradient(160deg, #F0EFFE 0%, #fff 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .cel-emoji { font-size: 5rem; animation: bounce .5s alternate infinite; display: block; margin-bottom: 12px; }
+  @keyframes bounce { to { transform: scale(1.15); } }
+  .cel-title { font-size: 2.2rem; font-weight: 900; color: #6C63FF; margin-bottom: 8px; }
+  .cel-sub { font-size: 1rem; color: #777; margin-bottom: 24px; }
+  .stars-row { display: flex; gap: 8px; justify-content: center; font-size: 2rem; margin-bottom: 24px; }
+  .prize-box { background: linear-gradient(135deg, #6C63FF, #9B93FF); color: white; border-radius: 20px; padding: 22px; width: 100%; text-align: center; margin-bottom: 20px; }
+  .prize-box .prize-icon { font-size: 2.5rem; margin-bottom: 6px; }
+  .prize-box .prize-text { font-size: 1.2rem; font-weight: 700; }
+
+  /* STAT GRID */
+  .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-card { background: white; border-radius: 14px; padding: 14px 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .stat-num { font-size: 2rem; font-weight: 900; color: #6C63FF; }
+  .stat-label { font-size: .75rem; color: #888; margin-top: 2px; }
+
+  /* FORM */
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: .85rem; font-weight: 700; color: #666; margin-bottom: 6px; display: block; }
+  .form-input { width: 100%; padding: 12px 14px; border: 2px solid #E0DEFF; border-radius: 12px; font-size: .95rem; outline: none; background: white; }
+  .form-input:focus { border-color: #6C63FF; }
+
+  /* AI PROCESSING */
+  .ai-box { background: #f8f7ff; border: 2px solid #D4D0FF; border-radius: 18px; padding: 24px; text-align: center; }
+  .ai-spinner { font-size: 2.5rem; animation: spin 1.2s linear infinite; display: inline-block; margin-bottom: 10px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-label { font-size: 1rem; font-weight: 700; color: #6C63FF; }
+  .ai-sub { font-size: .85rem; color: #999; margin-top: 4px; }
+
+  /* SECTION LABEL */
+  .section-label { font-size: .8rem; font-weight: 700; color: #9B93FF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 4px; }
+
+  /* BOTTOM NAV BAR */
+  .bottom-nav { background: white; border-top: 2px solid #eee; padding: 10px 20px; display: flex; justify-content: space-around; position: sticky; bottom: 0; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: .7rem; color: #aaa; cursor: pointer; padding: 4px 12px; border-radius: 12px; }
+  .nav-item.active { color: #6C63FF; background: #f0effe; }
+  .nav-item .nav-icon { font-size: 1.3rem; }
+
+  h2 { font-size: 1.3rem; font-weight: 800; color: #222; margin-bottom: 6px; }
+  h3 { font-size: 1.05rem; font-weight: 700; color: #333; margin-bottom: 10px; }
+  p  { color: #666; font-size: .92rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="option-badge">Option 1 — Bright &amp; Playful</div>
+
+<!-- ===== SCREEN 1: WELCOME ===== -->
+<div class="screen active" id="s-welcome">
+  <div class="content" style="display:flex;flex-direction:column;justify-content:center;min-height:100vh;">
+    <div class="welcome-hero">
+      <span class="hero-emoji">⭐</span>
+      <h1 class="hero-title">Math Tutor</h1>
+      <p class="hero-sub">Upload a test. Practice the missed questions.<br>Earn stars. Win prizes.</p>
+    </div>
+    <button class="btn btn-purple" onclick="show('s-setup')">🚀 Start New Session</button>
+    <button class="btn btn-ghost" onclick="show('s-review')">▶ Preview Review Session</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: SETUP + UPLOAD ===== -->
+<div class="screen" id="s-setup">
+  <div class="topbar">
+    <span class="topbar-title">📋 New Session</span>
+    <span class="star-pill">⭐ 0</span>
+  </div>
+  <div class="content">
+    <div class="card">
+      <h2>Who's studying?</h2>
+      <p style="margin-bottom:16px;">Fill in the details to get started.</p>
+      <div class="form-group">
+        <label class="form-label">Student Name</label>
+        <input class="form-input" type="text" placeholder="e.g. Gabe" value="Gabe">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tutor Name</label>
+        <input class="form-input" type="text" placeholder="e.g. Auntie Mia" value="Auntie Mia">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assignment Name</label>
+        <input class="form-input" type="text" placeholder="e.g. Topic 10 Quiz" value="Topic 10 Lessons 1-3 Quiz">
+      </div>
+    </div>
+
+    <div class="section-label">Step 2 — Upload the graded test</div>
+    <div class="upload-zone" onclick="show('s-ai')">
+      <div class="upload-icon">📸</div>
+      <div class="upload-label">Tap to upload photo or PDF</div>
+      <div class="upload-sub">JPG, PNG, or PDF • photo of graded test</div>
+    </div>
+    <div style="text-align:center;margin:10px 0;color:#bbb;font-size:.85rem;">— or —</div>
+    <button class="btn btn-ghost" onclick="show('s-ai')" style="margin-bottom:0;">📁 Browse files</button>
+
+    <div class="card card-yellow" style="margin-top:16px;">
+      <div style="font-size:.88rem;color:#666;">💡 <strong>Tip:</strong> Take a clear, well-lit photo of the test. Make sure teacher marks (✓ and ✗) are visible so the AI can find missed questions.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: AI EXTRACTION ===== -->
+<div class="screen" id="s-ai">
+  <div class="topbar">
+    <span class="topbar-title">🤖 Reading Your Test</span>
+    <span class="star-pill">⭐ 0</span>
+  </div>
+  <div class="content">
+    <div class="ai-box" style="margin-bottom:16px;">
+      <div class="ai-spinner">⚙️</div>
+      <div class="ai-label">AI is analyzing the test...</div>
+      <div class="ai-sub">Finding missed questions and question types</div>
+      <div style="margin-top:14px;background:#E8E6FF;border-radius:8px;height:8px;overflow:hidden;">
+        <div style="background:#6C63FF;height:100%;width:72%;border-radius:8px;"></div>
+      </div>
+    </div>
+
+    <div class="section-label">Missed Questions Found — 5 of 10</div>
+    <div style="background:#FFE5E5;border-radius:14px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:1.2rem;">📊</span>
+      <span style="font-size:.88rem;color:#C53030;font-weight:600;">Score: 55/100 — Gabe missed 5 questions</span>
+    </div>
+
+    <div class="q-item">
+      <div class="q-badge">1</div>
+      <div class="q-body">
+        <div class="q-text">How many hundreds are in 600? <span class="missed-tag">MISSED</span></div>
+        <div class="q-type">Place Value Count</div>
+      </div>
+      <div class="q-toggle">✅</div>
+    </div>
+    <div class="q-item" style="border-color:#FFD93D;background:#fffde7;">
+      <div class="q-badge" style="background:#FFD93D;color:#333;">2</div>
+      <div class="q-body">
+        <div class="q-text">Lucy needs 1,000 rubber bands. She has 400. Which other number does she need?</div>
+        <div class="q-type">Missing Number Story Problem</div>
+      </div>
+      <div class="q-toggle">✅</div>
+    </div>
+    <div class="q-item">
+      <div class="q-badge">3</div>
+      <div class="q-body">
+        <div class="q-text">It has 7 hundreds. Tens between 7 and 9. Ones are 3 less than 5. <span class="missed-tag">MISSED</span></div>
+        <div class="q-type">Number from Clues</div>
+      </div>
+      <div class="q-toggle">✅</div>
+    </div>
+    <div class="q-item">
+      <div class="q-badge">9</div>
+      <div class="q-body">
+        <div class="q-text">Which is the correct value for the underlined digit? 5<u>5</u>6 <span class="missed-tag">MISSED</span></div>
+        <div class="q-type">Digit Value (Multiple Choice)</div>
+      </div>
+      <div class="q-toggle">✅</div>
+    </div>
+    <div class="q-item">
+      <div class="q-badge">10</div>
+      <div class="q-body">
+        <div class="q-text">What is the value of the 8 in 287? <span class="missed-tag">MISSED</span></div>
+        <div class="q-type">Place Value Chart</div>
+      </div>
+      <div class="q-toggle">✅</div>
+    </div>
+
+    <button class="btn btn-purple" onclick="show('s-practice')">✅ Looks good — Generate Practice Sheet</button>
+    <button class="btn btn-ghost">✏️ Edit Questions</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 4: PRACTICE SHEET ===== -->
+<div class="screen" id="s-practice">
+  <div class="topbar">
+    <span class="topbar-title">📄 Practice Sheet</span>
+    <span class="star-pill">⭐ 0</span>
+  </div>
+  <div class="content">
+    <div class="card card-green" style="margin-bottom:14px;">
+      <div style="display:flex;gap:12px;align-items:center;">
+        <span style="font-size:2rem;">✅</span>
+        <div>
+          <div style="font-weight:700;color:#166534;margin-bottom:2px;">Practice Sheet Ready!</div>
+          <div style="font-size:.85rem;color:#444;">Numbers have been randomized. Print or work on screen.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);">
+      <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding-bottom:10px;margin-bottom:14px;">
+        <div><div style="font-weight:700;font-size:1rem;">Topic 10 Lessons 1-3 Quiz</div><div style="font-size:.8rem;color:#888;">Practice Sheet</div></div>
+        <div style="text-align:right;font-size:.85rem;"><div>Gabe</div><div style="color:#888;">April 4, 2026</div></div>
+      </div>
+
+      <div class="pq">
+        <div class="pq-num">1</div>
+        <div class="pq-text">How many hundreds are in <strong>800</strong>?</div>
+        <div class="work-box">Show your work here ✏️</div>
+        <div class="answer-row"><span>My answer:</span><div class="answer-blank"></div></div>
+      </div>
+
+      <div class="pq">
+        <div class="pq-num">2</div>
+        <div class="pq-text">Marcus needs <strong>700</strong> stickers for an art project. He has <strong>300</strong> stickers now. Which other number does he need to have <strong>700</strong> stickers?</div>
+        <div class="work-box">Show your work here ✏️</div>
+        <div class="answer-row"><span>My answer:</span><div class="answer-blank"></div></div>
+      </div>
+
+      <div class="pq">
+        <div class="pq-num">3</div>
+        <div class="pq-text">What is the number?<br>• It has <strong>5</strong> hundreds.<br>• The tens digit is between <strong>3</strong> and <strong>5</strong>.<br>• The ones digit is <strong>2</strong> less than <strong>6</strong>.</div>
+        <div class="work-box">Show your work here ✏️</div>
+        <div class="answer-row"><span>My answer:</span><div class="answer-blank"></div></div>
+      </div>
+
+      <div class="pq">
+        <div class="pq-num">4</div>
+        <div class="pq-text">Which is the correct value for the underlined digit? <span style="font-size:1.5rem;font-weight:800;">3<u>7</u>2</span></div>
+        <div class="mc-opt"><div class="mc-box"></div>7</div>
+        <div class="mc-opt"><div class="mc-box"></div>70</div>
+        <div class="mc-opt"><div class="mc-box"></div>700</div>
+        <div class="mc-opt"><div class="mc-box"></div>7 tens</div>
+      </div>
+    </div>
+
+    <button class="btn btn-green" onclick="show('s-review')">🎯 Start Review Session</button>
+    <button class="btn btn-ghost">🖨️ Print Practice Sheet</button>
+    <button class="btn btn-ghost">🔑 View Answer Key</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 5: REVIEW SESSION ===== -->
+<div class="screen" id="s-review">
+  <div class="topbar">
+    <span class="topbar-title">🎯 Review Session</span>
+    <span class="star-pill">⭐ 2</span>
+  </div>
+  <div class="content">
+    <div class="prog-dots">
+      <div class="dot done-correct"></div>
+      <div class="dot done-correct"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <div style="font-size:.82rem;color:#999;margin-bottom:14px;">Question 3 of 5</div>
+
+    <div class="review-card">
+      <div class="review-q">What is the number?<br><br>• It has <strong>5</strong> hundreds.<br>• The tens digit is between <strong>3</strong> and <strong>5</strong>.<br>• The ones digit is <strong>2</strong> less than <strong>6</strong>.</div>
+    </div>
+
+    <div class="card card-yellow">
+      <div style="font-weight:700;margin-bottom:4px;font-size:.95rem;">🗣️ Ask Gabe:</div>
+      <div style="font-style:italic;color:#666;font-size:.9rem;">"How do you think you did? Walk me through how you solved it."</div>
+    </div>
+
+    <div class="hint-box" style="margin-bottom:14px;">
+      <div class="hint-label">💡 Hint (show if needed)</div>
+      <div class="hint-text">Start with the hundreds: 5_ _. For tens, what number is between 3 and 5? For ones: 6 − 2 = ?</div>
+    </div>
+
+    <div style="font-weight:700;margin-bottom:10px;color:#333;">Did Gabe get it right AND show his work?</div>
+    <div style="display:flex;gap:10px;margin-bottom:10px;">
+      <button class="btn btn-green btn-sm" style="flex:1;margin-bottom:0;" onclick="show('s-celebrate')">✅ Correct!</button>
+      <button class="btn btn-orange btn-sm" style="flex:1;margin-bottom:0;">🔄 Redo it</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="width:100%;">💡 Show Hint</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 6: CELEBRATION ===== -->
+<div class="screen" id="s-celebrate">
+  <div class="cel-screen">
+    <span class="cel-emoji">🏆</span>
+    <h1 class="cel-title">YOU WON!!</h1>
+    <p class="cel-sub">Amazing work, Gabe! Auntie Mia is SO proud of you!</p>
+    <div class="stars-row">⭐⭐⭐⭐⭐</div>
+    <div class="stat-grid" style="width:100%;">
+      <div class="stat-card"><div class="stat-num" style="color:#6BCB77;">4</div><div class="stat-label">✅ Correct</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#FF9B3D;">1</div><div class="stat-label">🔄 Redone</div></div>
+      <div class="stat-card"><div class="stat-num">4.5</div><div class="stat-label">⭐ Stars</div></div>
+    </div>
+    <div class="prize-box" style="width:100%;">
+      <div class="prize-icon">🎁</div>
+      <div class="prize-text">YOU EARNED YOUR PRIZE!<br>Go claim it right now! 🎉</div>
+    </div>
+    <button class="btn btn-purple" onclick="show('s-welcome')" style="width:100%;">🔄 Start New Session</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (shown on screens 2-6) -->
+<script>
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

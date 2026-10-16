@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATH MISSION — Cockpit v2a</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #080C12;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Scanline overlay effect */
+        body::after {
+            content: '';
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+        }
+
+        /* Cockpit side panels */
+        body::before {
+            content: '';
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                #00D4FF 0px,
+                #00D4FF 1px,
+                transparent 1px,
+                transparent 4px,
+                #00D4FF 4px,
+                #00D4FF 5px,
+                transparent 5px,
+                transparent 20px
+            );
+            opacity: 0.2;
+            z-index: 100;
+        }
+
+        .cockpit-right::before {
+            content: '';
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                #00D4FF 0px,
+                #00D4FF 1px,
+                transparent 1px,
+                transparent 4px,
+                #00D4FF 4px,
+                #00D4FF 5px,
+                transparent 5px,
+                transparent 20px
+            );
+            opacity: 0.2;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Topbar styling */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid #00D4FF;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .topbar a {
+            color: #00D4FF;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .topbar a:hover {
+            color: #FFA500;
+        }
+
+        /* Version badge */
+        .version-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #00D4FF;
+            opacity: 0.5;
+            text-transform: uppercase;
+        }
+
+        /* Main content card with corner brackets */
+        .card {
+            background: rgba(13, 17, 23, 0.9);
+            border: 2px solid #00D4FF;
+            border-radius: 4px;
+            padding: 24px;
+            position: relative;
+            flex: 1;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+
+        /* Corner bracket decorations */
+        .card::before,
+        .card::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00D4FF;
+        }
+
+        .card::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .card::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .card.corner-tl::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .card.corner-br::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #00D4FF;
+            text-shadow: 0 0 10px #00D4FF;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #FFA500;
+            margin: 16px 0 12px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        h3 {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #00D4FF;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #FFA500;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* Status readout panel */
+        .status-panel {
+            background: #0D1117;
+            border: 1px solid #00D4FF;
+            border-radius: 3px;
+            padding: 16px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #00D4FF;
+        }
+
+        .status-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+        }
+
+        .status-label {
+            color: #00D4FF;
+            text-transform: uppercase;
+        }
+
+        .status-value {
+            color: #FFA500;
+        }
+
+        /* Gauge/progress bar */
+        .gauge-container {
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .gauge-label {
+            color: #00D4FF;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .gauge-bar {
+            height: 24px;
+            background: #0D1117;
+            border: 1px solid #00D4FF;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00D4FF, #FFA500);
+            width: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        /* Tick marks on gauge */
+        .gauge-ticks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            pointer-events: none;
+        }
+
+        .tick {
+            flex: 1;
+            border-right: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .tick:last-child {
+            border-right: none;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #FFA500;
+            color: #000;
+            box-shadow: 0 0 12px #FFA500;
+        }
+
+        .btn-primary:hover {
+            background: #FFB520;
+            box-shadow: 0 0 20px #FFA500;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: #00D4FF;
+            color: #000;
+            box-shadow: 0 0 12px #00D4FF;
+        }
+
+        .btn-secondary:hover {
+            background: #00E8FF;
+            box-shadow: 0 0 20px #00D4FF;
+            transform: scale(1.02);
+        }
+
+        .btn-success {
+            background: #00AA00;
+            color: #FFF;
+            box-shadow: 0 0 12px #00AA00;
+        }
+
+        .btn-success:hover {
+            background: #00CC00;
+            box-shadow: 0 0 20px #00AA00;
+            transform: scale(1.02);
+        }
+
+        .btn-danger {
+            background: #FF3B30;
+            color: #FFF;
+            box-shadow: 0 0 12px #FF3B30;
+        }
+
+        .btn-danger:hover {
+            background: #FF5050;
+            box-shadow: 0 0 20px #FF3B30;
+            transform: scale(1.02);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #00D4FF;
+            border: 1px solid #00D4FF;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .btn-wide {
+            width: 100%;
+            display: block;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 11px;
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #00D4FF;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #0D1117;
+            border: 2px solid #00D4FF;
+            border-radius: 3px;
+            color: #00D4FF;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .form-input::placeholder {
+            color: rgba(0, 212, 255, 0.4);
+        }
+
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 12px #00D4FF;
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            background: #0D1117;
+            border: 2px dashed #00D4FF;
+            border-radius: 4px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 16px 0;
+        }
+
+        .upload-zone:hover {
+            background: rgba(0, 212, 255, 0.05);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .upload-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00D4FF;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Alert/callout panels */
+        .alert {
+            background: #0D1117;
+            border-left: 4px solid #FFA500;
+            border-radius: 3px;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .alert-warning {
+            border-left-color: #FFA500;
+            color: #FFF;
+        }
+
+        .alert-success {
+            border-left-color: #00AA00;
+            color: #FFF;
+        }
+
+        .alert-danger {
+            border-left-color: #FF3B30;
+            color: #FFF;
+        }
+
+        .alert-label {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            color: #FFA500;
+        }
+
+        /* Loading/scanning state */
+        .scanning {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            text-align: center;
+        }
+
+        .spinner {
+            font-size: 48px;
+            animation: spin 2s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .scanning-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00D4FF;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        /* Blink animation */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .blink {
+            animation: blink 0.8s infinite;
+        }
+
+        /* Instrument panel at bottom */
+        .instrument-panel {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding: 16px;
+            background: #0D1117;
+            border-top: 2px solid #00D4FF;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-green {
+            background: #00AA00;
+            animation: blink 1s infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .dot-amber {
+            background: #FFA500;
+            animation: blink 1s infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .dot-red {
+            background: #FF3B30;
+            animation: blink 1s infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .dot-cyan {
+            background: #00D4FF;
+            animation: blink 1s infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        /* Question list / threat display */
+        .threat-list {
+            background: #0D1117;
+            border: 1px solid #FF3B30;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .threat-row {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #0D3B4B;
+            font-size: 13px;
+            gap: 12px;
+        }
+
+        .threat-row:last-child {
+            border-bottom: none;
+        }
+
+        .threat-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #FF3B30;
+            animation: blink 0.8s infinite;
+            flex-shrink: 0;
+        }
+
+        .threat-number {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #FFA500;
+            min-width: 40px;
+        }
+
+        .threat-text {
+            flex: 1;
+            color: #CCC;
+        }
+
+        .threat-badge {
+            background: #FF3B30;
+            color: #FFF;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .threat-toggle {
+            width: 16px;
+            height: 16px;
+            background: transparent;
+            border: 1px solid #00D4FF;
+            cursor: pointer;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Practice question styling */
+        .practice-q {
+            background: #0D1117;
+            border: 1px solid #00D4FF;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .q-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 2px solid #00D4FF;
+            border-radius: 50%;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #00D4FF;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        .q-text {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            color: #FFF;
+        }
+
+        .q-number-highlight {
+            color: #FFA500;
+            font-weight: bold;
+        }
+
+        .q-workspace {
+            background: #080C12;
+            border: 2px dashed #00D4FF;
+            border-radius: 3px;
+            padding: 12px;
+            min-height: 80px;
+            margin: 12px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .q-answer {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #00D4FF;
+            text-transform: uppercase;
+            margin-top: 12px;
+        }
+
+        .q-answer-blank {
+            display: inline-block;
+            border-bottom: 2px solid #00D4FF;
+            min-width: 100px;
+        }
+
+        /* Review cards */
+        .review-card {
+            background: #0D1117;
+            border: 2px solid #00D4FF;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .review-section {
+            margin-bottom: 20px;
+        }
+
+        .review-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .review-section-title {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #00D4FF;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-section-content {
+            background: #080C12;
+            border: 1px solid #00D4FF;
+            border-radius: 3px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #CCC;
+        }
+
+        .verdict-box {
+            background: #1a0a0a;
+            border: 2px solid #FF3B30;
+            border-radius: 3px;
+            padding: 16px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FF3B30;
+            text-transform: uppercase;
+            margin: 16px 0;
+        }
+
+        .verdict-box.correct {
+            background: #0a1a0a;
+            border-color: #00AA00;
+            color: #00AA00;
+        }
+
+        .solution-steps {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 2;
+            color: #00D4FF;
+            background: #080C12;
+            padding: 12px;
+            border-radius: 3px;
+            margin-top: 12px;
+        }
+
+        /* Progress indicators */
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .progress-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0D1117;
+            border: 2px solid #00D4FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #00D4FF;
+            font-family: 'Courier New', monospace;
+        }
+
+        .progress-dot.active {
+            background: #00D4FF;
+            color: #000;
+            box-shadow: 0 0 12px #00D4FF;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Celebration styling */
+        .celebration-text {
+            text-align: center;
+            font-size: 28px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #0D1117;
+            border: 1px solid #00D4FF;
+            border-radius: 4px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-family: 'Courier New', monospace;
+            color: #FFA500;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #00D4FF;
+            text-transform: uppercase;
+        }
+
+        /* Upload photo placeholder */
+        .photo-placeholder {
+            background: #080C12;
+            border: 2px dashed #00D4FF;
+            border-radius: 4px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #00D4FF;
+            font-size: 32px;
+            margin: 12px 0;
+        }
+
+        .photo-label {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #00D4FF;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        /* Flex helpers */
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="cockpit-right">
+    <div class="container">
+        <!-- SCREEN 1: WELCOME -->
+        <div id="s-welcome" class="screen active">
+            <div class="card corner-tl corner-br">
+                <h1>MATH MISSION</h1>
+                <p class="subtitle">CADET GABE — REPORTING FOR DUTY</p>
+
+                <div class="status-panel">
+                    <div class="status-line">
+                        <span class="status-label">PILOT:</span>
+                        <span class="status-value">CADET GABE</span>
+                    </div>
+                    <div class="status-line">
+                        <span class="status-label">CREW CHIEF:</span>
+                        <span class="status-value">AUNTIE MIA</span>
+                    </div>
+                    <div class="status-line">
+                        <span class="status-label">STATUS:</span>
+                        <span class="status-value">READY FOR LAUNCH</span>
+                    </div>
+                    <div class="status-line">
+                        <span class="status-label">MISSION LEVEL:</span>
+                        <span class="status-value">4</span>
+                    </div>
+                </div>
+
+                <div class="gauge-container">
+                    <div class="gauge-label">
+                        <span>MISSION XP</span>
+                        <span>240 / 400</span>
+                    </div>
+                    <div class="gauge-bar">
+                        <div class="gauge-ticks">
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                        </div>
+                        <div class="gauge-fill">60%</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-wide" onclick="show('s-setup')">
+                    🚀 INITIATE LAUNCH SEQUENCE
+                </button>
+
+                <div class="instrument-panel">
+                    <span class="indicator-dot dot-green" style="--delay: 0s;"></span>
+                    <span class="indicator-dot dot-amber" style="--delay: 0.2s;"></span>
+                    <span class="indicator-dot dot-cyan" style="--delay: 0.4s;"></span>
+                    <span class="indicator-dot dot-green" style="--delay: 0.6s;"></span>
+                    <span class="indicator-dot dot-amber" style="--delay: 0.8s;"></span>
+                    <span class="indicator-dot dot-red" style="--delay: 1s;"></span>
+                    <span class="indicator-dot dot-cyan" style="--delay: 0.3s;"></span>
+                    <span class="indicator-dot dot-green" style="--delay: 0.7s;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: SETUP -->
+        <div id="s-setup" class="screen">
+            <div class="topbar">
+                <a onclick="show('s-welcome')">← BACK</a>
+                <span>MISSION BRIEFING</span>
+                <span>⭐ 0 XP</span>
+            </div>
+
+            <div class="card corner-tl corner-br">
+                <h2>MISSION DATA ENTRY</h2>
+
+                <form onsubmit="event.preventDefault(); show('s-ai');">
+                    <div class="form-group">
+                        <label class="form-label">PILOT NAME</label>
+                        <input type="text" class="form-input" placeholder="CADET NAME" value="Gabe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">CREW CHIEF</label>
+                        <input type="text" class="form-input" placeholder="SUPERVISOR" value="Auntie Mia" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">MISSION DESIGNATION</label>
+                        <input type="text" class="form-input" placeholder="E.G., ADDITION DRILLS #5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">STARDATE</label>
+                        <input type="date" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📡 TRANSMIT TEST FILE TO COMPUTER</label>
+                        <div class="upload-zone">
+                            <div class="upload-icon">📤</div>
+                            <div class="upload-text">UPLOAD ASSESSMENT</div>
+                            <div class="upload-hint">PDF or image file with grading marks</div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <div class="alert-label">⚠️ SYSTEM NOTICE</div>
+                        <div>Ensure all grading marks are visible in frame before transmission.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-wide">PROCEED TO ANALYSIS</button>
+                    <button type="button" class="btn btn-ghost btn-wide" onclick="show('s-welcome')">SKIP</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: AI EXTRACTION -->
+        <div id="s-ai" class="screen">
+            <div class="topbar">
+                <span>COMPUTER SCANNING</span>
+                <span>⭐ 0 XP</span>
+            </div>
+
+            <div class="card corner-tl corner-br">
+                <div class="scanning">
+                    <div class="spinner">⚙️</div>
+                    <div class="scanning-text">SHIP COMPUTER ANALYZING TRANSMISSION...</div>
+                    <div class="gauge-bar" style="width: 200px; margin-top: 20px;">
+                        <div class="gauge-ticks">
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                        </div>
+                        <div class="gauge-fill" style="width: 85%;">85%</div>
+                    </div>
+                </div>
+
+                <div class="status-panel" style="margin-top: 40px;">
+                    <div class="status-line">
+                        <span class="status-label">MISSION SCORE:</span>
+                        <span class="status-value">55 / 100</span>
+                    </div>
+                    <div class="status-line">
+                        <span class="status-label">TARGETS IDENTIFIED:</span>
+                        <span class="status-value">5</span>
+                    </div>
+                </div>
+
+                <h3>THREAT DISPLAY</h3>
+                <div class="threat-list">
+                    <div class="threat-row">
+                        <div class="threat-indicator blink"></div>
+                        <div class="threat-number">Q1</div>
+                        <div class="threat-text">7 + 8 = ?</div>
+                        <div class="threat-badge">MISSED</div>
+                    </div>
+                    <div class="threat-row">
+                        <div class="threat-indicator blink"></div>
+                        <div class="threat-number">Q3</div>
+                        <div class="threat-text">12 - 5 = ?</div>
+                        <div class="threat-badge">MISSED</div>
+                    </div>
+                    <div class="threat-row">
+                        <div class="threat-indicator blink"></div>
+                        <div class="threat-number">Q5</div>
+                        <div class="threat-text">9 + 6 = ?</div>
+                        <div class="threat-badge">MISSED</div>
+                    </div>
+                    <div class="threat-row">
+                        <div class="threat-indicator blink"></div>
+                        <div class="threat-number">Q7</div>
+                        <div class="threat-text">15 - 7 = ?</div>
+                        <div class="threat-badge">MISSED</div>
+                    </div>
+                    <div class="threat-row">
+                        <div class="threat-indicator blink"></div>
+                        <div class="threat-number">Q9</div>
+                        <div class="threat-text">8 + 4 = ?</div>
+                        <div class="threat-badge">MISSED</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary btn-wide" onclick="show('s-practice')">
+                    GENERATE MISSION PARAMETERS
+                </button>
+                <button class="btn btn-ghost btn-wide btn-small">+ ADD TARGET</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: PRACTICE SHEET -->
+        <div id="s-practice" class="screen">
+            <div class="topbar">
+                <a onclick="show('s-ai')">← BACK</a>
+                <span>MISSION WORKSHEET</span>
+                <span>⭐ 0 XP</span>
+            </div>
+
+            <div class="card corner-tl corner-br">
+                <div class="alert alert-success">
+                    <div class="alert-label">✓ MISSION PARAMETERS LOADED</div>
+                </div>
+
+                <div class="status-panel">
+                    <div class="status-line">
+                        <span class="status-label">ASSIGNMENT:</span>
+                        <span class="status-value">ADDITION DRILLS</span>
+                    </div>
+                    <div class="status-line">
+                        <span class="status-label">PILOT:</span>
+                        <span class="status-value">GABE</span>
+                    </div>
+                    <div class="status-line">
+                        <span class="status-label">STARDATE:</span>
+                        <span class="status-value">2026-04-06</span>
+                    </div>
+                </div>
+
+                <h3>PRACTICE QUESTIONS</h3>
+
+                <div class="practice-q">
+                    <div>
+                        <span class="q-number">1</span>
+                        <span class="q-text">
+                            <span class="q-number-highlight">7</span> + <span class="q-number-highlight">8</span> = ?
+                        </span>
+                    </div>
+                    <div class="q-workspace">COMPUTATION ZONE</div>
+                    <div class="q-answer">FINAL ANSWER: <span class="q-answer-blank"></span></div>
+                </div>
+
+                <div class="practice-q">
+                    <div>
+                        <span class="q-number">3</span>
+                        <span class="q-text">
+                            <span class="q-number-highlight">12</span> - <span class="q-number-highlight">5</span> = ?
+                        </span>
+                    </div>
+                    <div class="q-workspace">COMPUTATION ZONE</div>
+                    <div class="q-answer">FINAL ANSWER: <span class="q-answer-blank"></span></div>
+                </div>
+
+                <div class="practice-q">
+                    <div>
+                        <span class="q-number">5</span>
+                        <span class="q-text">
+                            <span class="q-number-highlight">9</span> + <span class="q-number-highlight">6</span> = ?
+                        </span>
+                    </div>
+                    <div class="q-workspace">COMPUTATION ZONE</div>
+                    <div class="q-answer">FINAL ANSWER: <span class="q-answer-blank"></span></div>
+                </div>
+
+                <h3 style="margin-top: 24px;">ACTION PROTOCOLS</h3>
+
+                <!-- PRINT CARD -->
+                <div style="background: #0D1117; border: 2px solid #FFA500; border-radius: 4px; padding: 16px; margin: 16px 0;">
+                    <h3 style="color: #FFA500; margin-top: 0;">📄 PRINT MISSION WORKSHEET</h3>
+                    <p style="font-size: 13px; color: #CCC; margin: 12px 0; line-height: 1.6;">
+                        Generates 8.5×11 printable sheet with computation zones and answer blanks.
+                    </p>
+                    <button class="btn btn-primary" style="width: 100%;">PRINT WORKSHEET</button>
+                </div>
+
+                <!-- UPLOAD CARD -->
+                <div style="background: #0D1117; border: 2px solid #00D4FF; border-radius: 4px; padding: 16px; margin: 16px 0;">
+                    <h3 style="color: #00D4FF; margin-top: 0;">📸 UPLOAD CADET'S COMPLETED WORK</h3>
+                    <p style="font-size: 13px; color: #CCC; margin: 12px 0; line-height: 1.6;">
+                        After Gabe completes on paper, upload a photo of his answers.
+                    </p>
+                    <div class="upload-zone">
+                        <div class="upload-icon">📤</div>
+                        <div class="upload-text">TRANSMIT FILE</div>
+                        <div class="upload-hint">Photo or scan of completed worksheet</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary btn-wide" onclick="show('s-review')">
+                    ▶ INITIATE REVIEW SEQUENCE
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: REVIEW SESSION -->
+        <div id="s-review" class="screen">
+            <div class="topbar">
+                <a onclick="show('s-practice')">← BACK</a>
+                <span>REVIEW SEQUENCE ACTIVE</span>
+                <span>⭐ 20 XP</span>
+            </div>
+
+            <div class="card corner-tl corner-br">
+                <div class="progress-dots">
+                    <div class="progress-dot">1</div>
+                    <div class="progress-dot">2</div>
+                    <div class="progress-dot active">3</div>
+                    <div class="progress-dot">4</div>
+                    <div class="progress-dot">5</div>
+                </div>
+
+                <div style="text-align: center; margin: 16px 0; font-family: 'Courier New', monospace; font-size: 13px; color: #FFA500; text-transform: uppercase;">
+                    TARGET 3 OF 5 — 2 NEUTRALIZED
+                </div>
+
+                <!-- QUESTION CARD -->
+                <div class="review-card">
+                    <!-- A. TARGET -->
+                    <div class="review-section">
+                        <div class="review-section-title">
+                            <span style="display: inline-block; width: 24px; height: 24px; border: 2px solid #00D4FF; border-radius: 50%; text-align: center; line-height: 20px; font-size: 11px; font-weight: bold;">3</span>
+                            TARGET
+                        </div>
+                        <div class="review-section-content">
+                            <span class="q-number-highlight" style="font-size: 16px;">9</span> + <span class="q-number-highlight" style="font-size: 16px;">6</span> = ?
+                        </div>
+                    </div>
+
+                    <!-- B. CADET'S SUBMISSION -->
+                    <div class="review-section">
+                        <div class="review-section-title">📸 PILOT'S UPLOADED COMPUTATION SHEET</div>
+                        <div class="photo-placeholder">📸</div>
+                        <div class="photo-label">TRANSMISSION RECEIVED</div>
+                    </div>
+
+                    <!-- C. SYSTEM VERDICT -->
+                    <div class="review-section">
+                        <div class="review-section-title">SYSTEM VERDICT</div>
+                        <div class="verdict-box">
+                            ❌ TARGET MISSED<br>
+                            <span style="font-size: 12px;">RECALIBRATE</span>
+                        </div>
+                    </div>
+
+                    <!-- D. CORRECT SOLUTION -->
+                    <div class="review-section">
+                        <div class="review-section-title">🔑 SHIP COMPUTER SOLUTION</div>
+                        <div class="review-section-content">
+                            <strong style="color: #00AA00;">ANSWER: 15</strong>
+                            <div class="solution-steps">
+                                STEP 1: START WITH 9<br>
+                                STEP 2: ADD 6 MORE<br>
+                                STEP 3: COUNT: 10, 11, 12, 13, 14, 15<br>
+                                STEP 4: RESULT = 15
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="btn btn-success" style="flex: 1;">✅ CORRECT (+20⭐)</button>
+                    <button class="btn btn-danger" style="flex: 1;">❌ INCORRECT</button>
+                </div>
+
+                <button class="btn btn-danger btn-wide" onclick="show('s-review')">🔄 RECALIBRATE</button>
+
+                <div class="alert alert-warning" style="margin-top: 20px;">
+                    <div class="alert-label">💡 SHIP COMPUTER HINT</div>
+                    <div>Try counting on your fingers starting from 9. Add 6 more fingers. What number do you reach?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: CELEBRATION -->
+        <div id="s-celebrate" class="screen">
+            <div class="card corner-tl corner-br">
+                <div class="celebration-text">
+                    🚀 MISSION COMPLETE<br>
+                    ALL TARGETS NEUTRALIZED!
+                </div>
+
+                <div style="text-align: center; font-size: 24px; color: #00D4FF; font-family: 'Courier New', monospace; font-weight: bold; text-shadow: 0 0 10px #00D4FF; margin: 20px 0; animation: pulse 0.8s infinite;">
+                    MISSION SUCCESS
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">CORRECT</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">RETRIED</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">+100</div>
+                        <div class="stat-label">XP EARNED</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">LEVEL REACHED</div>
+                    </div>
+                </div>
+
+                <div style="background: #0D1117; border: 2px solid #00AA00; border-radius: 4px; padding: 16px; margin: 20px 0; text-align: center;">
+                    <h3 style="color: #00AA00; margin: 0 0 12px 0;">✓ PROMOTION ACHIEVED</h3>
+                    <div style="font-family: 'Courier New', monospace; font-size: 14px; color: #00AA00; font-weight: bold; text-transform: uppercase;">
+                        LEVEL 5 SPACE RANGER
+                    </div>
+                </div>
+
+                <div class="gauge-container">
+                    <div class="gauge-label">
+                        <span>TOTAL MISSION XP</span>
+                        <span>340 / 400</span>
+                    </div>
+                    <div class="gauge-bar">
+                        <div class="gauge-ticks">
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                            <div class="tick"></div>
+                        </div>
+                        <div class="gauge-fill" style="width: 85%;">85%</div>
+                    </div>
+                </div>
+
+                <div style="background: #1a0a1a; border: 2px solid #FFA500; border-radius: 4px; padding: 16px; margin: 20px 0; text-align: center;">
+                    <div style="font-family: 'Courier New', monospace; font-size: 13px; color: #FFA500; text-transform: uppercase; font-weight: bold; margin-bottom: 8px;">
+                        🎁 PRIZE PROTOCOL ACTIVATED
+                    </div>
+                    <div style="font-size: 14px; color: #FFA500;">Report to Auntie Mia for your reward!</div>
+                </div>
+
+                <button class="btn btn-primary btn-wide" onclick="show('s-welcome')">
+                    🚀 LAUNCH NEW MISSION
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="version-badge">v2a — Cockpit</div>
+
+    <script>
+        function show(screenId) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+
+            // Show target screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Initialize: show welcome screen
+        document.addEventListener('DOMContentLoaded', () => {
+            show('s-welcome');
+        });
+    </script>
+</body>
+</html>

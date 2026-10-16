@@ -1,0 +1,20 @@
+file:///Users/miapendergast/Documents/Claude/Projects/Gabe's%20Math%20App/wireframe-option3-game.html
+
+Feedback
+- positive feedback
+    - i really like the missed question screen that shows the missed questions out of the graded assignment and even classifies the type of problem
+- overall flow 
+    - it looks like there are 2 core flows from the home screen: "Start Mission" and "Preview". for now, let's start with just 1 flow: "Start Mission"
+- "Start Mission" Flow
+    - step 1: upload, looks good no changes needed
+    - setp 2: missed questions, looks good no changes needed
+    - step 3: i want a way to export the questions in a printable format (assume 8x11 inch letter paper) where the student can have space to show their work
+        - i want an upload option on here for the tutor to upload the student's answers and their work
+    - step 4: on the review session screen, i want the following components on the screen for each question:
+        - the question and number
+        - a rendering of the student's work based off the uploaded file
+        - a pass/fail if the student's answer is correct
+        - an answer key of the correct answer and the worked out steps that lead to the answer
+- Overall style
+    - i think that the overall style is kinda boring,i want this to look more like an engaging game
+

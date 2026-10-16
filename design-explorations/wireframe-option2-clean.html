@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option 2 — Clean & Structured</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #F7F8FC; min-height: 100vh; color: #1A202C; }
+
+  .option-badge {
+    position: fixed; top: 12px; right: 12px; z-index: 999;
+    background: #2B4C8C; color: white; font-size: 11px; font-weight: 700;
+    padding: 6px 12px; border-radius: 20px; letter-spacing: .5px;
+  }
+
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* HEADER */
+  .header {
+    background: white; border-bottom: 1px solid #E2E8F0;
+    padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .back-btn { background: #F1F5F9; border: none; border-radius: 8px; padding: 7px 14px; font-size: .85rem; color: #555; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .header-title { font-size: 1rem; font-weight: 700; color: #1A202C; }
+  .star-chip { background: #FFF3CC; color: #B7791F; font-weight: 700; padding: 5px 12px; border-radius: 20px; font-size: .85rem; border: 1.5px solid #F6D860; }
+
+  /* STEP BAR */
+  .step-bar { background: white; border-bottom: 1px solid #E2E8F0; padding: 12px 24px; display: flex; gap: 0; }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step-circle { width: 24px; height: 24px; border-radius: 50%; background: #E2E8F0; color: #888; font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step.active .step-circle { background: #2B4C8C; color: white; }
+  .step.done .step-circle { background: #48BB78; color: white; }
+  .step-name { font-size: .75rem; color: #888; }
+  .step.active .step-name { color: #2B4C8C; font-weight: 700; }
+  .step.done .step-name { color: #48BB78; }
+  .step-connector { flex: 1; height: 1px; background: #E2E8F0; margin: 0 6px; margin-top: 1px; }
+
+  /* CONTENT */
+  .content { flex: 1; padding: 24px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+  /* CARDS */
+  .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; border: 1px solid #E2E8F0; }
+  .card-title { font-size: 1rem; font-weight: 700; color: #1A202C; margin-bottom: 4px; }
+  .card-sub { font-size: .85rem; color: #718096; margin-bottom: 16px; }
+
+  /* SECTIONS */
+  .section-header { font-size: .75rem; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; margin-top: 4px; }
+
+  /* FORM */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: .82rem; font-weight: 600; color: #4A5568; margin-bottom: 5px; }
+  .field input { width: 100%; padding: 10px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px; font-size: .95rem; outline: none; background: #FAFAFA; }
+  .field input:focus { border-color: #2B4C8C; background: white; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* UPLOAD */
+  .upload-area { border: 2px dashed #CBD5E0; border-radius: 10px; padding: 32px; text-align: center; cursor: pointer; background: #F7FAFC; transition: all .2s; }
+  .upload-area:hover { border-color: #2B4C8C; background: #EBF4FF; }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 8px; }
+  .upload-title { font-size: .95rem; font-weight: 600; color: #2D3748; }
+  .upload-hint  { font-size: .8rem; color: #A0AEC0; margin-top: 4px; }
+  .upload-btn   { display: inline-block; margin-top: 12px; background: #2B4C8C; color: white; padding: 8px 20px; border-radius: 8px; font-size: .85rem; font-weight: 600; }
+
+  /* BUTTONS */
+  .btn { width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: .95rem; font-weight: 700; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s; }
+  .btn:last-child { margin-bottom: 0; }
+  .btn-navy   { background: #2B4C8C; color: white; }
+  .btn-green  { background: #48BB78; color: white; }
+  .btn-coral  { background: #FC8181; color: white; }
+  .btn-outline { background: white; color: #4A5568; border: 1.5px solid #E2E8F0; }
+  .btn-sm { padding: 9px 16px; width: auto; font-size: .85rem; border-radius: 8px; }
+
+  /* TABLE-STYLE QUESTION LIST */
+  .q-table { background: white; border-radius: 12px; border: 1px solid #E2E8F0; overflow: hidden; margin-bottom: 16px; }
+  .q-table-header { display: grid; grid-template-columns: 36px 1fr 80px 36px; gap: 0; padding: 8px 14px; background: #F7FAFC; border-bottom: 1px solid #E2E8F0; }
+  .q-th { font-size: .72rem; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: .5px; }
+  .q-row { display: grid; grid-template-columns: 36px 1fr 80px 36px; gap: 0; padding: 12px 14px; border-bottom: 1px solid #F0F0F0; align-items: start; }
+  .q-row:last-child { border-bottom: none; }
+  .q-num { font-weight: 700; color: #2B4C8C; font-size: .9rem; }
+  .q-content .q-text { font-size: .88rem; color: #2D3748; line-height: 1.4; }
+  .q-content .q-type { font-size: .72rem; color: #A0AEC0; margin-top: 3px; }
+  .q-status { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: .72rem; font-weight: 700; }
+  .status-missed { background: #FFF5F5; color: #C53030; }
+  .status-ok     { background: #F0FFF4; color: #276749; }
+  .q-check { font-size: 1rem; cursor: pointer; }
+
+  /* INFO CALLOUT */
+  .callout { border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: flex-start; font-size: .88rem; }
+  .callout-blue { background: #EBF4FF; border: 1px solid #BEE3F8; }
+  .callout-green { background: #F0FFF4; border: 1px solid #9AE6B4; }
+  .callout-amber { background: #FFFBEB; border: 1px solid #FCD34D; }
+  .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { color: #4A5568; line-height: 1.5; }
+  .callout-body strong { color: #1A202C; }
+
+  /* PROGRESS */
+  .prog-bar-wrap { background: #E2E8F0; border-radius: 4px; height: 6px; margin-bottom: 6px; }
+  .prog-bar-fill { background: #2B4C8C; height: 100%; border-radius: 4px; }
+  .prog-label { font-size: .78rem; color: #718096; display: flex; justify-content: space-between; }
+
+  /* QUESTION DOTS */
+  .q-dots { display: flex; gap: 6px; margin-bottom: 16px; }
+  .qdot { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; }
+  .qdot-correct { background: #F0FFF4; color: #276749; border: 2px solid #68D391; }
+  .qdot-redo    { background: #FFFBEB; color: #B7791F; border: 2px solid #F6D860; }
+  .qdot-active  { background: #2B4C8C; color: white; border: 2px solid #2B4C8C; }
+  .qdot-pending { background: #F7FAFC; color: #A0AEC0; border: 2px solid #E2E8F0; }
+
+  /* REVIEW */
+  .review-card { background: white; border-radius: 12px; border: 2px solid #2B4C8C; padding: 22px; margin-bottom: 14px; }
+  .review-label { font-size: .75rem; font-weight: 700; color: #2B4C8C; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+  .review-q { font-size: 1.15rem; font-weight: 600; color: #1A202C; line-height: 1.6; }
+
+  /* HINT */
+  .hint-panel { border: 1.5px solid #FCD34D; background: #FFFBEB; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .hint-head { font-size: .82rem; font-weight: 700; color: #92400E; margin-bottom: 4px; }
+  .hint-body { font-size: .88rem; color: #78350F; line-height: 1.5; }
+
+  /* ACTION ROW */
+  .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+  /* PRACTICE QUESTION */
+  .pq-block { border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px; margin-bottom: 14px; background: white; }
+  .pq-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .pq-num { background: #2B4C8C; color: white; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .82rem; }
+  .pq-text { font-size: .95rem; font-weight: 600; color: #1A202C; flex: 1; line-height: 1.4; }
+  .work-space { border: 1.5px dashed #CBD5E0; border-radius: 8px; height: 64px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: #CBD5E0; font-size: .82rem; }
+  .answer-line { display: flex; align-items: center; gap: 8px; border-top: 1px solid #F0F0F0; padding-top: 10px; }
+  .answer-line span { font-size: .85rem; color: #718096; font-weight: 600; white-space: nowrap; }
+  .answer-blank { flex: 1; border-bottom: 1.5px solid #2D3748; height: 22px; }
+  .mc-option { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px; margin-bottom: 7px; font-size: .9rem; color: #2D3748; }
+  .mc-radio { width: 18px; height: 18px; border: 2px solid #CBD5E0; border-radius: 4px; flex-shrink: 0; }
+
+  /* CELEBRATION */
+  .cel { text-align: center; padding: 40px 24px; }
+  .cel-icon { font-size: 4.5rem; display: block; margin-bottom: 14px; }
+  .cel-title { font-size: 2rem; font-weight: 900; color: #2B4C8C; margin-bottom: 6px; }
+  .cel-sub { font-size: .95rem; color: #718096; margin-bottom: 24px; }
+  .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-box { background: white; border-radius: 10px; padding: 14px 8px; text-align: center; border: 1px solid #E2E8F0; }
+  .stat-n { font-size: 2rem; font-weight: 900; color: #2B4C8C; }
+  .stat-l { font-size: .73rem; color: #A0AEC0; margin-top: 2px; }
+  .prize-panel { background: #2B4C8C; color: white; border-radius: 12px; padding: 22px; text-align: center; margin-bottom: 20px; }
+
+  /* WELCOME */
+  .welcome-wrap { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 40px 24px; text-align: center; }
+  .app-logo { font-size: 4rem; margin-bottom: 16px; }
+  .app-name { font-size: 2rem; font-weight: 900; color: #2B4C8C; margin-bottom: 6px; }
+  .app-tagline { font-size: .95rem; color: #718096; margin-bottom: 32px; line-height: 1.6; }
+
+  /* AI PROGRESS */
+  .ai-panel { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 16px; }
+  .ai-icon { font-size: 2.5rem; display: inline-block; animation: pulse 1s alternate infinite; }
+  @keyframes pulse { to { transform: scale(1.1); opacity: .7; } }
+  .ai-title { font-weight: 700; font-size: 1rem; margin: 10px 0 4px; color: #1A202C; }
+  .ai-hint { font-size: .82rem; color: #A0AEC0; }
+  .ai-bar { background: #E2E8F0; border-radius: 4px; height: 8px; margin: 14px 0 4px; }
+  .ai-fill { background: linear-gradient(90deg, #2B4C8C, #63B3ED); height: 100%; border-radius: 4px; width: 68%; }
+  .ai-pct { font-size: .8rem; color: #718096; text-align: right; }
+</style>
+</head>
+<body>
+<div class="option-badge">Option 2 — Clean &amp; Structured</div>
+
+<!-- ===== SCREEN 1: WELCOME ===== -->
+<div class="screen active" id="s-welcome">
+  <div class="welcome-wrap">
+    <div class="app-logo">📚</div>
+    <div class="app-name">Math Tutor</div>
+    <div class="app-tagline">Upload any graded test, get a custom<br>practice session in seconds.</div>
+    <button class="btn btn-navy" onclick="show('s-setup')" style="max-width:320px;">Start New Session</button>
+    <button class="btn btn-outline" onclick="show('s-review')" style="max-width:320px;">Preview App</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: SETUP + UPLOAD ===== -->
+<div class="screen" id="s-setup">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="show('s-welcome')">← Back</button>
+      <span class="header-title">New Session</span>
+    </div>
+    <div class="star-chip">⭐ 0 stars</div>
+  </div>
+  <div class="step-bar">
+    <div class="step active"><div class="step-circle">1</div><div class="step-name">Setup</div></div>
+    <div class="step-connector"></div>
+    <div class="step"><div class="step-circle">2</div><div class="step-name">Extract</div></div>
+    <div class="step-connector"></div>
+    <div class="step"><div class="step-circle">3</div><div class="step-name">Practice</div></div>
+    <div class="step-connector"></div>
+    <div class="step"><div class="step-circle">4</div><div class="step-name">Review</div></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Session Info</div>
+      <div class="card-sub">Who's studying today?</div>
+      <div class="field-row">
+        <div class="field"><label>Student Name</label><input type="text" value="Gabe"></div>
+        <div class="field"><label>Tutor Name</label><input type="text" value="Auntie Mia"></div>
+      </div>
+      <div class="field"><label>Assignment / Test Name</label><input type="text" value="Topic 10 Lessons 1-3 Quiz"></div>
+      <div class="field"><label>Date</label><input type="date" value="2026-04-04"></div>
+    </div>
+
+    <div class="section-header">Upload graded test</div>
+    <div class="upload-area" onclick="show('s-ai')">
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">Upload photo or PDF of graded test</div>
+      <div class="upload-hint">JPG · PNG · PDF — drag & drop or tap to browse</div>
+      <div class="upload-btn">Choose File</div>
+    </div>
+
+    <div class="callout callout-blue" style="margin-top:14px;">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body"><strong>Photo tip:</strong> Make sure teacher marks (✓ and ✗) are clearly visible. The AI uses these to find which questions your student missed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: AI EXTRACTION ===== -->
+<div class="screen" id="s-ai">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="show('s-setup')">← Back</button>
+      <span class="header-title">AI Extraction</span>
+    </div>
+    <div class="star-chip">⭐ 0 stars</div>
+  </div>
+  <div class="step-bar">
+    <div class="step done"><div class="step-circle">✓</div><div class="step-name">Setup</div></div>
+    <div class="step-connector"></div>
+    <div class="step active"><div class="step-circle">2</div><div class="step-name">Extract</div></div>
+    <div class="step-connector"></div>
+    <div class="step"><div class="step-circle">3</div><div class="step-name">Practice</div></div>
+    <div class="step-connector"></div>
+    <div class="step"><div class="step-circle">4</div><div class="step-name">Review</div></div>
+  </div>
+  <div class="content">
+    <div class="ai-panel">
+      <div class="ai-icon">🤖</div>
+      <div class="ai-title">Reading your test...</div>
+      <div class="ai-hint">Identifying questions and grading marks</div>
+      <div class="ai-bar"><div class="ai-fill"></div></div>
+      <div class="ai-pct">68% complete</div>
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-icon">📊</div>
+      <div class="callout-body"><strong>Score detected: 55/100</strong> — 5 questions missed. Review below and remove any that shouldn't be included.</div>
+    </div>
+
+    <div class="section-header">Missed Questions — Tap to include/exclude</div>
+    <div class="q-table">
+      <div class="q-table-header">
+        <div class="q-th">#</div>
+        <div class="q-th">Question</div>
+        <div class="q-th">Type</div>
+        <div class="q-th"></div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q1</div>
+        <div class="q-content">
+          <div class="q-text">How many hundreds are in 600?</div>
+          <div class="q-type">Place Value Count</div>
+        </div>
+        <div><span class="q-status status-missed">Missed</span></div>
+        <div class="q-check">☑️</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q2</div>
+        <div class="q-content">
+          <div class="q-text">Lucy needs 1,000 rubber bands. She has 400. What other number?</div>
+          <div class="q-type">Story Problem</div>
+        </div>
+        <div><span class="q-status status-missed">Missed</span></div>
+        <div class="q-check">☑️</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q7</div>
+        <div class="q-content">
+          <div class="q-text">7 hundreds, tens between 7 and 9, ones 3 less than 5.</div>
+          <div class="q-type">Number from Clues</div>
+        </div>
+        <div><span class="q-status status-missed">Missed</span></div>
+        <div class="q-check">☑️</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q9</div>
+        <div class="q-content">
+          <div class="q-text">Value of underlined digit in 5<u>5</u>6?</div>
+          <div class="q-type">Digit Value (MC)</div>
+        </div>
+        <div><span class="q-status status-missed">Missed</span></div>
+        <div class="q-check">☑️</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q10</div>
+        <div class="q-content">
+          <div class="q-text">Value of the 8 in 287?</div>
+          <div class="q-type">Place Value Chart</div>
+        </div>
+        <div><span class="q-status status-missed">Missed</span></div>
+        <div class="q-check">☑️</div>
+      </div>
+    </div>
+    <button class="btn btn-navy" onclick="show('s-practice')">Generate Practice Sheet →</button>
+    <button class="btn btn-outline">+ Add Missing Question</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 4: PRACTICE SHEET ===== -->
+<div class="screen" id="s-practice">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="show('s-ai')">← Back</button>
+      <span class="header-title">Practice Sheet</span>
+    </div>
+    <div class="star-chip">⭐ 0 stars</div>
+  </div>
+  <div class="step-bar">
+    <div class="step done"><div class="step-circle">✓</div><div class="step-name">Setup</div></div>
+    <div class="step-connector"></div>
+    <div class="step done"><div class="step-circle">✓</div><div class="step-name">Extract</div></div>
+    <div class="step-connector"></div>
+    <div class="step active"><div class="step-circle">3</div><div class="step-name">Practice</div></div>
+    <div class="step-connector"></div>
+    <div class="step"><div class="step-circle">4</div><div class="step-name">Review</div></div>
+  </div>
+  <div class="content">
+    <div class="callout callout-green">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body"><strong>5 questions generated</strong> with new randomized numbers. Print the sheet and have Gabe show all work.</div>
+    </div>
+
+    <div style="background:white;border-radius:12px;border:1px solid #E2E8F0;padding:18px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid #E2E8F0;margin-bottom:16px;">
+        <div><div style="font-weight:700;">Topic 10 Lessons 1-3 Quiz</div><div style="font-size:.78rem;color:#718096;">Practice Sheet — Randomized</div></div>
+        <div style="text-align:right;font-size:.82rem;color:#718096;"><div style="font-weight:600;color:#1A202C;">Gabe</div><div>April 4, 2026</div></div>
+      </div>
+
+      <div class="pq-block">
+        <div class="pq-header"><div class="pq-num">1</div><div class="pq-text">How many hundreds are in <strong>800</strong>?</div></div>
+        <div class="work-space">Show your work here</div>
+        <div class="answer-line"><span>Answer:</span><div class="answer-blank"></div></div>
+      </div>
+      <div class="pq-block">
+        <div class="pq-header"><div class="pq-num">2</div><div class="pq-text">Marcus needs <strong>700</strong> stickers. He has <strong>300</strong>. What other number does he need?</div></div>
+        <div class="work-space">Show your work here</div>
+        <div class="answer-line"><span>Answer:</span><div class="answer-blank"></div></div>
+      </div>
+      <div class="pq-block">
+        <div class="pq-header"><div class="pq-num">3</div><div class="pq-text">What is the number? It has <strong>5</strong> hundreds. Tens between <strong>3</strong> and <strong>5</strong>. Ones are <strong>2</strong> less than <strong>6</strong>.</div></div>
+        <div class="work-space">Show your work here</div>
+        <div class="answer-line"><span>Answer:</span><div class="answer-blank"></div></div>
+      </div>
+      <div class="pq-block">
+        <div class="pq-header"><div class="pq-num">4</div><div class="pq-text">Which is the correct value for the underlined digit? <span style="font-size:1.4rem;font-weight:800;letter-spacing:2px;">3<u>7</u>2</span></div></div>
+        <div class="mc-option"><div class="mc-radio"></div>7</div>
+        <div class="mc-option"><div class="mc-radio"></div>70</div>
+        <div class="mc-option"><div class="mc-radio"></div>700</div>
+        <div class="mc-option"><div class="mc-radio"></div>7 ones</div>
+      </div>
+    </div>
+
+    <button class="btn btn-green" onclick="show('s-review')">Start Review Session →</button>
+    <div class="action-row">
+      <button class="btn btn-outline btn-sm">🖨️ Print Sheet</button>
+      <button class="btn btn-outline btn-sm">🔑 Answer Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 5: REVIEW SESSION ===== -->
+<div class="screen" id="s-review">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="show('s-practice')">← Back</button>
+      <span class="header-title">Review Session</span>
+    </div>
+    <div class="star-chip">⭐ 2 stars</div>
+  </div>
+  <div class="content" style="padding-top:20px;">
+    <div class="q-dots">
+      <div class="qdot qdot-correct">1</div>
+      <div class="qdot qdot-correct">2</div>
+      <div class="qdot qdot-active">3</div>
+      <div class="qdot qdot-pending">4</div>
+      <div class="qdot qdot-pending">5</div>
+    </div>
+    <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:40%;"></div></div>
+    <div class="prog-label"><span>Question 3 of 5</span><span>40% complete</span></div>
+
+    <div style="height:14px;"></div>
+    <div class="review-card">
+      <div class="review-label">Question 3</div>
+      <div class="review-q">What is the number?<br><br>• It has <strong>5</strong> hundreds.<br>• The tens digit is between <strong>3</strong> and <strong>5</strong>.<br>• The ones digit is <strong>2</strong> less than <strong>6</strong>.</div>
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-icon">🗣️</div>
+      <div class="callout-body"><strong>Ask Gabe:</strong> "How do you think you did? Walk me through your work step by step."</div>
+    </div>
+
+    <div class="hint-panel">
+      <div class="hint-head">💡 Hint (show if student is stuck)</div>
+      <div class="hint-body">Hundreds: 5_ _. Tens — what's between 3 and 5? Ones: 6 − 2 = ? Put it together!</div>
+    </div>
+
+    <div style="font-weight:600;font-size:.9rem;color:#4A5568;margin-bottom:10px;">Did Gabe answer correctly AND show his work?</div>
+    <div class="action-row">
+      <button class="btn btn-green btn-sm" onclick="show('s-celebrate')">✅ Correct</button>
+      <button class="btn btn-coral btn-sm">🔄 Redo it</button>
+    </div>
+    <button class="btn btn-outline" style="font-size:.85rem;padding:9px;">💡 Reveal Hint</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 6: CELEBRATION ===== -->
+<div class="screen" id="s-celebrate">
+  <div class="header" style="border:none;">
+    <span class="header-title" style="color:#2B4C8C;">Session Complete</span>
+    <div class="star-chip">⭐ 4.5 stars</div>
+  </div>
+  <div class="content">
+    <div class="cel">
+      <span class="cel-icon">🏆</span>
+      <div class="cel-title">Amazing Work, Gabe!</div>
+      <div class="cel-sub">Auntie Mia is so proud of you. You worked hard today!</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-n" style="color:#276749;">4</div><div class="stat-l">✅ Correct</div></div>
+      <div class="stat-box"><div class="stat-n" style="color:#B7791F;">1</div><div class="stat-l">🔄 Redone</div></div>
+      <div class="stat-box"><div class="stat-n">4.5</div><div class="stat-l">⭐ Stars</div></div>
+    </div>
+    <div class="prize-panel">
+      <div style="font-size:2.5rem;margin-bottom:8px;">🎁</div>
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">Prize Unlocked!</div>
+      <div style="font-size:.88rem;opacity:.85;">Go claim your reward from Auntie Mia!</div>
+    </div>
+    <button class="btn btn-navy" onclick="show('s-welcome')">Start New Session</button>
+    <button class="btn btn-outline">Save Session Summary</button>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
