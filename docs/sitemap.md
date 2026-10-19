@@ -58,12 +58,12 @@ flowchart TD
   end
 
   subgraph APP["Signed in"]
-    HOME_IN["/ Your sessions<br/>past sessions, Start new session"]:::planned
-    NEW["/sessions/new<br/>Step 1: Upload graded test"]:::planned
+    HOME_IN["/ Your sessions<br/>past sessions, Start new session"]:::built
+    NEW["/sessions/new<br/>Step 1: Upload graded test"]:::built
     ACCOUNT["/account<br/>Delete a session or everything, sign out"]:::planned
 
     subgraph SESSION["One session: /sessions/[id]/..."]
-      QUESTIONS["questions<br/>Step 2: Review missed questions"]:::planned
+      QUESTIONS["questions<br/>Step 2: Review missed questions"]:::next
       PRACTICE["practice<br/>Step 3: Practice set"]:::planned
       SHEET[["print/sheet<br/>Practice sheet"]]:::planned
       KEY[["print/answer-key<br/>Answer key"]]:::planned
@@ -92,7 +92,7 @@ flowchart TD
   SUMMARY -- "Start new session" --> NEW
 ```
 
-Shapes: rounded = no screen of its own (passes straight through); double-edged = a print page (opens the browser's print dialog, no app bar). Today the signed-in home shows only a "coming soon" placeholder.
+Shapes: rounded = no screen of its own (passes straight through); double-edged = a print page (opens the browser's print dialog, no app bar). Step 2 currently shows the uploaded pages; the missed-questions list arrives with extraction.
 
 ### Page list
 
@@ -103,9 +103,9 @@ Shapes: rounded = no screen of its own (passes straight through); double-edged =
 | `/auth/callback` | Nothing: the email link signs them in and moves on | ✅ Built |
 | `/welcome` | Confirms 18+ and accepts the terms, once (again if the terms change) | ✅ Built |
 | `/terms` | Reads the terms | ✅ Built (draft; legal review before Phase 3) |
-| `/` (signed in) | Sees past sessions; starts a new one or resumes one | ⬜ Planned, Phase 2 (placeholder today) |
-| `/sessions/new` | Enters the student's nickname and an assignment name; uploads photos, PDF or screenshots; reminded to cover the student's name | ⬜ Planned, Phase 2 |
-| `/sessions/[id]/questions` | Waits while the AI reads the test (progress shown); reviews missed questions: removes, edits, adds; marks "work required" | ⬜ Planned, Phase 2 |
+| `/` (signed in) | Sees past sessions; starts a new one or resumes one | ✅ Built |
+| `/sessions/new` | Enters the student's nickname and an assignment name; uploads photos, PDF or screenshots; reminded to cover the student's name | ✅ Built |
+| `/sessions/[id]/questions` | Waits while the AI reads the test (progress shown); reviews missed questions: removes, edits, adds; marks "work required" | 🟡 Next: shows the uploaded pages today; extraction and review to come |
 | `/sessions/[id]/practice` | Generates the practice set; regenerates or edits any question; sees questions flagged by the math check | ⬜ Planned, Phase 2 |
 | `/sessions/[id]/print/sheet` | Prints the practice sheet (letter size, space for work) | ⬜ Planned, Phase 2 |
 | `/sessions/[id]/print/answer-key` | Prints the answer key with worked steps | ⬜ Planned, Phase 2 |
@@ -195,7 +195,7 @@ flowchart LR
   subgraph CAPS["Capabilities"]
     C1["Sign-in and invites"]:::built
     C2["18+ and terms gate"]:::built
-    C3["Upload and photo prep"]:::planned
+    C3["Upload and photo prep"]:::built
     C4["Read the test: extraction"]:::planned
     C5["Write practice questions: generation"]:::planned
     C6["Math checks"]:::planned
@@ -243,7 +243,7 @@ flowchart LR
 |---|---|---|---|---|---|
 | **Sign-in and invites** | Invite-only accounts; email sign-in link; sign-out; keeps logins fresh | `/login`, `/auth/callback`, every signed-in page | Supabase Auth, `npm run invite`, `web/src/proxy.ts` | 001 | ✅ Built (own email service: Phase 3) |
 | **18+ and terms gate** | Nothing works until the adult confirms 18+ and accepts the current terms; the database refuses data until then | `/welcome`, every signed-in page | `profiles` table, database privacy rules, `web/src/lib/auth.ts` | 011 | ✅ Built |
-| **Upload and photo prep** | Takes photos, PDFs, screenshots, several pages; strips GPS and other metadata; fixes rotation; splits PDFs; resizes; shows progress | `/sessions/new`, `/work`, `/review` (redo) | Private `uploads` bucket, server route | 006 | ⬜ Phase 2 |
+| **Upload and photo prep** | Takes photos, PDFs, screenshots, several pages; strips GPS and other metadata; fixes rotation; splits PDFs; resizes; shows progress | `/sessions/new`, `/work`, `/review` (redo) | In the browser (`web/src/lib/upload/`), then straight to the private `uploads` bucket; a server action saves the rows | 006 | ✅ Built for `/sessions/new` (reused later by `/work` and `/review`) |
 | **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required" | `/questions` | Gemini + `extraction` prompt; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ⬜ Phase 2 (prompt benchmarked) |
 | **Write practice questions (generation)** | One mirrored question per miss: same wording and order, new numbers or diagram, a different answer; regenerate or edit | `/practice`, `/bonus` | Gemini + `generation` prompt; `generated_questions` table | 010 | ⬜ Phase 2 (prompt benchmarked 2026-10-19) |
 | **Math checks** | Checks each generated question is right before it's shown; retries, then flags for the adult | `/practice`, `/bonus` | App code: `web/src/lib/checks/` | 010 | 🟡 Checks written and used by the benchmark; app wiring Phase 2 |
@@ -283,5 +283,6 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-10-19 | Upload page, sessions list and photo prep built; Step 2 shows uploaded pages |
 | 2026-10-19 | Generation prompt and math checks written and benchmarked (capabilities table) |
 | 2026-10-19 | Site map created: pages built in Phase 1, pages planned for Phase 2 (from spec v1.1, backend doc and roadmap), session flow, capabilities |

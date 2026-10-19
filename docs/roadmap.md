@@ -4,7 +4,7 @@
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-19 (Phase 2 started: generation benchmark passed)
+**Last updated:** 2026-10-19 (Phase 2: generation benchmark passed; upload page working)
 
 | Phase | What it covers | Status |
 |---|---|---|
@@ -75,8 +75,8 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 Build the app described in the spec (v1.1) and backend doc.
 
 **Upload and reading the test**
-- [ ] Upload: photos, PDF or screenshots, multi-page; progress indicator; reminder to **cover the student's name** ([006](decisions/006-upload-retention.md))
-- [ ] Photo prep: strip metadata (GPS), fix rotation, split PDFs, resize ([006](decisions/006-upload-retention.md))
+- [x] Upload (`/sessions/new`): photos, PDF or screenshots, multi-page; progress indicator; reminder to **cover the student's name** ([006](decisions/006-upload-retention.md)). Pages go straight from the browser to private storage (Vercel's ~4.5 MB request limit rules out sending photos through the server); the session is saved only once every page has arrived
+- [x] Photo prep, **in the browser before upload** (`web/src/lib/upload/prepare.ts`): every page redrawn as a new JPEG, so metadata and GPS never leave the device; EXIF rotation applied; longest side 2400 px; each PDF page becomes an image ([006](decisions/006-upload-retention.md)). Verified on stored photos: no EXIF/GPS. *PDF upload not yet tried with a real PDF*
 - [ ] Extraction with Gemini 3.8 Flash: missed questions, partial credit, pictures, "work required" ([002](decisions/002-ai-provider.md))
 - [ ] Tutor review: remove, edit or add questions; set "work required"
 
@@ -99,7 +99,7 @@ Build the app described in the spec (v1.1) and backend doc.
 **Around the edges**
 - [ ] Daily photo-deletion job; delete-a-session and delete-everything controls ([006](decisions/006-upload-retention.md))
 - [ ] Error handling: unreadable photos, AI failures and timeouts, retry without losing work
-- [ ] Upload screen tip on good lighting (faint pencil is the main grading weakness)
+- [x] Upload screen tip on good lighting (faint pencil is the main grading weakness)
 - [ ] UI for adults: the space theme from the Hologram HUD prototype as light, grown-up branding; plain, professional wording; responsive on phone and tablet ([011](decisions/011-adult-only-audience.md))
 
 **Done when:** a full real session with Gabe runs end to end on the staging site.
