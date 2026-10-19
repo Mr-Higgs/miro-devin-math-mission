@@ -4,13 +4,13 @@
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-16 (schema live; invite-only login working locally)
+**Last updated:** 2026-10-19 (Phase 1 done: invite-only login works on the live site)
 
 | Phase | What it covers | Status |
 |---|---|---|
 | [0: Decisions](#phase-0--decisions) | Product and technical decisions | ✅ Done (business model deferred to Phase 4) |
-| [1: Foundation](#phase-1--foundation) | Real project setup: repo, app, database, hosting, "Built for change" | 🟡 **In progress** |
-| [2: Core product](#phase-2--core-product) | The app itself, from upload to celebration | ⬜ |
+| [1: Foundation](#phase-1--foundation) | Real project setup: repo, app, database, hosting, "Built for change" | ✅ Done 2026-10-19 |
+| [2: Core product](#phase-2--core-product) | The app itself, from upload to celebration | 🟡 **Next** |
 | [3: Invite-only launch](#phase-3--invite-only-launch-stage-1) | Online for Gabe and a few invited families | ⬜ |
 | [4: Public launch](#phase-4--public-launch-stage-2) | Open to everyone: **definition of done** | ⬜ |
 
@@ -45,9 +45,9 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 - [x] **Tutor signed in to the Vercel and Supabase CLIs** (CLI telemetry turned off). Supabase project "Math Mission" (US East / Ohio) is active, on the tutor's credits account
 - [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `web/benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with Gabe's name in it)
 - [x] **Next.js project** in `web/`: Next.js 16, React 19, TypeScript, Tailwind CSS 4 (telemetry off). Runs locally at http://localhost:3000
-- [ ] **Supabase project:** database, logins, private photo storage
+- [x] **Supabase project:** database, logins, private photo storage
   - [x] Connected: repo linked to project `mnlhcdxsobppgymkwcqi` (`supabase/` folder; confirmed empty), client code in `web/src/lib/supabase/`, keys in `web/.env.local` and Vercel (Production + Preview). Check: `/api/health` returns `{"supabase":"ok"}`
-  - [ ] Logins: comes with the invite-only login item below
+  - [x] Logins: see the invite-only login item below
   - [x] Private photo storage: `uploads` bucket (private, 20 MB per file, photos/PDF only); each adult can only reach their own folder
 - [x] **Vercel hosting:** project `math-mission` (root directory `web`), connected to GitHub so every push deploys automatically; live at https://math-mission-wheat.vercel.app. Each branch/pull request gets its own preview link
 - [x] **"Built for change" groundwork** before any screens ([007](decisions/007-tech-stack.md#built-for-change)):
@@ -59,15 +59,15 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 - [x] **Database schema** from backend doc §3 as the first migrations (`supabase/migrations/`, applied to the live database 2026-10-16):
   - 11 tables (profiles + the 10 from §3.1; validation rules are code, problem-area tags wait for v2), types in `web/src/lib/supabase/database.types.ts`
   - Privacy: row-level security on every table, each adult sees only their own rows, child rows locked to the same adult, nothing reachable before 18+ and terms are confirmed (011), signed-out visitors get nothing. Checked with 24 tests in a throwaway database; Supabase's security advisor reports no issues
-- [ ] **Invite-only login** working, with **18+ confirmation and terms acceptance** at sign-up ([011](decisions/011-adult-only-audience.md))
-  - [x] Built (not committed): email sign-in link (`/login`, `/auth/callback`), 18+ and terms screen (`/welcome`), draft terms (`/terms`), sign-out, `proxy.ts` keeps logins fresh. Adults are added with `npm run invite -- email` in `web/` (no public sign-up)
+- [x] **Invite-only login** working, with **18+ confirmation and terms acceptance** at sign-up ([011](decisions/011-adult-only-audience.md))
+  - [x] Built: email sign-in link (`/login`, `/auth/callback`), 18+ and terms screen (`/welcome`), draft terms (`/terms`), sign-out, `proxy.ts` keeps logins fresh. Adults are added with `npm run invite -- email` in `web/` (no public sign-up)
   - [x] `miapenbiz@gmail.com` invited
   - [x] Supabase dashboard: public sign-up off; Site URL and Redirect URLs set
   - [x] Tested on this Mac (sign in, 18+ and terms saved, sign out)
-  - [ ] Tested on the live site
+  - [x] Tested on the live site 2026-10-19
 - [x] **Local preview:** `.claude/launch.json` updated (entries `web` and `prototype`); dev server also runs with `npm run dev` in `web/`
 
-**Done when:** an invited user can log in on the staging site, and the benchmark runs from inside the project.
+**Done when:** an invited user can log in on the staging site, and the benchmark runs from inside the project. ✅ Met 2026-10-19.
 
 ---
 
