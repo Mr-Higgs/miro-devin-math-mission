@@ -1,10 +1,10 @@
 # Math Mission Roadmap
 
-**This is the live plan.** Tick boxes here as work gets done. Handoffs are dated snapshots that link here; the backend doc points here instead of keeping its own copy.
+**This is the live plan.** Tick boxes here as work gets done. Where each piece fits in the app (pages, actions, capabilities) is in the [site map](sitemap.md). Handoffs are dated snapshots that link here; the backend doc points here instead of keeping its own copy.
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-19 (Phase 1 done: invite-only login works on the live site)
+**Last updated:** 2026-10-19 (Phase 2 started: generation benchmark passed)
 
 | Phase | What it covers | Status |
 |---|---|---|
@@ -81,9 +81,9 @@ Build the app described in the spec (v1.1) and backend doc.
 - [ ] Tutor review: remove, edit or add questions; set "work required"
 
 **Practice set**
-- [ ] **Generation test first:** add a generation check to the benchmark (same skill, passes the math check). It's the one AI job not yet tested
+- [x] **Generation test first:** `npm run bench -- generation` (13 real missed/redo questions, `test-data/generation/`). First run 2026-10-19 on Gemini 3.8 Flash: 13/13 passed every check, 12/13 with the answer confirmed by math (the 13th is a symmetry drawing); read by hand, all mirror their originals. Prompt then tightened (always give a check; fixed list of picture types) and re-run: same scores, both fixes working
 - [ ] Generation: one practice question per missed question, same wording and order, new numbers ([010](decisions/010-question-generation.md))
-- [ ] Math checker (validation rules); retry, then flag for the tutor
+- [ ] Math checker (validation rules); retry, then flag for the tutor. *Checks written in `web/src/lib/checks/` (used by the benchmark); still to wire into the app with retries*
 - [ ] Regenerate and Edit buttons on each practice question
 - [ ] **Diagram drawing:** the app draws diagrams from data (blocks, charts, shapes, letters) so it can check the answers ([010](decisions/010-question-generation.md))
 - [ ] Printable practice sheet: letter size, space for work, mirrors the original's layout (model: `design-explorations/print-reference/`)

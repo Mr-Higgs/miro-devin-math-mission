@@ -1,4 +1,4 @@
-// Usage: npm run bench -- [extraction|grading|all] [--models id1,id2] [--repeat N] [--dry-run]
+// Usage: npm run bench -- [extraction|grading|generation|all] [--models id1,id2] [--repeat N] [--dry-run]
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -12,6 +12,11 @@ import { loadExtractionSamples, scoreExtraction, type ExtractionScore } from "./
 import { gradingUserText, loadGradingPages, scoreGradingPage, summarizeGrading, type ItemOutcome } from "./grading.js";
 import { EXTRACTION_INSTRUCTIONS, EXTRACTION_REQUEST } from "../../src/prompts/extraction.js";
 import { GRADING_INSTRUCTIONS } from "../../src/prompts/grading.js";
+import { GENERATION_INSTRUCTIONS, generationRequest } from "../../src/prompts/generation.js";
+import {
+  generationDetails, loadGenerationCases, scoreGeneration, selfCheckGeneration, summarizeGeneration,
+  type GenerationOutcome,
+} from "./generation.js";
 
 const PROVIDERS = { anthropic: callAnthropic, openai: callOpenAI, google: callGoogle };
 
@@ -22,7 +27,7 @@ function parseArgs(argv: string[]) {
     if (a === "--models") args.models = argv[++i].split(",");
     else if (a === "--repeat") args.repeat = Math.max(1, parseInt(argv[++i], 10));
     else if (a === "--dry-run") args.dryRun = true;
-    else if (["extraction", "grading", "all"].includes(a)) args.task = a;
+    else if (["extraction", "grading", "generation", "all"].includes(a)) args.task = a;
     else throw new Error(`Unknown argument: ${a}`);
   }
   return args;
@@ -34,10 +39,12 @@ async function main() {
   loadEnv();
   const args = parseArgs(process.argv.slice(2));
   const models = loadModels().filter((m) => !args.models.length || args.models.includes(m.id));
-  const doExtraction = args.task !== "grading";
-  const doGrading = args.task !== "extraction";
+  const doExtraction = ["all", "extraction"].includes(args.task);
+  const doGrading = ["all", "grading"].includes(args.task);
+  const doGeneration = ["all", "generation"].includes(args.task);
   const extractionSamples = doExtraction ? loadExtractionSamples() : [];
   const gradingPages = doGrading ? loadGradingPages() : [];
+  const generationCases = doGeneration ? loadGenerationCases() : [];
   const extractionPrompt = EXTRACTION_INSTRUCTIONS;
   const gradingPrompt = GRADING_INSTRUCTIONS;
 
@@ -45,6 +52,7 @@ async function main() {
   console.log(`Models: ${models.map((m) => m.id).join(", ")}`);
   console.log(`Extraction samples: ${extractionSamples.map((s) => `${s.id} (${s.images.length} photos, ${imageKb(s.images)} KB)`).join("; ") || "none"}`);
   console.log(`Grading pages: ${gradingPages.length}, items: ${gradingPages.reduce((n, p) => n + p.items.length, 0)}`);
+  console.log(`Generation cases: ${generationCases.length}`);
 
   if (args.dryRun) {
     // Self-check: perfect replies built from the expected answers must score 100%.
@@ -58,6 +66,12 @@ async function main() {
     );
     const g = summarizeGrading(outcomes);
     console.log(`Self-check grading: ${pct(g.accuracyAll)} of ${g.answeredItems} answered items, blanks ${pct(g.blankSkippedCorrectly)}`);
+    if (generationCases.length) {
+      const failures = selfCheckGeneration(generationCases);
+      console.log(`Self-check generation: ${failures.length ? `${failures.length} problem(s)` : "math checks pass good examples and catch wrong answers"}`);
+      for (const f of failures) console.log(`  ${f}`);
+      if (failures.length) process.exitCode = 1;
+    }
     console.log("Dry run only: no API calls made.");
     return;
   }
@@ -67,6 +81,8 @@ async function main() {
   mkdirSync(outDir, { recursive: true });
   const raw: any[] = [];
   const rows: string[] = [];
+  const generationRows: string[] = [];
+  const generationDetailLines: string[] = [];
 
   for (const model of models) {
     const call = (system: string, images: ImageInput[], text: string): Promise<CallResult> =>
@@ -74,6 +90,7 @@ async function main() {
     let tokensIn = 0, tokensOut = 0, ms = 0, calls = 0, errors = 0;
     const extractionScores: ExtractionScore[] = [];
     const gradingOutcomes: ItemOutcome[] = [];
+    const generationOutcomes: GenerationOutcome[] = [];
     let fatal: string | undefined;
 
     const attempt = async (what: string, fn: () => Promise<CallResult>, onReply: (r: CallResult) => void) => {
@@ -107,6 +124,12 @@ async function main() {
           catch (e: any) { errors++; console.log(`  unparseable reply: ${e.message}`); }
         });
       }
+      for (const c of generationCases) {
+        console.log(`${model.id}: generation ${c.id} (run ${rep})`);
+        await attempt(`generation:${c.id}:${rep}`, () => call(GENERATION_INSTRUCTIONS, [], generationRequest(c.original)), (r) => {
+          generationOutcomes.push(scoreGeneration(c, r.text));
+        });
+      }
     }
 
     const avg = (f: (s: ExtractionScore) => number) =>
@@ -118,6 +141,15 @@ async function main() {
       `${pct(g.blankSkippedCorrectly)} | ${calls ? (ms / calls / 1000).toFixed(1) + "s" : "—"} | ${tokensIn.toLocaleString()} / ${tokensOut.toLocaleString()} | ${errors}${fatal ? " (stopped)" : ""} |`,
     );
     raw.push({ model: model.id, extractionScores, gradingSummary: g });
+
+    if (generationCases.length) {
+      const gen = summarizeGeneration(generationOutcomes);
+      generationRows.push(
+        `| ${model.label} | ${gen.cases} | ${pct(gen.validJson)} | ${pct(gen.passed)} | ${pct(gen.passedMathChecked)} | ${gen.flagged.length} |`,
+      );
+      generationDetailLines.push("", `### ${model.label}`, "", ...generationDetails(generationOutcomes, generationCases));
+      raw.push({ model: model.id, generationSummary: gen, generationOutcomes });
+    }
   }
 
   const summary = [
@@ -130,6 +162,20 @@ async function main() {
     ...rows,
     "",
     "⚠️ = model ID from web research; confirm with `npm run bench:models`.",
+    ...(generationRows.length
+      ? [
+          "",
+          "## Generation (decision 010)",
+          "",
+          "| Model | Cases | Valid JSON | Passed all checks | Passed with math confirmed | Flagged for the adult |",
+          "|---|---|---|---|---|---|",
+          ...generationRows,
+          "",
+          "Read the practice questions below: the checks confirm the math and format, but only a person can judge whether each one truly mirrors the original.",
+          ...generationDetailLines,
+        ]
+      : []),
+    "",
     "Details per question are in raw.json in this folder.",
   ].join("\n");
   writeFileSync(join(outDir, "summary.md"), summary + "\n");

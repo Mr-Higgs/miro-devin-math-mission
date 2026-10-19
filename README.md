@@ -11,6 +11,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 **Phase 1 (foundation) done** (2026-10-19): an invited adult can sign in on the live site, with the 18+ and terms confirmation. Database, private photo storage, hosting and the "Built for change" groundwork are in place. **Next: Phase 2**, starting with the generation benchmark check. The April prototype `index.html` is the visual reference. AI provider: Gemini 3.8 Flash, with an adult-only design (decision 011).
 
 - Roadmap (live plan and checklist): [docs/roadmap.md](docs/roadmap.md)
+- Site map (pages, user actions, capabilities; check before building): [docs/sitemap.md](docs/sitemap.md)
 - Decisions: [docs/decisions/](docs/decisions/README.md)
 - Latest handoff: [handoffs/2026-10-19-handoff.md](handoffs/2026-10-19-handoff.md)
 
@@ -23,6 +24,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 | [Backend_Planning_Doc.md](docs/Backend_Planning_Doc.md) | Backend plan: data model, API, architecture, AI strategy (in progress) |
 | [bug-report.md](docs/bug-report.md) | Bug audit of the Hologram prototype (Apr 6) |
 | [docs/roadmap.md](docs/roadmap.md) | **The live plan:** phases 0–4 with checklists. Start here to see what's next |
+| [docs/sitemap.md](docs/sitemap.md) | **The site map:** every page, what the adult does there, and the capabilities behind it. Check before building; propose changes here |
 | [docs/setup-guide.md](docs/setup-guide.md) | Step-by-step guide to the accounts needed for Phase 1 (GitHub, Vercel, Supabase) |
 | [docs/decisions/](docs/decisions/) | Decision log: one file per product/technical decision, with an index of what's open |
 | [web/benchmark/](web/benchmark/README.md) | Benchmark: tests the app's prompts and AI models on `test-data/` (`npm run bench` in `web/`) |

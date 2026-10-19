@@ -6,7 +6,7 @@ Every instruction the app gives the AI lives here, one file per job (decision 00
 |---|---|---|
 | `extraction.ts` | Read photos of a graded test and list every question | Benchmarked (002) |
 | `grading.ts` | Grade the student's finished work from a photo | Benchmarked (002, 003) |
-| *generation* | Write one mirrored practice question per missed question (010) | Phase 2: add a benchmark check first |
+| `generation.ts` | Write one mirrored practice question per missed question, with a check the app can work out (010) | Benchmarked 2026-10-19 |
 | *hints* | Hints for the adult during review | Phase 2 |
 
 ## Changing a prompt

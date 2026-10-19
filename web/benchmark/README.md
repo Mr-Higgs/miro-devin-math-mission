@@ -7,9 +7,10 @@ Sends the real samples in `test-data/` (at the project root) to each AI model an
 | Test | Samples | Measures |
 |---|---|---|
 | **Extraction:** reading a graded test | `test-data/graded-tests/` | Finds the missed questions (recall + precision), reads the student's answers, spots partial credit |
+| **Generation:** writing practice questions | `test-data/generation/cases.json` | Each practice question passes the app's math checks (`web/src/lib/checks/`): right format and choices, a different answer, same size numbers and regrouping, answer confirmed by math. `summary.md` lists original and practice side by side for a person to read |
 | **Grading:** judging the student's work | `test-data/student-work/` | Gets pass / redo / needs check / skipped right, counts **wrongful redos** (the costliest error, per decision 003), skips blank questions |
 
-It uses the app's own prompts from [`web/src/prompts/`](../src/prompts/README.md), so a prompt change is tested exactly as the app will use it. Re-run it after every prompt or model change (decision 007, "Built for change"). Generation (decision 010) is not tested yet.
+It uses the app's own prompts from [`web/src/prompts/`](../src/prompts/README.md), so a prompt change is tested exactly as the app will use it. Re-run it after every prompt or model change (decision 007, "Built for change").
 
 ## One-time setup
 
