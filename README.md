@@ -12,7 +12,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 
 - Roadmap (live plan and checklist): [docs/roadmap.md](docs/roadmap.md)
 - Decisions: [docs/decisions/](docs/decisions/README.md)
-- Latest handoff: [handoffs/2026-10-16-handoff-2.md](handoffs/2026-10-16-handoff-2.md)
+- Latest handoff: [handoffs/2026-10-19-handoff.md](handoffs/2026-10-19-handoff.md)
 
 ## What's in this folder
 
