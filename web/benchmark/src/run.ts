@@ -1,8 +1,9 @@
 // Usage: npm run bench -- [extraction|grading|generation|all] [--models id1,id2] [--repeat N] [--dry-run]
+//   Gemini only: [--detail default|medium|high|ultra_high] [--thinking default|minimal|low|medium|high] [--enhance]
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  BENCH_DIR, loadEnv, loadModels,
+  BENCH_DIR, RUN_OPTIONS, loadEnv, loadModels,
   type CallResult, type ImageInput,
 } from "./common.js";
 import { callAnthropic } from "./providers/anthropic.js";
@@ -27,6 +28,9 @@ function parseArgs(argv: string[]) {
     if (a === "--models") args.models = argv[++i].split(",");
     else if (a === "--repeat") args.repeat = Math.max(1, parseInt(argv[++i], 10));
     else if (a === "--dry-run") args.dryRun = true;
+    else if (a === "--detail") RUN_OPTIONS.detail = argv[++i];
+    else if (a === "--thinking") RUN_OPTIONS.thinking = argv[++i];
+    else if (a === "--enhance") RUN_OPTIONS.enhance = true;
     else if (["extraction", "grading", "generation", "all"].includes(a)) args.task = a;
     else throw new Error(`Unknown argument: ${a}`);
   }
@@ -57,9 +61,12 @@ async function main() {
   if (args.dryRun) {
     // Self-check: perfect replies built from the expected answers must score 100%.
     for (const s of extractionSamples) {
-      const perfect = JSON.stringify({ questions: s.expected.questions });
+      const perfect = JSON.stringify({
+        questions: s.expected.questions,
+        pages: (s.expected.page_rotations ?? []).map((rotation: number, i: number) => ({ photo: i + 1, rotation })),
+      });
       const sc = scoreExtraction(s.expected, perfect);
-      console.log(`Self-check extraction ${s.id}: recall ${pct(sc.missedRecall)}, precision ${pct(sc.missedPrecision)}, answers ${pct(sc.studentAnswerAccuracy)}`);
+      console.log(`Self-check extraction ${s.id}: recall ${pct(sc.missedRecall)}, precision ${pct(sc.missedPrecision)}, answers ${pct(sc.studentAnswerAccuracy)}, rotation ${pct(sc.rotationAccuracy ?? NaN)}`);
     }
     const outcomes = gradingPages.flatMap((p) =>
       scoreGradingPage(p, JSON.stringify({ results: p.items.map((i) => ({ id: i.id, result: i.acceptable[0] })) })),
@@ -82,6 +89,7 @@ async function main() {
   const raw: any[] = [];
   const rows: string[] = [];
   const generationRows: string[] = [];
+  const extractionMisses: string[] = [];
   const generationDetailLines: string[] = [];
 
   for (const model of models) {
@@ -113,7 +121,7 @@ async function main() {
       for (const s of extractionSamples) {
         console.log(`${model.id}: extraction ${s.id} (run ${rep})`);
         await attempt(`extraction:${s.id}:${rep}`, () => call(extractionPrompt, s.images, EXTRACTION_REQUEST), (r) => {
-          try { extractionScores.push(scoreExtraction(s.expected, r.text)); }
+          try { extractionScores.push({ ...scoreExtraction(s.expected, r.text), sampleId: s.id }); }
           catch (e: any) { errors++; console.log(`  unparseable reply: ${e.message}`); }
         });
       }
@@ -137,10 +145,20 @@ async function main() {
     const g = summarizeGrading(gradingOutcomes);
     rows.push(
       `| ${model.label}${model.confirm ? " ⚠️" : ""} | ${pct(avg((s) => s.missedRecall))} | ${pct(avg((s) => s.missedPrecision))} | ` +
-      `${pct(avg((s) => s.studentAnswerAccuracy))} | ${pct(g.accuracyVerified)} | ${pct(g.accuracyAll)} | ${g.wrongfulRedos} | ` +
+      `${pct(avg((s) => s.markedCorrectAccuracy))} | ${pct(avg((s) => s.studentAnswerAccuracy))} | ${pct(avg((s) => (s.totalScoreRead === null ? NaN : s.totalScoreRead ? 1 : 0)))} | ${pct(avg((s) => s.rotationAccuracy ?? NaN))} | ${pct(g.accuracyVerified)} | ${pct(g.accuracyAll)} | ${g.wrongfulRedos} | ` +
       `${pct(g.blankSkippedCorrectly)} | ${calls ? (ms / calls / 1000).toFixed(1) + "s" : "—"} | ${tokensIn.toLocaleString()} / ${tokensOut.toLocaleString()} | ${errors}${fatal ? " (stopped)" : ""} |`,
     );
     raw.push({ model: model.id, extractionScores, gradingSummary: g });
+    if (extractionScores.length) {
+      // Mistakes that keep coming back across samples and repeats.
+      const counts = new Map<string, number>();
+      extractionScores.forEach((s) => s.details.forEach((d) => {
+        const key = `${s.sampleId} ${d}`;
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }));
+      const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+      extractionMisses.push("", `**${model.label}**, most common extraction mistakes (times seen across ${extractionScores.length} readings):`, ...top.map(([k, n]) => `- ${n}× ${k}`));
+    }
 
     if (generationCases.length) {
       const gen = summarizeGeneration(generationOutcomes);
@@ -155,13 +173,14 @@ async function main() {
   const summary = [
     `# Benchmark run ${stamp}`,
     "",
-    `Task: ${args.task} · repeats: ${args.repeat}`,
+    `Task: ${args.task} · repeats: ${args.repeat} · Gemini detail: ${RUN_OPTIONS.detail}, thinking: ${RUN_OPTIONS.thinking}, enhance: ${RUN_OPTIONS.enhance}`,
     "",
-    "| Model | Missed found (recall) | Missed precision | Student answers read | Grading (verified items) | Grading (all items) | Wrongful redos | Blanks skipped | Avg time/call | Tokens in / out | Errors |",
-    "|---|---|---|---|---|---|---|---|---|---|---|",
+    "| Model | Missed found (recall) | Missed precision | Correct/missed right | Student answers read | Score read | Pages upright | Grading (verified items) | Grading (all items) | Wrongful redos | Blanks skipped | Avg time/call | Tokens in / out | Errors |",
+    "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ...rows,
     "",
     "⚠️ = model ID from web research; confirm with `npm run bench:models`.",
+    ...extractionMisses,
     ...(generationRows.length
       ? [
           "",

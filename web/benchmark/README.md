@@ -6,7 +6,7 @@ Sends the real samples in `test-data/` (at the project root) to each AI model an
 
 | Test | Samples | Measures |
 |---|---|---|
-| **Extraction:** reading a graded test | `test-data/graded-tests/` | Finds the missed questions (recall + precision), reads the student's answers, spots partial credit |
+| **Extraction:** reading a graded test | `test-data/graded-tests/` (001: original photos; 004: the tutor's phone photos of the same quiz, harder) | Finds the missed questions (recall + precision), decides correct/missed, reads the student's answers, spots partial credit, reads the total score, says which way each page is turned. `summary.md` lists the mistakes that keep coming back across repeats |
 | **Generation:** writing practice questions | `test-data/generation/cases.json` | Each practice question passes the app's math checks (`web/src/lib/checks/`): right format and choices, a different answer, same size numbers and regrouping, answer confirmed by math. `summary.md` lists original and practice side by side for a person to read |
 | **Grading:** judging the student's work | `test-data/student-work/` | Gets pass / redo / needs check / skipped right, counts **wrongful redos** (the costliest error, per decision 003), skips blank questions |
 
@@ -31,6 +31,7 @@ npm run bench -- --dry-run          # checks samples and scoring; no API calls, 
 npm run bench                       # all models, both tests
 npm run bench -- grading --models claude-opus-5-5,gemini-3.8-flash
 npm run bench -- --repeat 3         # run each test 3 times to see consistency
+npm run bench -- extraction --models gemini-3.8-flash --detail ultra_high   # Gemini settings: --detail, --thinking low, --enhance
 ```
 
 Each run saves `web/benchmark/results/<date-time>/summary.md` (the comparison table) and `raw.json` (every reply and per-question detail).

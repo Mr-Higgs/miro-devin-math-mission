@@ -34,6 +34,7 @@ const norm = (s: unknown) =>
     .join("");
 
 export interface ExtractionScore {
+  sampleId?: string;
   questionsExpected: number;
   questionsFound: number;
   extraQuestions: number;
@@ -42,6 +43,10 @@ export interface ExtractionScore {
   markedCorrectAccuracy: number;
   studentAnswerAccuracy: number;
   partialCreditFound: boolean | null;
+  /** Share of photos whose reported rotation matches the hand-checked one (null if not recorded). */
+  rotationAccuracy: number | null;
+  /** Did it read the total score written on the paper (null if not recorded)? */
+  totalScoreRead: boolean | null;
   details: string[];
 }
 
@@ -75,7 +80,27 @@ export function scoreExtraction(expected: any, replyText: string): ExtractionSco
   const hits = [...flagged].filter((n) => truth.has(n)).length;
   const extra = got.length - byNum.size + [...byNum.keys()].filter((n) => !exp.some((e) => e.question_number === n)).length;
 
+  let rotationAccuracy: number | null = null;
+  if (Array.isArray(expected.page_rotations)) {
+    const got = new Map<number, number>((Array.isArray(reply.pages) ? reply.pages : []).map((p: any) => [Number(p.photo), Number(p.rotation)]));
+    const right = expected.page_rotations.filter((r: number, i: number) => got.get(i + 1) === r).length;
+    rotationAccuracy = right / expected.page_rotations.length;
+    expected.page_rotations.forEach((r: number, i: number) => {
+      if (got.get(i + 1) !== r) details.push(`Photo ${i + 1}: rotation ${got.get(i + 1) ?? "missing"}, expected ${r}`);
+    });
+  }
+
+  let totalScoreRead: boolean | null = null;
+  if (expected.total_score_as_written) {
+    const clean = (v: unknown) => String(v ?? "").replace(/[\s%]/g, ""); // "55%" = "55"
+    const got = clean(reply.total_score?.as_written);
+    totalScoreRead = got === clean(expected.total_score_as_written);
+    if (!totalScoreRead) details.push(`Total score: read "${got}", expected "${expected.total_score_as_written}"`);
+  }
+
   return {
+    totalScoreRead,
+    rotationAccuracy,
     questionsExpected: exp.length,
     questionsFound: found,
     extraQuestions: extra,

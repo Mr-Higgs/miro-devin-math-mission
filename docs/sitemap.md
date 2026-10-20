@@ -64,6 +64,7 @@ flowchart TD
 
     subgraph SESSION["One session: /sessions/[id]/..."]
       QUESTIONS["questions<br/>Step 2: Review missed questions"]:::next
+      UNGRADED["Ungraded test: app works out<br/>the answers and grades them"]:::proposed
       PRACTICE["practice<br/>Step 3: Practice set"]:::planned
       SHEET[["print/sheet<br/>Practice sheet"]]:::planned
       KEY[["print/answer-key<br/>Answer key"]]:::planned
@@ -83,6 +84,7 @@ flowchart TD
   HOME_OUT --> LOGIN --> CALLBACK --> WELCOME --> HOME_IN
   LOGIN -.-> TERMS
   HOME_IN --> NEW --> QUESTIONS --> PRACTICE
+  NEW -.-> UNGRADED -.-> QUESTIONS
   PRACTICE --> SHEET
   PRACTICE --> KEY
   PRACTICE --> WORK --> REVIEW --> BONUS --> SUMMARY --> REWARDS
@@ -105,7 +107,7 @@ Shapes: rounded = no screen of its own (passes straight through); double-edged =
 | `/terms` | Reads the terms | ✅ Built (draft; legal review before Phase 3) |
 | `/` (signed in) | Sees past sessions; starts a new one or resumes one | ✅ Built |
 | `/sessions/new` | Enters the student's nickname and an assignment name; uploads photos, PDF or screenshots; reminded to cover the student's name | ✅ Built |
-| `/sessions/[id]/questions` | Waits while the AI reads the test (progress shown); reviews missed questions: removes, edits, adds; marks "work required" | 🟡 Next: shows the uploaded pages today; extraction and review to come |
+| `/sessions/[id]/questions` | Waits while the AI reads the test (progress shown); reviews missed questions: removes, edits, adds; marks "work required" | 🟡 Reading, warnings, Mark correct/missed and Edit answers built; edit text, remove, add, work required to come |
 | `/sessions/[id]/practice` | Generates the practice set; regenerates or edits any question; sees questions flagged by the math check | ⬜ Planned, Phase 2 |
 | `/sessions/[id]/print/sheet` | Prints the practice sheet (letter size, space for work) | ⬜ Planned, Phase 2 |
 | `/sessions/[id]/print/answer-key` | Prints the answer key with worked steps | ⬜ Planned, Phase 2 |
@@ -196,7 +198,7 @@ flowchart LR
     C1["Sign-in and invites"]:::built
     C2["18+ and terms gate"]:::built
     C3["Upload and photo prep"]:::built
-    C4["Read the test: extraction"]:::planned
+    C4["Read the test: extraction"]:::built
     C5["Write practice questions: generation"]:::planned
     C6["Math checks"]:::planned
     C7["Diagrams as data"]:::planned
@@ -244,7 +246,7 @@ flowchart LR
 | **Sign-in and invites** | Invite-only accounts; email sign-in link; sign-out; keeps logins fresh | `/login`, `/auth/callback`, every signed-in page | Supabase Auth, `npm run invite`, `web/src/proxy.ts` | 001 | ✅ Built (own email service: Phase 3) |
 | **18+ and terms gate** | Nothing works until the adult confirms 18+ and accepts the current terms; the database refuses data until then | `/welcome`, every signed-in page | `profiles` table, database privacy rules, `web/src/lib/auth.ts` | 011 | ✅ Built |
 | **Upload and photo prep** | Takes photos, PDFs, screenshots, several pages; strips GPS and other metadata; fixes rotation; splits PDFs; resizes; shows progress | `/sessions/new`, `/work`, `/review` (redo) | In the browser (`web/src/lib/upload/`), then straight to the private `uploads` bucket; a server action saves the rows | 006 | ✅ Built for `/sessions/new` (reused later by `/work` and `/review`) |
-| **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required" | `/questions` | Gemini + `extraction` prompt; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ⬜ Phase 2 (prompt benchmarked) |
+| **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required", the score on the paper; reports which way each page is turned so pages are shown upright automatically; the app cross-checks the reading and warns the adult | `/questions` | Gemini + `extraction` prompt (`web/src/lib/extraction.ts`); checks in `web/src/lib/checks/extraction.ts`; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ✅ Built |
 | **Write practice questions (generation)** | One mirrored question per miss: same wording and order, new numbers or diagram, a different answer; regenerate or edit | `/practice`, `/bonus` | Gemini + `generation` prompt; `generated_questions` table | 010 | ⬜ Phase 2 (prompt benchmarked 2026-10-19) |
 | **Math checks** | Checks each generated question is right before it's shown; retries, then flags for the adult | `/practice`, `/bonus` | App code: `web/src/lib/checks/` | 010 | 🟡 Checks written and used by the benchmark; app wiring Phase 2 |
 | **Diagrams as data** | The app draws blocks, charts, shapes and letters from data, so their answers can be checked | `/practice`, print pages, `/review` | App code | 010 | ⬜ Phase 2 |
@@ -271,7 +273,7 @@ Ideas waiting for a decision. Add a row here (or ask Claude to); it also gets a 
 
 | Date | Change | Where it fits | Asked by | Status |
 |---|---|---|---|---|
-| | *(none yet)* | | | |
+| 2026-10-19 | **Ungraded tests**: upload a test nobody has graded; the app works out the answers (checked by math), reads the student's answers and decides what was missed. Recommended: detected automatically, so no new page or step ([decision 012](decisions/012-ungraded-tests.md)) | Step 1 upload (unchanged) and Step 2 review (banner, "needs your check" flags); capabilities "Read the test" + "Math checks" | Tutor | 🆕 Proposed: waiting on choices Q1–Q4 in 012 |
 
 When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decision record if it changes how the app works), and its status here becomes ⬜ Planned.
 
@@ -283,6 +285,8 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-10-19 | Extraction built with auto-rotation, cross-checks (score on paper, missing answers) and quick fixes on Step 2; prompt rewritten for accuracy after the tutor's feedback |
+| 2026-10-19 | Decided: pages turned the wrong way are fixed automatically by extraction, not by rotate buttons (no extra step for the adult) |
 | 2026-10-19 | Upload page, sessions list and photo prep built; Step 2 shows uploaded pages |
 | 2026-10-19 | Generation prompt and math checks written and benchmarked (capabilities table) |
 | 2026-10-19 | Site map created: pages built in Phase 1, pages planned for Phase 2 (from spec v1.1, backend doc and roadmap), session flow, capabilities |

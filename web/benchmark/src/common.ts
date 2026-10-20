@@ -9,6 +9,9 @@ export const TEST_DATA_DIR = join(WEB_DIR, "..", "test-data");
 
 export type Provider = "anthropic" | "openai" | "google";
 
+/** Run-wide options from the command line (Gemini only): --detail, --thinking, --enhance. */
+export const RUN_OPTIONS: { detail: string; thinking: string; enhance: boolean } = { detail: "default", thinking: "default", enhance: false };
+
 export interface ModelConfig {
   provider: Provider;
   id: string;

@@ -12,6 +12,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 
 - Roadmap (live plan and checklist): [docs/roadmap.md](docs/roadmap.md)
 - Site map (pages, user actions, capabilities; check before building): [docs/sitemap.md](docs/sitemap.md)
+- Cost optimization ideas (grow and act on as we go): [docs/cost-optimization.md](docs/cost-optimization.md)
 - Decisions: [docs/decisions/](docs/decisions/README.md)
 - Latest handoff: [handoffs/2026-10-19-handoff.md](handoffs/2026-10-19-handoff.md)
 
@@ -25,6 +26,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 | [bug-report.md](docs/bug-report.md) | Bug audit of the Hologram prototype (Apr 6) |
 | [docs/roadmap.md](docs/roadmap.md) | **The live plan:** phases 0–4 with checklists. Start here to see what's next |
 | [docs/sitemap.md](docs/sitemap.md) | **The site map:** every page, what the adult does there, and the capabilities behind it. Check before building; propose changes here |
+| [docs/cost-optimization.md](docs/cost-optimization.md) | **Cost ideas:** where the per-use cost goes and ideas to lower it, with status and measured savings. Feeds decision 004 (business model) |
 | [docs/setup-guide.md](docs/setup-guide.md) | Step-by-step guide to the accounts needed for Phase 1 (GitHub, Vercel, Supabase) |
 | [docs/decisions/](docs/decisions/) | Decision log: one file per product/technical decision, with an index of what's open |
 | [web/benchmark/](web/benchmark/README.md) | Benchmark: tests the app's prompts and AI models on `test-data/` (`npm run bench` in `web/`) |

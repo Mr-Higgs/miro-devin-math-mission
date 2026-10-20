@@ -47,6 +47,7 @@ export type Database = {
           file_type: string
           id: string
           page_order: number
+          rotation: number
           uploaded_at: string
           user_id: string
         }
@@ -57,6 +58,7 @@ export type Database = {
           file_type: string
           id?: string
           page_order: number
+          rotation?: number
           uploaded_at?: string
           user_id?: string
         }
@@ -67,6 +69,7 @@ export type Database = {
           file_type?: string
           id?: string
           page_order?: number
+          rotation?: number
           uploaded_at?: string
           user_id?: string
         }
@@ -84,6 +87,8 @@ export type Database = {
         Row: {
           assignment_name: string | null
           created_at: string
+          extraction_error: string | null
+          extraction_started_at: string | null
           extraction_status: Database["public"]["Enums"]["extraction_status"]
           id: string
           student_nickname: string
@@ -92,6 +97,8 @@ export type Database = {
         Insert: {
           assignment_name?: string | null
           created_at?: string
+          extraction_error?: string | null
+          extraction_started_at?: string | null
           extraction_status?: Database["public"]["Enums"]["extraction_status"]
           id?: string
           student_nickname: string
@@ -100,6 +107,8 @@ export type Database = {
         Update: {
           assignment_name?: string | null
           created_at?: string
+          extraction_error?: string | null
+          extraction_started_at?: string | null
           extraction_status?: Database["public"]["Enums"]["extraction_status"]
           id?: string
           student_nickname?: string
@@ -172,6 +181,7 @@ export type Database = {
           id: string
           model_used: string
           notes: string | null
+          score_as_written: string | null
           user_id: string
         }
         Insert: {
@@ -181,6 +191,7 @@ export type Database = {
           id?: string
           model_used: string
           notes?: string | null
+          score_as_written?: string | null
           user_id?: string
         }
         Update: {
@@ -190,6 +201,7 @@ export type Database = {
           id?: string
           model_used?: string
           notes?: string | null
+          score_as_written?: string | null
           user_id?: string
         }
         Relationships: [

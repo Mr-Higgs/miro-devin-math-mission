@@ -132,6 +132,23 @@ check("another adult can't see A's files", r.rows?.[0]?.n === 0, r.error);
 r = await db.query(`select public, file_size_limit from storage.buckets where id = 'uploads'`);
 check("uploads bucket is private", r.rows[0]?.public === false);
 
+// Page rotation and extraction progress (migration extraction_progress)
+r = await as(A, `insert into public.assignment_pages (assignment_id, page_order, file_path, file_type, rotation)
+                 values ('${asgn}', 1, '${A}/assignments/${asgn}/page-1.jpg', 'image/jpeg', 180) returning rotation`);
+check("adult can save a page turned 180", r.rows?.[0]?.rotation === 180, r.error);
+r = await as(A, `update public.assignment_pages set rotation = 45 where assignment_id = '${asgn}'`);
+check("rotation must be 0, 90, 180 or 270", !!r.error, r.error);
+r = await as(B, `update public.assignment_pages set rotation = 90 where assignment_id = '${asgn}' returning id`);
+check("another adult can't turn A's pages", r.rows?.length === 0, r.error);
+r = await as(A, `update public.assignments set extraction_status = 'processing', extraction_started_at = now() where id = '${asgn}' returning id`);
+check("adult can mark their test as being read", r.rows?.length === 1, r.error);
+
+// Score on the paper (migration score_on_paper)
+r = await as(A, `insert into public.extraction_results (assignment_id, model_used, score_as_written) values ('${asgn}', 'test', '55') returning score_as_written`);
+check("adult can save the score read from the paper", r.rows?.[0]?.score_as_written === "55", r.error);
+r = await as(B, `select count(*)::int n from public.extraction_results`);
+check("another adult can't see A's score", r.rows?.[0]?.n === 0, r.error);
+
 // Deleting the user removes everything
 await db.exec(`delete from auth.users where id = '${A}'`);
 r = await db.query(`select (select count(*) from public.assignments) + (select count(*) from public.attempts) + (select count(*) from public.session_progress) as n`);

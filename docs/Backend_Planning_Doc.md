@@ -102,16 +102,17 @@ The data model is designed around the core workflow: educator uploads a graded a
 
 **2. Assignment**
 - The original graded test the educator uploaded.
-- Fields: assignment_id, user_id, student_nickname (entered by the tutor — never the real name from the paper), assignment_name, upload_date
+- Fields: assignment_id, user_id, student_nickname (entered by the tutor — never the real name from the paper), assignment_name, upload_date, extraction_status (pending, processing, done, failed), extraction_started_at, extraction_error
+- *Proposed ([012](decisions/012-ungraded-tests.md)):* graded_by (teacher, app) for tests nobody has graded yet
 
 **3. Assignment Page**
 - One uploaded photo, PDF page or screenshot of the assignment. A quiz may have several.
-- Fields: page_id, assignment_id, page_order, file_path, file_type, uploaded_at, deleted_at
+- Fields: page_id, assignment_id, page_order, file_path, file_type, uploaded_at, deleted_at, rotation (0/90/180/270, reported by the AI so pages are shown upright)
 - The file itself is deleted under the retention rules (§3.4); the row stays with `deleted_at` set.
 
 **4. Extraction Result**
 - The AI's reading of the whole assignment.
-- Fields: extraction_result_id, assignment_id, model_used, extraction_confidence, notes (e.g., "Q4 appears on two photos; counted once")
+- Fields: extraction_result_id, assignment_id, model_used, extraction_confidence, notes (e.g., "Q4 appears on two photos; counted once"), score_as_written (the total the teacher wrote, used to cross-check the reading)
 
 **5. Question (from Assignment)**
 - One question as it appeared on the original test.
@@ -509,15 +510,20 @@ AI does three jobs: **extraction** (reading the graded test), **generation** (wr
 
 ### 8.1 Image Processing Pipeline
 
-**Step 1 — Intake & preprocessing** (server route, before anything is stored or sent):
-- **Strip metadata**, including GPS location ([006](decisions/006-upload-retention.md)).
+**Step 1 — Intake & preprocessing** (as built: **in the adult's browser**, before anything is uploaded; Vercel's ~4.5 MB request limit rules out sending photos through the server):
+- **Strip metadata**, including GPS location ([006](decisions/006-upload-retention.md)): every page is redrawn as a new JPEG, so metadata never leaves the device.
 - **Convert PDFs** (including tablet notes) to one image per page.
-- **Fix rotation.** Real samples were often upside down or sideways.
-- **Resize** large photos to keep AI calls fast and cheap.
+- **Fix rotation:** the phone's own orientation in the browser; pages photographed with the paper turned are detected by the AI during extraction (no rotate buttons for the adult).
+- **Resize** to 2400 px on the longest side.
+- **For the AI only** (server, 2026-10-19): an optional contrast boost darkens faint pencil on the copy sent to the AI, keeping colors so student pencil and teacher pen stay distinct. The stored photo is unchanged.
 
 **Step 2 — Send to the AI** as a structured request: instructions + all pages of the assignment (or submission) in order.
 
 **Step 3 — Parse the response.** Always request structured JSON. Validate it before saving; if it's malformed, retry once, then show an error the educator can act on.
+
+**Step 4 — Cross-check** (as built): the app compares the reading with the score written on the paper, and flags missed questions with no student answer and answers that contradict correct/missed. The adult sees warnings on Step 2 and fixes with one tap.
+
+**Ungraded tests** (proposed, [012](decisions/012-ungraded-tests.md)): with no teacher marks or score, the AI also works out each answer with a calculation the app verifies (the [010](decisions/010-question-generation.md) checks), and the app compares the student's answer in code.
 
 **Lessons from real samples** (see `test-data/`): tests span several photos that may overlap; teacher marks are subtle (a blue circle on the *correct* choice, "-1", partial credit); pictures carry meaning (base-ten blocks, place-value charts, shapes); the tutor and student may write on the same page in different colors; and children use invented spelling.
 

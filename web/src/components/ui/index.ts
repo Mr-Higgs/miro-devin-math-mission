@@ -9,4 +9,5 @@ export { cx } from "./cx";
 export { Notice, type Tone } from "./Notice";
 export { PageShell } from "./PageShell";
 export { ProgressDots, type DotState } from "./ProgressDots";
+export { QuestionCard, type QuestionCardData } from "./QuestionCard";
 export { TextField } from "./TextField";

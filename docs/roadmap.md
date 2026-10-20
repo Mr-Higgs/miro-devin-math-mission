@@ -1,10 +1,10 @@
 # Math Mission Roadmap
 
-**This is the live plan.** Tick boxes here as work gets done. Where each piece fits in the app (pages, actions, capabilities) is in the [site map](sitemap.md). Handoffs are dated snapshots that link here; the backend doc points here instead of keeping its own copy.
+**This is the live plan.** Tick boxes here as work gets done. Where each piece fits in the app (pages, actions, capabilities) is in the [site map](sitemap.md); ideas for lowering per-use cost are in [cost optimization](cost-optimization.md). Handoffs are dated snapshots that link here; the backend doc points here instead of keeping its own copy.
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-19 (Phase 2: generation benchmark passed; upload page working)
+**Last updated:** 2026-10-19 (Phase 2: upload, extraction with auto-rotation, Step 2 checks and quick fixes)
 
 | Phase | What it covers | Status |
 |---|---|---|
@@ -76,9 +76,12 @@ Build the app described in the spec (v1.1) and backend doc.
 
 **Upload and reading the test**
 - [x] Upload (`/sessions/new`): photos, PDF or screenshots, multi-page; progress indicator; reminder to **cover the student's name** ([006](decisions/006-upload-retention.md)). Pages go straight from the browser to private storage (Vercel's ~4.5 MB request limit rules out sending photos through the server); the session is saved only once every page has arrived
-- [x] Photo prep, **in the browser before upload** (`web/src/lib/upload/prepare.ts`): every page redrawn as a new JPEG, so metadata and GPS never leave the device; EXIF rotation applied; longest side 2400 px; each PDF page becomes an image ([006](decisions/006-upload-retention.md)). Verified on stored photos: no EXIF/GPS. *PDF upload not yet tried with a real PDF*
-- [ ] Extraction with Gemini 3.8 Flash: missed questions, partial credit, pictures, "work required" ([002](decisions/002-ai-provider.md))
-- [ ] Tutor review: remove, edit or add questions; set "work required"
+- [x] Photo prep, **in the browser before upload** (`web/src/lib/upload/prepare.ts`): every page redrawn as a new JPEG, so metadata and GPS never leave the device; EXIF rotation applied; longest side 2400 px; each PDF page becomes an image ([006](decisions/006-upload-retention.md)). PDF upload verified 2026-10-19 (7-page PDF → 7 clean pages). Phone photos 2026-10-19: stored copies have no EXIF/GPS (originals not located to confirm they had GPS). *Pages photographed with the paper turned stay turned: fixed automatically by extraction (below)*
+- [x] Extraction with Gemini 3.8 Flash (`web/src/lib/extraction.ts`, runs from Step 2 with a "Reading the test…" screen; up to 4 minutes; one automatic retry on network errors): missed questions, partial credit, pictures, "work required" ([002](decisions/002-ai-provider.md)). **Also reports which way each page is turned, so pages are shown upright automatically, with no rotate buttons for the adult** (tutor's call 2026-10-19)
+  - Accuracy work 2026-10-19, after the tutor found misreadings on phone photos: prompt now separates student pencil from teacher pen, decides correct/missed only from teacher marks, and checks against the written total score. Benchmark on samples 001 + 004 (phone photos), Flash, 3 runs each: missed found 73% → 100%, correct/missed calls 80% → 100%, student answers 77% → 100%, pages upright 100%
+  - The app cross-checks every reading on Step 2 (`web/src/lib/checks/extraction.ts`): score on the paper vs points as read, missing student answers, answers that contradict correct/missed. Warnings point the adult at what to check
+- [ ] **Ungraded tests** ([012](decisions/012-ungraded-tests.md), proposed 2026-10-19): the app works out the answers (math-checked), reads the student's answers, decides what was missed. Waiting on the tutor's choices; benchmark with student-work samples 002/003
+- [ ] Tutor review: remove, edit or add questions; set "work required". *Done: one-tap Mark as correct / missed, Edit answers. Still to do: edit question text, remove, add, work required*
 
 **Practice set**
 - [x] **Generation test first:** `npm run bench -- generation` (13 real missed/redo questions, `test-data/generation/`). First run 2026-10-19 on Gemini 3.8 Flash: 13/13 passed every check, 12/13 with the answer confirmed by math (the 13th is a symmetry drawing); read by hand, all mirror their originals. Prompt then tightened (always give a check; fixed list of picture types) and re-run: same scores, both fixes working
