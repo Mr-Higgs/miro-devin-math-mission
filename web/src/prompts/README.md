@@ -5,6 +5,7 @@ Every instruction the app gives the AI lives here, one file per job (decision 00
 | File | Job | Status |
 |---|---|---|
 | `extraction.ts` | Read photos of a graded test and list every question | Benchmarked (002) |
+| `second-look.ts` | When a student answer wasn't found, look again at just that question's photo (2026-10-20) | Tested on the faintest mark in sample 004: 3/3 |
 | `grading.ts` | Grade the student's finished work from a photo | Benchmarked (002, 003) |
 | `generation.ts` | Write one mirrored practice question per missed question, with a check the app can work out (010) | Benchmarked 2026-10-19 |
 | *hints* | Hints for the adult during review | Phase 2 |

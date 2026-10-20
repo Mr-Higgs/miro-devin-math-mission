@@ -21,6 +21,7 @@ THE TOTAL SCORE. Read the score the teacher wrote on the test, exactly as writte
 
 For every question on the assignment, report:
 - question_number
+- photo: the number of the photo the question is on (the first one, if it appears on two)
 - original_question_text: exactly as written
 - format: "multiple_choice" | "multiple_select" | "fill_in" | "open_response"
 - choices: an object like {"A": "...", "B": "..."}, or null

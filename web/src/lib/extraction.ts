@@ -6,6 +6,7 @@ import "server-only";
 import { EXTRACTION_INSTRUCTIONS, EXTRACTION_REQUEST } from "@/prompts/extraction";
 import { AI_MODEL, AiError, EXTRACTION_SETTINGS, askAi, parseJsonReply, type AiPart } from "@/lib/ai/gemini";
 import { enhanceForReading } from "@/lib/ai/enhance";
+import { secondLook } from "@/lib/second-look";
 import { createClient } from "@/lib/supabase/server";
 import { UPLOADS_BUCKET, isUuid } from "@/lib/upload/paths";
 
@@ -48,13 +49,16 @@ export async function runExtraction(sessionId: string): Promise<ExtractionOutcom
 
     // The pages are the adult's own private files, already cleaned in the browser.
     const parts: AiPart[] = [];
+    const photos: AiPart[] = []; // each photo on its own, for the second look
     for (const [i, page] of pages.entries()) {
       const { data: blob, error } = await supabase.storage.from(UPLOADS_BUCKET).download(page.file_path);
       if (error || !blob) throw new AiError(`Page ${i + 1} couldn't be opened.`);
       parts.push({ text: `Photo ${i + 1} of ${pages.length}` });
       const photo = Buffer.from(await blob.arrayBuffer());
       const sent = EXTRACTION_SETTINGS.enhance ? await enhanceForReading(photo) : photo;
-      parts.push({ image: { mediaType: "image/jpeg", base64: sent.toString("base64") } });
+      const image: AiPart = { image: { mediaType: "image/jpeg", base64: sent.toString("base64") } };
+      parts.push(image);
+      photos.push(image);
     }
     parts.push({ text: EXTRACTION_REQUEST });
 
@@ -87,6 +91,21 @@ export async function runExtraction(sessionId: string): Promise<ExtractionOutcom
       };
     });
 
+    // Second look at the photos of any question whose student answer wasn't found.
+    const look = await secondLook(
+      questions.map((q, i) => ({ ...q, photo: num(rawQuestions[i].photo) })),
+      photos.length,
+      async (instructions, photo, request) =>
+        (await askAi(instructions, [{ text: `Photo ${photo}` }, photos[photo - 1], { text: request }], EXTRACTION_SETTINGS)).text,
+    );
+    for (const q of questions) {
+      const answer = look.found.get(q.question_number);
+      if (answer && !q.student_answer) q.student_answer = answer;
+    }
+    const lookNote = look.found.size
+      ? `A second look found the student's answer to question${look.found.size > 1 ? "s" : ""} ${[...look.found.keys()].join(", ")}.`
+      : null;
+
     const confidences = questions.map((q) => q.confidence).filter((c): c is number => c !== null);
     const rotations = new Map<number, number>(
       (Array.isArray(reply.pages) ? (reply.pages as Record<string, unknown>[]) : [])
@@ -102,7 +121,7 @@ export async function runExtraction(sessionId: string): Promise<ExtractionOutcom
       assignment_id: assignment.id,
       model_used: AI_MODEL,
       extraction_confidence: confidences.length ? Number((confidences.reduce((a, b) => a + b, 0) / confidences.length).toFixed(2)) : null,
-      notes: str(reply.notes, 2000),
+      notes: [str(reply.notes, 1800), lookNote].filter(Boolean).join(" ") || null,
       score_as_written: str((reply.total_score as Record<string, unknown> | null)?.as_written, 40),
     });
     if (resultError) throw resultError;

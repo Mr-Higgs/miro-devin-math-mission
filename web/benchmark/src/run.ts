@@ -13,6 +13,7 @@ import { loadExtractionSamples, scoreExtraction, type ExtractionScore } from "./
 import { gradingUserText, loadGradingPages, scoreGradingPage, summarizeGrading, type ItemOutcome } from "./grading.js";
 import { EXTRACTION_INSTRUCTIONS, EXTRACTION_REQUEST } from "../../src/prompts/extraction.js";
 import { GRADING_INSTRUCTIONS } from "../../src/prompts/grading.js";
+import { secondLook } from "../../src/lib/second-look.js";
 import { GENERATION_INSTRUCTIONS, generationRequest } from "../../src/prompts/generation.js";
 import {
   generationDetails, loadGenerationCases, scoreGeneration, selfCheckGeneration, summarizeGeneration,
@@ -95,7 +96,7 @@ async function main() {
   for (const model of models) {
     const call = (system: string, images: ImageInput[], text: string): Promise<CallResult> =>
       PROVIDERS[model.provider](model.id, system, images, text);
-    let tokensIn = 0, tokensOut = 0, ms = 0, calls = 0, errors = 0;
+    let tokensIn = 0, tokensOut = 0, ms = 0, calls = 0, errors = 0, secondLooks = 0;
     const extractionScores: ExtractionScore[] = [];
     const gradingOutcomes: ItemOutcome[] = [];
     const generationOutcomes: GenerationOutcome[] = [];
@@ -120,7 +121,28 @@ async function main() {
     for (let rep = 1; rep <= args.repeat; rep++) {
       for (const s of extractionSamples) {
         console.log(`${model.id}: extraction ${s.id} (run ${rep})`);
-        await attempt(`extraction:${s.id}:${rep}`, () => call(extractionPrompt, s.images, EXTRACTION_REQUEST), (r) => {
+        // Same as the app: main reading, then a second look at photos with missing student answers.
+        const readWithSecondLook = async (): Promise<CallResult> => {
+          const first = await call(extractionPrompt, s.images, EXTRACTION_REQUEST);
+          let reply: any;
+          try { reply = JSON.parse(first.text.slice(first.text.indexOf("{"), first.text.lastIndexOf("}") + 1)); } catch { return first; }
+          const qs: any[] = Array.isArray(reply.questions) ? reply.questions : [];
+          let extraIn = 0, extraOut = 0, extraMs = 0;
+          const look = await secondLook(
+            qs.map((q) => ({ question_number: String(q.question_number), original_question_text: String(q.original_question_text ?? ""), choices: q.choices ?? null, photo: Number(q.photo) || null, student_answer: q.student_answer || null })),
+            s.images.length,
+            async (instructions, photo, request) => {
+              const r = await call(instructions, [s.images[photo - 1]], request);
+              extraIn += r.inputTokens ?? 0; extraOut += r.outputTokens ?? 0; extraMs += r.ms;
+              return r.text;
+            },
+          );
+          for (const q of qs) { const a = look.found.get(String(q.question_number)); if (a && !q.student_answer) q.student_answer = a; }
+          if (look.photosChecked) console.log(`  second look: ${look.photosChecked} photo(s), found ${[...look.found.keys()].join(", ") || "nothing"}`);
+          secondLooks += look.photosChecked;
+          return { text: JSON.stringify(reply), inputTokens: (first.inputTokens ?? 0) + extraIn, outputTokens: (first.outputTokens ?? 0) + extraOut, ms: first.ms + extraMs };
+        };
+        await attempt(`extraction:${s.id}:${rep}`, readWithSecondLook, (r) => {
           try { extractionScores.push({ ...scoreExtraction(s.expected, r.text), sampleId: s.id }); }
           catch (e: any) { errors++; console.log(`  unparseable reply: ${e.message}`); }
         });
@@ -157,6 +179,7 @@ async function main() {
         counts.set(key, (counts.get(key) ?? 0) + 1);
       }));
       const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+      extractionMisses.push("", `**${model.label}**: second looks needed on ${secondLooks} photo(s) across ${extractionScores.length} readings.`);
       extractionMisses.push("", `**${model.label}**, most common extraction mistakes (times seen across ${extractionScores.length} readings):`, ...top.map(([k, n]) => `- ${n}× ${k}`));
     }
 

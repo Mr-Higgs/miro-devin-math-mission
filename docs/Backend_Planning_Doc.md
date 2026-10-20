@@ -521,6 +521,8 @@ AI does three jobs: **extraction** (reading the graded test), **generation** (wr
 
 **Step 3 — Parse the response.** Always request structured JSON. Validate it before saving; if it's malformed, retry once, then show an error the educator can act on.
 
+**Step 3b — Second look** (as built, 2026-10-20): any question whose student answer wasn't found gets one focused retry with only its own photo.
+
 **Step 4 — Cross-check** (as built): the app compares the reading with the score written on the paper, and flags missed questions with no student answer and answers that contradict correct/missed. The adult sees warnings on Step 2 and fixes with one tap.
 
 **Ungraded tests** (proposed, [012](decisions/012-ungraded-tests.md)): with no teacher marks or score, the AI also works out each answer with a calculation the app verifies (the [010](decisions/010-question-generation.md) checks), and the app compares the student's answer in code.

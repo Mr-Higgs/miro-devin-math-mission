@@ -246,7 +246,7 @@ flowchart LR
 | **Sign-in and invites** | Invite-only accounts; email sign-in link; sign-out; keeps logins fresh | `/login`, `/auth/callback`, every signed-in page | Supabase Auth, `npm run invite`, `web/src/proxy.ts` | 001 | ✅ Built (own email service: Phase 3) |
 | **18+ and terms gate** | Nothing works until the adult confirms 18+ and accepts the current terms; the database refuses data until then | `/welcome`, every signed-in page | `profiles` table, database privacy rules, `web/src/lib/auth.ts` | 011 | ✅ Built |
 | **Upload and photo prep** | Takes photos, PDFs, screenshots, several pages; strips GPS and other metadata; fixes rotation; splits PDFs; resizes; shows progress | `/sessions/new`, `/work`, `/review` (redo) | In the browser (`web/src/lib/upload/`), then straight to the private `uploads` bucket; a server action saves the rows | 006 | ✅ Built for `/sessions/new` (reused later by `/work` and `/review`) |
-| **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required", the score on the paper; reports which way each page is turned so pages are shown upright automatically; the app cross-checks the reading and warns the adult | `/questions` | Gemini + `extraction` prompt (`web/src/lib/extraction.ts`); checks in `web/src/lib/checks/extraction.ts`; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ✅ Built |
+| **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required", the score on the paper; reports which way each page is turned so pages are shown upright automatically; takes an automatic second look at any photo where a student answer is missing; the app cross-checks the reading and warns the adult | `/questions` | Gemini + `extraction` prompt (`web/src/lib/extraction.ts`); checks in `web/src/lib/checks/extraction.ts`; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ✅ Built |
 | **Write practice questions (generation)** | One mirrored question per miss: same wording and order, new numbers or diagram, a different answer; regenerate or edit | `/practice`, `/bonus` | Gemini + `generation` prompt; `generated_questions` table | 010 | ⬜ Phase 2 (prompt benchmarked 2026-10-19) |
 | **Math checks** | Checks each generated question is right before it's shown; retries, then flags for the adult | `/practice`, `/bonus` | App code: `web/src/lib/checks/` | 010 | 🟡 Checks written and used by the benchmark; app wiring Phase 2 |
 | **Diagrams as data** | The app draws blocks, charts, shapes and letters from data, so their answers can be checked | `/practice`, print pages, `/review` | App code | 010 | ⬜ Phase 2 |
@@ -285,6 +285,7 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-10-20 | Automatic second look for missing student answers |
 | 2026-10-19 | Extraction built with auto-rotation, cross-checks (score on paper, missing answers) and quick fixes on Step 2; prompt rewritten for accuracy after the tutor's feedback |
 | 2026-10-19 | Decided: pages turned the wrong way are fixed automatically by extraction, not by rotate buttons (no extra step for the adult) |
 | 2026-10-19 | Upload page, sessions list and photo prep built; Step 2 shows uploaded pages |

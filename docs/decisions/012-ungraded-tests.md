@@ -30,7 +30,7 @@ Ungraded tests depend entirely on reading the student's pencil, so they need the
 1. Same settings as graded tests.
 2. Higher detail and contrast boost for ungraded tests only.
 3. Also read ungraded tests twice and compare, taking a third look where the two disagree (about double the cost).
-*Recommendation:* 2, then 3 only if the benchmark shows it's needed.
+*Recommendation:* 2, then 3 only if the benchmark shows it's needed. Note (2026-10-20): the automatic second look for missing student answers is now built for all tests, which covers part of this cheaply.
 
 ## Cost (decision 004 is still open)
 - Reading + solving + checking happens in **the same single AI call** as today. The checks and the multiple-choice/number grading are code, so they're free.
