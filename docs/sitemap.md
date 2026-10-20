@@ -65,9 +65,9 @@ flowchart TD
     subgraph SESSION["One session: /sessions/[id]/..."]
       QUESTIONS["questions<br/>Step 2: Review missed questions"]:::next
       UNGRADED["Ungraded test: app works out<br/>the answers and grades them"]:::proposed
-      PRACTICE["practice<br/>Step 3: Practice set"]:::planned
-      SHEET[["print/sheet<br/>Practice sheet"]]:::planned
-      KEY[["print/answer-key<br/>Answer key"]]:::planned
+      PRACTICE["practice<br/>Step 3: Practice set"]:::built
+      SHEET[["print/sheet<br/>Practice sheet"]]:::built
+      KEY[["print/answer-key<br/>Answer key"]]:::built
       WORK["work<br/>Step 4: Upload student's work"]:::planned
       REVIEW["review<br/>Step 5: Review session"]:::planned
       BONUS["bonus<br/>Step 6: Bonus round"]:::planned
@@ -108,9 +108,9 @@ Shapes: rounded = no screen of its own (passes straight through); double-edged =
 | `/` (signed in) | Sees past sessions; starts a new one or resumes one | ✅ Built |
 | `/sessions/new` | Enters the student's nickname and an assignment name; uploads photos, PDF or screenshots; reminded to cover the student's name | ✅ Built |
 | `/sessions/[id]/questions` | Waits while the AI reads the test (progress shown); reviews missed questions: removes, edits, adds; marks "work required" | 🟡 Reading, warnings, Mark correct/missed and Edit answers built; edit text, remove, add, work required to come |
-| `/sessions/[id]/practice` | Generates the practice set; regenerates or edits any question; sees questions flagged by the math check | ⬜ Planned, Phase 2 |
-| `/sessions/[id]/print/sheet` | Prints the practice sheet (letter size, space for work) | ⬜ Planned, Phase 2 |
-| `/sessions/[id]/print/answer-key` | Prints the answer key with worked steps | ⬜ Planned, Phase 2 |
+| `/sessions/[id]/practice` | Generates the practice set; regenerates or edits any question; sees questions flagged by the math check | ✅ Built (Edit later, if needed) |
+| `/sessions/[id]/print/sheet` | Prints the practice sheet (letter size, space for work) | ✅ Built |
+| `/sessions/[id]/print/answer-key` | Prints the answer key: the practice sheet filled in, with the right answers marked and worked steps in the work boxes | ✅ Built |
 | `/sessions/[id]/work` | Uploads photos of the student's finished sheet; grading runs | ⬜ Planned, Phase 2 |
 | `/sessions/[id]/review` | Goes through each question with the student: sees the AI's result and grading notes, overrides with one tap, shows hint, uploads a redo, Got it / Move on; pauses and resumes | ⬜ Planned, Phase 2 |
 | `/sessions/[id]/bonus` | Runs one extra mirrored question; a win unlocks the special printable | ⬜ Planned, Phase 2 (prize design is open question OQ-6) |
@@ -199,9 +199,9 @@ flowchart LR
     C2["18+ and terms gate"]:::built
     C3["Upload and photo prep"]:::built
     C4["Read the test: extraction"]:::built
-    C5["Write practice questions: generation"]:::planned
-    C6["Math checks"]:::planned
-    C7["Diagrams as data"]:::planned
+    C5["Write practice questions: generation"]:::built
+    C6["Math checks"]:::built
+    C7["Diagrams as data"]:::built
     C8["Printables"]:::planned
     C9["Grade student work"]:::planned
     C10["Review, overrides, stars"]:::planned
@@ -247,10 +247,10 @@ flowchart LR
 | **18+ and terms gate** | Nothing works until the adult confirms 18+ and accepts the current terms; the database refuses data until then | `/welcome`, every signed-in page | `profiles` table, database privacy rules, `web/src/lib/auth.ts` | 011 | ✅ Built |
 | **Upload and photo prep** | Takes photos, PDFs, screenshots, several pages; strips GPS and other metadata; fixes rotation; splits PDFs; resizes; shows progress | `/sessions/new`, `/work`, `/review` (redo) | In the browser (`web/src/lib/upload/`), then straight to the private `uploads` bucket; a server action saves the rows | 006 | ✅ Built for `/sessions/new` (reused later by `/work` and `/review`) |
 | **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required", the score on the paper; reports which way each page is turned so pages are shown upright automatically; takes an automatic second look at any photo where a student answer is missing; the app cross-checks the reading and warns the adult | `/questions` | Gemini + `extraction` prompt (`web/src/lib/extraction.ts`); checks in `web/src/lib/checks/extraction.ts`; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ✅ Built |
-| **Write practice questions (generation)** | One mirrored question per miss: same wording and order, new numbers or diagram, a different answer; regenerate or edit | `/practice`, `/bonus` | Gemini + `generation` prompt; `generated_questions` table | 010 | ⬜ Phase 2 (prompt benchmarked 2026-10-19) |
-| **Math checks** | Checks each generated question is right before it's shown; retries, then flags for the adult | `/practice`, `/bonus` | App code: `web/src/lib/checks/` | 010 | 🟡 Checks written and used by the benchmark; app wiring Phase 2 |
-| **Diagrams as data** | The app draws blocks, charts, shapes and letters from data, so their answers can be checked | `/practice`, print pages, `/review` | App code | 010 | ⬜ Phase 2 |
-| **Printables** | Practice sheet, answer key, certificate, star chart, mission complete page; clean print layout | `print/*` pages | Browser print; model in `design-explorations/print-reference/` | 011 | ⬜ Phase 2 |
+| **Write practice questions (generation)** | One mirrored question per miss: same wording and order, new numbers or diagram, a different answer; regenerate | `/practice`, `/bonus` | Gemini (low thinking) + `generation` prompt (`web/src/lib/generation.ts`); `generated_questions` table | 010 | ✅ Built for `/practice` |
+| **Math checks** | Checks each generated question is right before it's shown; retries, then flags for the adult | `/practice`, `/bonus` | App code: `web/src/lib/checks/` | 010 | ✅ Built |
+| **Diagrams as data** | The app draws blocks, charts, shapes and letters from data, so their answers can be checked | `/practice`, print pages, `/review` | App code: `web/src/components/pictures/Picture.tsx` | 010 | ✅ Built |
+| **Printables** | Practice sheet, answer key, certificate, star chart, mission complete page; clean print layout | `print/*` pages | Browser print (shared question layout in `web/src/app/sessions/[id]/print/`); model in `design-explorations/print-reference/` | 011 | 🟡 Sheet and answer key built; rewards later |
 | **Grade student work** | Pass / redo / needs your check / skipped per question, with notes for the adult | `/work`, `/review` | Gemini + `grading` prompt; `student_submissions`, `submission_pages`, `attempts` tables | 003 | ⬜ Phase 2 (prompt benchmarked) |
 | **Review, overrides, stars** | One-tap override; hints; progress dots; stars (+1 pass, +0.5 on a retry); pause and resume | `/review`, `/summary` | `session_progress`, `attempts` tables; building blocks | 003, 011 | ⬜ Phase 2 |
 | **Photo deletion and data controls** | Deletes photos when a session completes or after 30 days; delete one session or everything | `/summary`, `/account` | Vercel daily job, storage, database | 006 | ⬜ Phase 2 |
@@ -285,6 +285,7 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-10-20 | Step 3 built: practice set with math checks, retries, flags and Regenerate; pictures drawn from data; printable practice sheet and answer key (the sheet filled in) |
 | 2026-10-20 | Automatic second look for missing student answers |
 | 2026-10-19 | Extraction built with auto-rotation, cross-checks (score on paper, missing answers) and quick fixes on Step 2; prompt rewritten for accuracy after the tutor's feedback |
 | 2026-10-19 | Decided: pages turned the wrong way are fixed automatically by extraction, not by rotate buttons (no extra step for the adult) |

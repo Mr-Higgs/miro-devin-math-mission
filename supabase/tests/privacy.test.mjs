@@ -149,6 +149,21 @@ check("adult can save the score read from the paper", r.rows?.[0]?.score_as_writ
 r = await as(B, `select count(*)::int n from public.extraction_results`);
 check("another adult can't see A's score", r.rows?.[0]?.n === 0, r.error);
 
+// Practice generation (migration practice_generation)
+r = await as(A, `insert into public.sessions (assignment_id, practice_status, practice_started_at) values ('${asgn}', 'generating', now()) returning id`);
+check("adult can mark a practice set as being written", r.rows?.length === 1, r.error);
+const s2 = r.rows?.[0]?.id;
+r = await as(A, `insert into public.questions (assignment_id, position, question_number, original_question_text, format, marked_correct)
+                 values ('${asgn}', 2, '2', 'Q', 'fill_in', false) returning id`);
+const q2 = r.rows?.[0]?.id;
+r = await as(A, `insert into public.generated_questions (session_id, question_id, position, question_text, correct_answer, check_status, answer_check, check_notes)
+                 values ('${s2}', '${q2}', 1, 'New Q', '7', 'flagged', '{"kind":"arithmetic","expression":"3 + 4"}', 'Check failed') returning answer_check->>'kind' as kind`);
+check("adult can save a practice question with its check", r.rows?.[0]?.kind === "arithmetic", r.error);
+r = await as(B, `select count(*)::int n from public.generated_questions`);
+check("another adult can't see A's practice questions", r.rows?.[0]?.n === 0, r.error);
+r = await as(B, `update public.sessions set practice_status = 'ready' where id = '${s2}' returning id`);
+check("another adult can't change A's practice status", r.rows?.length === 0, r.error);
+
 // Deleting the user removes everything
 await db.exec(`delete from auth.users where id = '${A}'`);
 r = await db.query(`select (select count(*) from public.assignments) + (select count(*) from public.attempts) + (select count(*) from public.session_progress) as n`);

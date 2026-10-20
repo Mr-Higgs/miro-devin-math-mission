@@ -216,6 +216,8 @@ export type Database = {
       }
       generated_questions: {
         Row: {
+          answer_check: Json | null
+          check_notes: string | null
           check_status: Database["public"]["Enums"]["check_status"]
           choices: Json | null
           correct_answer: string
@@ -233,6 +235,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          answer_check?: Json | null
+          check_notes?: string | null
           check_status: Database["public"]["Enums"]["check_status"]
           choices?: Json | null
           correct_answer: string
@@ -250,6 +254,8 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          answer_check?: Json | null
+          check_notes?: string | null
           check_status?: Database["public"]["Enums"]["check_status"]
           choices?: Json | null
           correct_answer?: string
@@ -437,6 +443,9 @@ export type Database = {
           assignment_id: string
           completed_at: string | null
           id: string
+          practice_error: string | null
+          practice_started_at: string | null
+          practice_status: Database["public"]["Enums"]["practice_status"]
           started_at: string
           status: Database["public"]["Enums"]["session_status"]
           updated_at: string
@@ -446,6 +455,9 @@ export type Database = {
           assignment_id: string
           completed_at?: string | null
           id?: string
+          practice_error?: string | null
+          practice_started_at?: string | null
+          practice_status?: Database["public"]["Enums"]["practice_status"]
           started_at?: string
           status?: Database["public"]["Enums"]["session_status"]
           updated_at?: string
@@ -455,6 +467,9 @@ export type Database = {
           assignment_id?: string
           completed_at?: string | null
           id?: string
+          practice_error?: string | null
+          practice_started_at?: string | null
+          practice_status?: Database["public"]["Enums"]["practice_status"]
           started_at?: string
           status?: Database["public"]["Enums"]["session_status"]
           updated_at?: string
@@ -554,6 +569,7 @@ export type Database = {
       check_status: "passed" | "flagged" | "tutor_edited"
       extraction_status: "pending" | "processing" | "done" | "failed"
       grade_result: "pass" | "redo" | "needs_check" | "skipped"
+      practice_status: "none" | "generating" | "ready" | "failed"
       progress_status: "pending" | "pass" | "redo" | "needs_check" | "skipped"
       question_format:
         | "multiple_choice"
@@ -694,6 +710,7 @@ export const Constants = {
       check_status: ["passed", "flagged", "tutor_edited"],
       extraction_status: ["pending", "processing", "done", "failed"],
       grade_result: ["pass", "redo", "needs_check", "skipped"],
+      practice_status: ["none", "generating", "ready", "failed"],
       progress_status: ["pending", "pass", "redo", "needs_check", "skipped"],
       question_format: [
         "multiple_choice",

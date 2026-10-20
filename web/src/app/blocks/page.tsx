@@ -7,6 +7,7 @@ import {
   Badge, Button, ButtonLink, Card, Checkbox, GradeBadge, Notice, PageShell, ProgressDots, TextField,
 } from "@/components/ui";
 import { GRADE_RESULTS } from "@/lib/grading";
+import { Picture } from "@/components/pictures/Picture";
 
 export const metadata: Metadata = { title: "Building blocks", robots: { index: false } };
 
@@ -50,6 +51,21 @@ export default function BlocksPage() {
             <Notice tone="success">Practice sheet ready to print.</Notice>
             <Notice tone="warning">Two answers need your check.</Notice>
             <Notice tone="danger">The photo couldn&apos;t be read. Try again in better light.</Notice>
+          </div>
+        </Card>
+
+        <Card title="Pictures (drawn from data)">
+          <div className="flex flex-wrap items-start gap-8 text-ink">
+            <Picture spec={{ place_value_chart: { hundreds: 3, tens: 8, ones: 5 } }} />
+            <Picture spec={{ underlined: { number: 447, place: "tens" } }} />
+            <Picture spec={{ rectangle: { length: 9, width: 5, units: "cm" } }} />
+            <Picture spec={{ polygon: { sides: [3, 3, 5, 5, 5], units: "cm" } }} />
+            <Picture spec={{ letters: "TOM" }} />
+            <Picture spec={{ blocks: { hundreds: 1, tens: 3, ones: 8 } }} />
+            <Picture spec={{ bundles: { count: 6, each: 100 } }} />
+            <Picture spec={{ symmetry: { shape: "isosceles_trapezoid", line: "vertical" } }} />
+            <Picture spec={{ symmetry: { shape: "heart", line: "horizontal" } }} />
+            <Picture spec={{ other: "a sea star with five arms" }} />
           </div>
         </Card>
 

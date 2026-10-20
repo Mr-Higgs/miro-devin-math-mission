@@ -52,3 +52,29 @@ export async function getSession(id: string) {
     },
   };
 }
+
+/** A session's practice set (Step 3), with each practice question's original. */
+export async function getPractice(id: string) {
+  if (!isUuid(id)) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("sessions")
+    .select(
+      "id, practice_status, practice_error, assignment:assignments(student_nickname, assignment_name, extraction_status, questions(id, marked_correct)), practice:generated_questions(id, position, question_text, choices, picture_spec, correct_answer, steps_to_solve, hint, requires_work, check_status, check_notes, generation_attempts, original:questions(question_number, original_question_text, choices, correct_answer))",
+    )
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data?.assignment) return null;
+  return {
+    ...data,
+    missedCount: data.assignment.questions.filter((q) => !q.marked_correct).length,
+    practice: [...data.practice]
+      .sort((a, b) => a.position - b.position)
+      .map((p) => ({
+        ...p,
+        choices: (p.choices ?? null) as Record<string, string> | null,
+        original: p.original ? { ...p.original, choices: (p.original.choices ?? null) as Record<string, string> | null } : null,
+      })),
+  };
+}

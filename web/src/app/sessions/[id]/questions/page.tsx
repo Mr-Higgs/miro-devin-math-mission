@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Card, Notice, PageShell, QuestionCard } from "@/components/ui";
+import { ButtonLink, Card, Notice, PageShell, QuestionCard } from "@/components/ui";
 import { SignOutButton } from "@/components/SignOutButton";
 import { requireAdult } from "@/lib/auth";
 import { checkExtraction } from "@/lib/checks/extraction";
@@ -71,6 +71,11 @@ async function Questions({ id }: { id: string }) {
                 {assignment.scoreAsWritten && ` Score on the paper: ${assignment.scoreAsWritten}.`}
               </p>
             </Notice>
+            <div>
+              <ButtonLink href={`/sessions/${session.id}/practice`} size="lg">
+                Continue to practice set ({missed.length})
+              </ButtonLink>
+            </div>
             {warnings.overall.map((w) => (
               <Notice key={w} tone="warning" title="Something doesn't add up">
                 {w}

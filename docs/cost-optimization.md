@@ -32,12 +32,13 @@ Exact prices change; check Google's current Gemini pricing when estimating.
 | 2 | **Spend extra care only where needed**: graded tests (teacher marks + score to cross-check) use cheap settings; higher image detail and any second reading only for ungraded tests ([012](decisions/012-ungraded-tests.md)) | Medium | Low: graded tests have built-in checks | 💡 idea | Depends on 012 |
 | 3 | **Record tokens used per session** (save input/output tokens with each AI call) so pricing is based on real numbers | None directly; makes every other decision measurable | None | 💡 idea | Small database addition (e.g. on `extraction_results`) |
 | 4 | **Grow the benchmark with every new real test** | Avoids paying for settings that only looked good on one quiz | None | 💡 idea | Each new graded test of Gabe's → a sample |
-| 9 | **Low thinking for generation** (writing practice questions): the app's math checks catch mistakes, so cheaper reasoning may be safe there | Large: output tokens drop ~70% | Low: math-checked | 💡 idea | Rejected for extraction (see below); measure with `npm run bench -- generation --thinking low` |
 | 5 | **Lower image detail** (`mediaResolution` low/medium) for clean, well-lit photos | Input tokens per photo: 1,120 → 560 or 280 | High for faint pencil | 💡 idea | Only after measuring; faint pencil is the main weakness |
 | 7 | **Cap pages and uploads per session/month** at public launch | Bounds worst-case cost per user | None | 💡 idea | Roadmap Phase 4 already lists per-user limits |
 | 8 | **Batch generation**: write all practice questions in one call instead of one per question | Fewer repeated instructions (input tokens) | A bad question could affect others; retries get bigger | 💡 idea | Measure with the generation benchmark |
 
 ## Measurements
+
+**Generation thinking, 2026-10-20** (13 cases, `npm run bench -- generation --thinking low`): default ~12 s and ~1,500 output tokens per question, 13/13 passed; low ~2.6 s and ~190 output tokens, 11/13 passed first try (number size changed once, answer unchanged once; both caught). `minimal` is not supported by this model.
 
 **Extraction settings, 2026-10-19** (Gemini 3.8 Flash, samples 001 + 004, per reading of a 6-photo test; `npm run bench -- extraction --repeat 2` with `--enhance`, `--detail`, `--thinking`):
 
@@ -57,6 +58,7 @@ Rough cost assumes output tokens cost several times more than input; check curre
 | – | Photos shrunk to 2400 px in the browser before upload | Smaller uploads and storage; photo tokens stay at the default ~1,100 | 2026-10-19 |
 | – | Reading, rotation detection and score reading in **one** AI call (no separate calls) | Avoided 1–2 extra calls per test | 2026-10-19 |
 | – | Math checks and score cross-checks done in **code**, not by the AI | No AI cost for checking | 2026-10-19 |
+| 9 | **Low thinking for writing practice questions** (`GENERATION_SETTINGS` in `web/src/lib/ai/gemini.ts`) | Output tokens ~20,000 → ~2,500 for 13 questions (about −85%); time per question ~12 s → ~2.6 s, so Regenerate feels near-instant. 11/13 passed the checks first try (the 2 failures were caught and are retried automatically) | 2026-10-20 |
 | 6 | **Second look sends only the affected photo** with a short request, only when a student answer is missing (`web/src/lib/second-look.ts`) | Tests with nothing missing pay nothing extra (0 second looks in 4 benchmark readings); a gap costs ~1,400 in / ~400–900 out tokens, about a tenth of a full reading | 2026-10-20 |
 
 ## Rejected or on hold

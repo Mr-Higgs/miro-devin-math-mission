@@ -4,7 +4,7 @@
 
 **Definition of done:** Math Mission is released online and publicly available (end of Phase 4).
 
-**Last updated:** 2026-10-19 (Phase 2: upload, extraction with auto-rotation, Step 2 checks and quick fixes)
+**Last updated:** 2026-10-19 (Phase 2: Steps 1–3 working: upload, reading the test, practice set, printable sheet and answer key)
 
 | Phase | What it covers | Status |
 |---|---|---|
@@ -86,12 +86,12 @@ Build the app described in the spec (v1.1) and backend doc.
 
 **Practice set**
 - [x] **Generation test first:** `npm run bench -- generation` (13 real missed/redo questions, `test-data/generation/`). First run 2026-10-19 on Gemini 3.8 Flash: 13/13 passed every check, 12/13 with the answer confirmed by math (the 13th is a symmetry drawing); read by hand, all mirror their originals. Prompt then tightened (always give a check; fixed list of picture types) and re-run: same scores, both fixes working
-- [ ] Generation: one practice question per missed question, same wording and order, new numbers ([010](decisions/010-question-generation.md))
-- [ ] Math checker (validation rules); retry, then flag for the tutor. *Checks written in `web/src/lib/checks/` (used by the benchmark); still to wire into the app with retries*
-- [ ] Regenerate and Edit buttons on each practice question
-- [ ] **Diagram drawing:** the app draws diagrams from data (blocks, charts, shapes, letters) so it can check the answers ([010](decisions/010-question-generation.md))
-- [ ] Printable practice sheet: letter size, space for work, mirrors the original's layout (model: `design-explorations/print-reference/`)
-- [ ] Answer key with worked steps
+- [x] Generation (`web/src/lib/generation.ts`, Step 3 `/sessions/[id]/practice`): one practice question per missed question, same wording and order, new numbers ([010](decisions/010-question-generation.md)); written 4 at a time with low thinking (fast, cheap); a "Rewrite practice set" warning if Step 2's missed questions change
+- [x] Math checker (validation rules, `web/src/lib/checks/`) runs on every practice question; failures are sent back with the problems, up to 3 tries, then flagged "Needs your check" with the reason
+- [ ] Regenerate and Edit buttons on each practice question. *Regenerate done (~3 s); Edit later, if needed*
+- [x] **Diagram drawing** (`web/src/components/pictures/Picture.tsx`): the app draws pictures from data (place-value charts, underlined digits, rectangles and polygons with side lengths, letters, base-ten blocks, bundles of 100, symmetry shapes with a dashed line); anything else is shown as a description to sketch. Preview at `/blocks`
+- [x] Printable practice sheet (`/sessions/[id]/print/sheet`): letter size, black and white, nickname and date line, circled answer letters, answer lines, work boxes (larger where work is required); "Save as PDF" via the print dialog
+- [x] Answer key (`/sessions/[id]/print/answer-key`): the practice sheet filled in, same layout (tutor's request 2026-10-20): right answers marked, worked steps and a hint in each work box
 
 **Grading and review session**
 - [ ] Upload of the student's work → grading: pass / redo / needs tutor check / skipped ([003](decisions/003-grading-model.md))
