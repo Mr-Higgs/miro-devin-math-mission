@@ -17,9 +17,9 @@ export function PageShell({
 }) {
   return (
     <>
-      <header className="bg-brand text-brand-ink">
+      <header className="app-bar bg-brand text-brand-ink">
         <div className="mx-auto flex h-14 w-full max-w-4xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="font-display text-lg font-semibold tracking-tight">
+          <Link href="/" className="app-name font-display text-lg font-semibold tracking-wide">
             {APP_NAME}
           </Link>
           {actions}

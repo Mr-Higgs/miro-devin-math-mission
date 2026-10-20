@@ -4,7 +4,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-  Badge, Button, ButtonLink, Card, Checkbox, GradeBadge, Notice, PageShell, ProgressDots, TextField,
+  Badge, Button, ButtonLink, Card, Checkbox, GradeBadge, Notice, PageShell, ProgressDots, QuestionCard, TextField,
 } from "@/components/ui";
 import { GRADE_RESULTS } from "@/lib/grading";
 import { Picture } from "@/components/pictures/Picture";
@@ -17,10 +17,40 @@ export default function BlocksPage() {
   return (
     <PageShell
       title="Building blocks"
-      intro="Every shared piece of the interface. Colors, fonts and effects come from src/theme/."
+      intro="Every shared piece of the interface. Colors, fonts and effects come from src/theme/theme.css."
       actions={<Button variant="secondary">Sign out</Button>}
     >
       <div className="grid gap-6">
+        <Card title="Sample screen: Step 2" aside="How a real page reads">
+          <div className="grid gap-4">
+            <Notice title="5 missed out of 10 questions">Check each question against the paper. Score on the paper: 55.</Notice>
+            <QuestionCard
+              q={{
+                question_number: "10",
+                original_question_text: "Which is the value of the 8 in the number 287?",
+                choices: { A: "800", B: "80", C: "10", D: "8" },
+                picture_description: null,
+                student_answer: "D",
+                correct_answer: "B",
+                points_possible: 1,
+                points_earned: 0,
+                marked_correct: false,
+                requires_work: false,
+                confidence: 0.9,
+              }}
+              actions={
+                <>
+                  <Button variant="secondary">Mark as correct</Button>
+                  <Button variant="quiet">Edit answers</Button>
+                </>
+              }
+            />
+            <div>
+              <Button size="lg">Continue to practice set (5)</Button>
+            </div>
+          </div>
+        </Card>
+
         <Card title="Buttons">
           <div className="flex flex-wrap gap-3">
             <Button>Primary</Button>

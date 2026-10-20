@@ -1,72 +1,48 @@
 /*
  * The app's look, in one place (decision 007, "Built for change").
- * Restyle the whole app by editing the values below; screens and building
- * blocks only use these names (bg-surface, text-ink, shadow-card, ...).
+ * Restyle the whole app by editing this file: screens and building blocks
+ * only use these names (bg-surface, text-ink, shadow-card, ...) and the class
+ * hooks at the bottom (.btn, .field-label, .card, .app-bar).
  *
- * Look: the Hologram HUD prototype's navy and cyan, toned down into calm,
- * grown-up branding for the adults who use the app (decision 011).
+ * Look: "HUD style", chosen by the tutor on 2026-10-20 (decision 011,
+ * Amendment 1): the April Hologram HUD prototype's deep-space background,
+ * glowing cyan edges and uppercase cyan headings. Always dark. Wording stays
+ * plain and adult (decision 011); printed pages stay black on white
+ * (web/src/app/sessions/[id]/print/print.css).
  * Fonts are chosen in fonts.ts; the app name is in brand.ts.
  */
 
-/* ---- Light (default) ---- */
 :root {
-  /* Page and surfaces */
-  --page: #f5f8fc;
-  --surface: #ffffff;
-  --surface-muted: #eaf0f7;
-  --line: #d5dfea;
+  color-scheme: dark;
+
+  /* Page and surfaces: deep space and see-through glass panels */
+  --page: #04040e;
+  --surface: rgba(8, 22, 44, 0.72);
+  --surface-muted: rgba(14, 34, 62, 0.8);
+  --line: rgba(34, 211, 238, 0.42);
 
   /* Text */
-  --ink: #0b1b2e;
-  --ink-muted: #4a5b70;
+  --ink: #e8faff;
+  --ink-muted: #8ec5d6;
 
-  /* Brand: deep-space navy, with cyan as the accent */
-  --brand: #0a2540;
-  --brand-ink: #ffffff; /* text on brand */
-  --accent: #0e7490;
-  --accent-ink: #ffffff; /* text on accent */
-  --accent-soft: #e0f5fa;
-  --glow: rgba(34, 211, 238, 0.35);
+  /* Brand: the app bar, and cyan as the accent */
+  --brand: rgba(4, 10, 24, 0.85);
+  --brand-ink: #67e8f9; /* cyan: headings, labels, app name */
+  --accent: #22d3ee;
+  --accent-ink: #e8faff; /* text on accent buttons */
+  --accent-soft: rgba(34, 211, 238, 0.1);
+  --glow: rgba(34, 211, 238, 0.5);
 
   /* Meaning (also used for grading results, decision 003) */
-  --success: #15803d;
-  --success-soft: #e7f6ec;
-  --warning: #a35a00;
-  --warning-soft: #fdf1df;
-  --danger: #b91c1c;
-  --danger-soft: #fdeaea;
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.12);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.12);
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.12);
 
   /* Keyboard focus ring */
-  --focus: #0891b2;
-}
-
-/* ---- Dark (follows the device setting) ---- */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page: #08131f;
-    --surface: #0f2033;
-    --surface-muted: #16293f;
-    --line: #24405c;
-
-    --ink: #e6eef7;
-    --ink-muted: #9fb2c7;
-
-    --brand: #0f2a47;
-    --brand-ink: #e6eef7;
-    --accent: #22d3ee;
-    --accent-ink: #062030;
-    --accent-soft: #0c3344;
-    --glow: rgba(34, 211, 238, 0.25);
-
-    --success: #4ade80;
-    --success-soft: #0f2e1d;
-    --warning: #fbbf24;
-    --warning-soft: #33260a;
-    --danger: #f87171;
-    --danger-soft: #3a1414;
-
-    --focus: #22d3ee;
-  }
+  --focus: #67e8f9;
 }
 
 /*
@@ -106,7 +82,66 @@
   --radius-control: 0.5rem;
   --radius-card: 0.875rem;
 
-  /* Effects: a soft card shadow, and a faint cyan glow kept from the HUD look */
-  --shadow-card: 0 1px 2px rgba(11, 27, 46, 0.06), 0 4px 16px rgba(11, 27, 46, 0.06);
+  /* Effects: glass panels with a cyan edge, and the HUD glow */
+  --shadow-card: inset 0 0 0 1px rgba(34, 211, 238, 0.2), 0 0 22px rgba(34, 211, 238, 0.12);
   --shadow-glow: 0 0 0 1px var(--glow), 0 0 18px var(--glow);
+}
+
+/* ---- HUD effects ---- */
+
+/* Deep space: a purple glow, a blue glow, and a faint starfield */
+body {
+  background-color: var(--page);
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.6), transparent 60%),
+    radial-gradient(1px 1px at 120px 80px, rgba(125, 249, 255, 0.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 200px 160px, rgba(255, 255, 255, 0.5), transparent 60%),
+    radial-gradient(1px 1px at 290px 40px, rgba(255, 255, 255, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 340px 210px, rgba(125, 249, 255, 0.45), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 85%, rgba(88, 28, 135, 0.35), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 90% 15%, rgba(14, 116, 144, 0.25), transparent 70%);
+  background-size: 360px 240px, 360px 240px, 360px 240px, 360px 240px, 360px 240px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+
+/* Page and panel headings: uppercase cyan with a glow */
+h1,
+h2 {
+  color: var(--brand-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 14px var(--glow);
+}
+
+/* ---- Hooks used by the building blocks (web/src/components/ui) ---- */
+
+.app-bar {
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.15);
+}
+.app-bar .app-name {
+  color: var(--brand-ink);
+  text-shadow: 0 0 12px var(--glow);
+}
+
+.card {
+  backdrop-filter: blur(4px);
+}
+
+.btn {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.btn-primary {
+  background: rgba(34, 211, 238, 0.16);
+  border: 1px solid rgba(34, 211, 238, 0.7);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.35);
+}
+
+/* Short field labels only (checkbox sentences stay in normal case) */
+.field-label {
+  color: var(--brand-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
 }

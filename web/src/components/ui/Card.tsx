@@ -9,7 +9,7 @@ type CardProps = ComponentProps<"section"> & {
 
 export function Card({ title, aside, className, children, ...props }: CardProps) {
   return (
-    <section className={cx("rounded-card border border-line bg-surface p-5 shadow-card sm:p-6", className)} {...props}>
+    <section className={cx("card rounded-card border border-line bg-surface p-5 shadow-card sm:p-6", className)} {...props}>
       {(title || aside) && (
         <header className="mb-4 flex items-start justify-between gap-4">
           {title && <h2 className="font-display text-lg font-semibold text-ink">{title}</h2>}

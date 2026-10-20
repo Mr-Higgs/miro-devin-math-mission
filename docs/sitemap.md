@@ -260,7 +260,7 @@ flowchart LR
 | What | Why | Status |
 |---|---|---|
 | Database privacy rules | Each adult only ever reaches their own rows and files (checked by `npm run db:test`) | ✅ Built |
-| Theme and building blocks (`web/src/theme/`, `web/src/components/ui/`) | Every page shares one look; restyle in one place | ✅ Built |
+| Theme and building blocks (`web/src/theme/`, `web/src/components/ui/`) | Every page shares one look (HUD style since 2026-10-20); restyle in one place | ✅ Built |
 | Benchmark (`npm run bench`) | Tests prompts and AI models on real samples before a change goes live: extraction, grading, generation | ✅ Built |
 | Daily photo-deletion job | Decision 006 | ⬜ Phase 2 |
 | Error tracking, spending cap, own email service | Running safely with other families | ⬜ Phase 3 |
@@ -285,6 +285,7 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-10-20 | Whole app switched to the HUD-style look (tutor's choice after comparing on `/blocks`; [011 Amendment 1](decisions/011-adult-only-audience.md)); no page or step changes |
 | 2026-10-20 | Step 3 built: practice set with math checks, retries, flags and Regenerate; pictures drawn from data; printable practice sheet and answer key (the sheet filled in) |
 | 2026-10-20 | Automatic second look for missing student answers |
 | 2026-10-19 | Extraction built with auto-rotation, cross-checks (score on paper, missing answers) and quick fixes on Step 2; prompt rewritten for accuracy after the tutor's feedback |

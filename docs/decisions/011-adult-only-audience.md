@@ -55,3 +55,14 @@ Not legal advice.
 - **[003](003-grading-model.md):** Amendment 2 (feedback for the adult).
 - **[006](006-upload-retention.md):** Amendment 1 (name covering, consent).
 - **Spec, backend doc, roadmap.**
+
+## Amendment 1 — 2026-10-20: HUD-style look
+
+The tutor compared the plain "light branding" look with a preview closer to the April Hologram HUD prototype and chose the **HUD style for the whole app**: deep-space background with a faint starfield, see-through panels with glowing cyan edges, uppercase cyan headings and labels in a techy font (Orbitron), outlined glowing buttons. Always dark.
+
+What stays the same, so the adult-only position holds:
+- **Wording is plain and written for the adult** ("Upload and continue", "Missed questions"). None of the prototype's game language ("Activate mission", "Beam up file", "Ghost threat") and nothing addressed to the student.
+- **No on-screen stars, confetti or celebrations** for the student; rewards stay printable.
+- **Printed pages stay plain black on white.**
+
+Where it lives: `web/src/theme/theme.css` (values and effects) and `fonts.ts`; the building blocks only carry class hooks, so the look can still be changed in one place.

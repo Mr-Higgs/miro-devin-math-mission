@@ -84,11 +84,11 @@ Build the app described in the spec (v1.1) and backend doc.
 - [ ] **Ungraded tests** ([012](decisions/012-ungraded-tests.md), proposed 2026-10-19): the app works out the answers (math-checked), reads the student's answers, decides what was missed. Waiting on the tutor's choices; benchmark with student-work samples 002/003
 - [ ] Tutor review: remove, edit or add questions; set "work required". *Done: one-tap Mark as correct / missed, Edit answers. Still to do: edit question text, remove, add, work required*
 
-**Practice set**
+**Practice set** (Step 3: ✅ complete 2026-10-20)
 - [x] **Generation test first:** `npm run bench -- generation` (13 real missed/redo questions, `test-data/generation/`). First run 2026-10-19 on Gemini 3.8 Flash: 13/13 passed every check, 12/13 with the answer confirmed by math (the 13th is a symmetry drawing); read by hand, all mirror their originals. Prompt then tightened (always give a check; fixed list of picture types) and re-run: same scores, both fixes working
 - [x] Generation (`web/src/lib/generation.ts`, Step 3 `/sessions/[id]/practice`): one practice question per missed question, same wording and order, new numbers ([010](decisions/010-question-generation.md)); written 4 at a time with low thinking (fast, cheap); a "Rewrite practice set" warning if Step 2's missed questions change
 - [x] Math checker (validation rules, `web/src/lib/checks/`) runs on every practice question; failures are sent back with the problems, up to 3 tries, then flagged "Needs your check" with the reason
-- [ ] Regenerate and Edit buttons on each practice question. *Regenerate done (~3 s); Edit later, if needed*
+- [x] Regenerate on each practice question (~3 s). *Edit by hand deferred: later, if needed*
 - [x] **Diagram drawing** (`web/src/components/pictures/Picture.tsx`): the app draws pictures from data (place-value charts, underlined digits, rectangles and polygons with side lengths, letters, base-ten blocks, bundles of 100, symmetry shapes with a dashed line); anything else is shown as a description to sketch. Preview at `/blocks`
 - [x] Printable practice sheet (`/sessions/[id]/print/sheet`): letter size, black and white, nickname and date line, circled answer letters, answer lines, work boxes (larger where work is required); "Save as PDF" via the print dialog
 - [x] Answer key (`/sessions/[id]/print/answer-key`): the practice sheet filled in, same layout (tutor's request 2026-10-20): right answers marked, worked steps and a hint in each work box
@@ -104,7 +104,7 @@ Build the app described in the spec (v1.1) and backend doc.
 - [ ] Daily photo-deletion job; delete-a-session and delete-everything controls ([006](decisions/006-upload-retention.md))
 - [ ] Error handling: unreadable photos, AI failures and timeouts, retry without losing work
 - [x] Upload screen tip on good lighting (faint pencil is the main grading weakness)
-- [ ] UI for adults: the space theme from the Hologram HUD prototype as light, grown-up branding; plain, professional wording; responsive on phone and tablet ([011](decisions/011-adult-only-audience.md))
+- [x] UI for adults: **HUD style** chosen by the tutor 2026-10-20 ([011 Amendment 1](decisions/011-adult-only-audience.md)): the Hologram HUD prototype's dark space look, glowing cyan edges and headings, with plain, professional wording and no on-screen celebrations; responsive on phone and tablet. All in `web/src/theme/`
 
 **Done when:** a full real session with Gabe runs end to end on the staging site.
 

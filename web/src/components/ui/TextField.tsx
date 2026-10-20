@@ -15,7 +15,7 @@ export function TextField({ label, hint, error, id, className, ...props }: TextF
 
   return (
     <div className={cx("flex flex-col gap-1.5", className)}>
-      <label htmlFor={inputId} className="text-sm font-medium text-ink">
+      <label htmlFor={inputId} className="field-label font-medium text-ink">
         {label}
       </label>
       <input

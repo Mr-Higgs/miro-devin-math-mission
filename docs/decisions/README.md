@@ -16,7 +16,7 @@ One file per decision, numbered in the order they're made: `NNN-short-name.md`. 
 | [008](008-target-grade-level.md) | Target grade level | ↩️ Superseded by 009 | ~~3rd grade for MVP~~ |
 | [009](009-no-grade-level.md) | No grade level | ✅ Decided | The uploaded test decides topics and difficulty; no grade setting |
 | [010](010-question-generation.md) | Question generation | ✅ Decided (amended) | One practice question per missed question that mirrors the original; only numbers/diagrams change and the answer must differ; AI writes, app checks |
-| [011](011-adult-only-audience.md) | Adult-only audience | ✅ Decided | 18+ adults only; no student accounts; adult-facing screens; printable student rewards; legal review before invite-only launch |
+| [011](011-adult-only-audience.md) | Adult-only audience | ✅ Decided (amended) | 18+ adults only; no student accounts; adult-facing screens; printable student rewards; legal review before invite-only launch. Amendment 1: HUD-style look, plain adult wording kept |
 
 ## Phase 2 decisions
 

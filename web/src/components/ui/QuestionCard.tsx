@@ -28,7 +28,7 @@ export function QuestionCard({ q, actions, warnings = [] }: { q: QuestionCardDat
   const right = letters(q.correct_answer);
 
   return (
-    <article className="rounded-card border border-line bg-surface p-4">
+    <article className="card rounded-card border border-line bg-surface p-4">
       <header className="mb-2 flex flex-wrap items-center gap-2">
         <span className="font-display font-semibold text-ink">Question {q.question_number}</span>
         {q.marked_correct ? <Badge tone="success">Marked correct</Badge> : <Badge tone="danger">Missed</Badge>}

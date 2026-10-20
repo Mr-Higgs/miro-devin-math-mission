@@ -6,11 +6,11 @@ type Variant = "primary" | "secondary" | "quiet" | "danger";
 type Size = "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-control font-medium transition-colors " +
+  "btn inline-flex items-center justify-center gap-2 rounded-control font-medium transition-colors " +
   "disabled:cursor-not-allowed disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-accent text-accent-ink hover:shadow-glow",
+  primary: "btn-primary bg-accent text-accent-ink hover:shadow-glow",
   secondary: "border border-line bg-surface text-ink hover:bg-surface-muted",
   quiet: "text-accent hover:bg-accent-soft",
   danger: "bg-danger text-surface hover:opacity-90",
