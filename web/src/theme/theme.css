@@ -43,6 +43,14 @@
 
   /* Keyboard focus ring */
   --focus: #67e8f9;
+
+  /* The animated galaxy behind every page (components/GalaxyBackground.tsx) */
+  --galaxy-star: #ffffff;
+  --galaxy-star-tint: #7df9ff;
+  --galaxy-nebula-1: rgba(88, 28, 135, 0.38); /* purple, lower left */
+  --galaxy-nebula-2: rgba(14, 116, 144, 0.3); /* teal, upper right */
+  --galaxy-nebula-3: rgba(37, 99, 235, 0.14); /* blue, middle */
+  --galaxy-glow: rgba(34, 211, 238, 0.1); /* follows the cursor */
 }
 
 /*
@@ -89,19 +97,13 @@
 
 /* ---- HUD effects ---- */
 
-/* Deep space: a purple glow, a blue glow, and a faint starfield */
+/* Deep space. The stars, nebulae and cursor glow are drawn by
+   components/GalaxyBackground.tsx (colors above); never printed. */
 body {
   background-color: var(--page);
-  background-image:
-    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.6), transparent 60%),
-    radial-gradient(1px 1px at 120px 80px, rgba(125, 249, 255, 0.5), transparent 60%),
-    radial-gradient(1.5px 1.5px at 200px 160px, rgba(255, 255, 255, 0.5), transparent 60%),
-    radial-gradient(1px 1px at 290px 40px, rgba(255, 255, 255, 0.4), transparent 60%),
-    radial-gradient(1px 1px at 340px 210px, rgba(125, 249, 255, 0.45), transparent 60%),
-    radial-gradient(ellipse 60% 50% at 10% 85%, rgba(88, 28, 135, 0.35), transparent 70%),
-    radial-gradient(ellipse 55% 45% at 90% 15%, rgba(14, 116, 144, 0.25), transparent 70%);
-  background-size: 360px 240px, 360px 240px, 360px 240px, 360px 240px, 360px 240px, 100% 100%, 100% 100%;
-  background-attachment: fixed;
+}
+@media print {
+  .galaxy { display: none; }
 }
 
 /* Page and panel headings: uppercase cyan with a glow */

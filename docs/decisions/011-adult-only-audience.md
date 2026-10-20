@@ -65,4 +65,6 @@ What stays the same, so the adult-only position holds:
 - **No on-screen stars, confetti or celebrations** for the student; rewards stay printable.
 - **Printed pages stay plain black on white.**
 
-Where it lives: `web/src/theme/theme.css` (values and effects) and `fonts.ts`; the building blocks only carry class hooks, so the look can still be changed in one place.
+Later the same day the static starfield became an **interactive galaxy background** on every page (`web/src/components/GalaxyBackground.tsx`): stars in depth layers that shift with the mouse, slowly drifting nebulae, a soft glow following the cursor; drifting on touch screens, still when the device asks for reduced motion, never printed.
+
+Where it lives: `web/src/theme/theme.css` (values, effects and galaxy colors) and `fonts.ts`; the building blocks only carry class hooks, so the look can still be changed in one place.
