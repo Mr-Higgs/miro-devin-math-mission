@@ -9,7 +9,7 @@
 Can the adult upload a test or worksheet **nobody has graded yet**, and have the app work out the right answers, read the student's answers, and decide which were missed?
 
 Today the app relies on the teacher's marks: what the teacher marked wrong decides the practice set, and the score on the paper lets the app check its own reading. An ungraded test has neither, so:
-- the student's **faint pencil** is the only evidence of what they answered (no teacher marks to fall back on);
+- The student's **faint pencil** is the only evidence of what they answered (no teacher marks to fall back on);
 - the **correct answers** must come from the app, not the teacher;
 - the "score doesn't add up" cross-check can't run.
 

@@ -31,7 +31,7 @@ Exact prices change; check Google's current Gemini pricing when estimating.
 |---|---|---|---|---|---|
 | 2 | **Spend extra care only where needed**: graded tests (teacher marks + score to cross-check) use cheap settings; higher image detail and any second reading only for ungraded tests ([012](decisions/012-ungraded-tests.md)) | Medium | Low: graded tests have built-in checks | 💡 idea | Depends on 012 |
 | 3 | **Record tokens used per session** (save input/output tokens with each AI call) so pricing is based on real numbers | None directly; makes every other decision measurable | None | 💡 idea | Small database addition (e.g. on `extraction_results`) |
-| 4 | **Grow the benchmark with every new real test** | Avoids paying for settings that only looked good on one quiz | None | 💡 idea | Each new graded test of Gabe's → a sample |
+| 4 | **Grow the benchmark with every new real test** | Avoids paying for settings that only looked good on one quiz | None | 💡 idea | Each new graded test of the student's → a sample |
 | 5 | **Lower image detail** (`mediaResolution` low/medium) for clean, well-lit photos | Input tokens per photo: 1,120 → 560 or 280 | High for faint pencil | 💡 idea | Only after measuring; faint pencil is the main weakness |
 | 7 | **Cap pages and uploads per session/month** at public launch | Bounds worst-case cost per user | None | 💡 idea | Roadmap Phase 4 already lists per-user limits |
 | 8 | **Batch generation**: write all practice questions in one call instead of one per question | Fewer repeated instructions (input tokens) | A bad question could affect others; retries get bigger | 💡 idea | Measure with the generation benchmark |

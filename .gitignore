@@ -19,3 +19,12 @@ dist/
 .claude/settings.local.json
 .DS_Store
 *.log
+
+# Screenshots and local run data
+site/screenshots/
+starter/screenshots/
+starter/data/*
+!starter/data/.gitkeep
+!starter/data/README.md
+starter/submission/*.mp4
+starter/submission/*.webm

@@ -1,5 +1,9 @@
 # Working on Math Mission
 
+**Buildathon participants:** the rules below apply to the original app in `web/`. For the participant app in `starter/`, use the `customize-mission` skill (`.devin/skills/`) and `starter/README.md` instead; `docs/sitemap.md` and `docs/roadmap.md` describe `web/`, not `starter/`.
+
+## Rules for `web/`
+
 - **Start with the latest handoff** (linked from `README.md`), `docs/roadmap.md` and `web/AGENTS.md`.
 - **Check `docs/sitemap.md` before building anything.** Say where the work fits: which page, user action and capability. If it's new or changes how something works, add it to the site map's "Proposed changes" first and confirm with the tutor.
 - **Keep the site map true.** When a page or capability is built, changed or dropped, update `docs/sitemap.md` (status, diagrams, change log) in the same commit, alongside the roadmap ticks.

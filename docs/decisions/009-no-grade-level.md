@@ -13,12 +13,12 @@ Should the app be built for a specific grade level?
 
 ## Why
 - The core idea is to practice *exactly what was on the test*. The test already carries the grade level, so the app never needs to know it.
-- The same app works for Gabe this year and next year, and for any family at public launch (see [001](001-launch-audience.md)), without per-grade work.
+- The same app works for the student this year and next year, and for any family at public launch (see [001](001-launch-audience.md)), without per-grade work.
 - 008 was decided on the assumption that question generation needs a per-grade template library. That assumption is now an open question (below), not a given.
 
 ## What this means
 - **No grade field** in setup, accounts or the data model.
-- **Test samples:** what matters is *variety* (different topics, formats, visuals, teacher marking styles), not a specific grade. Gabe's 3rd-grade tests this year are welcome as samples because they're new topics, not because the app targets 3rd grade.
+- **Test samples:** what matters is *variety* (different topics, formats, visuals, teacher marking styles), not a specific grade. The student's 3rd-grade tests this year are welcome as samples because they're new topics, not because the app targets 3rd grade.
 - **Visuals:** practice sheets must handle whatever pictures appear on uploaded tests: base-ten blocks, place-value charts, arrays, fraction bars, number lines, shapes, graphs, and so on.
 - **Spec §5's question-type list** becomes *examples* of what the app must handle, not the complete set.
 

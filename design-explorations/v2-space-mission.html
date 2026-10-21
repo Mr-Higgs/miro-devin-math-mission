@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Mission — Space Tutoring App for Gabe</title>
+    <title>Math Mission — Space Tutoring App for the student</title>
     <style>
         * {
             margin: 0;
@@ -985,10 +985,10 @@
     <!-- SCREEN 1: WELCOME -->
     <div id="s-welcome" class="screen active">
         <div class="hero-title">Math Mission</div>
-        <div class="hero-subtitle">Upload Gabe's test. Navigate the mission. Earn stars.</div>
+        <div class="hero-subtitle">Upload the student's test. Navigate the mission. Earn stars.</div>
 
         <div class="rank-bar">
-            <div class="rank-text">Cadet Gabe — Level 4 Math Astronaut</div>
+            <div class="rank-text">Cadet — Level 4 Math Astronaut</div>
             <div class="stars-count">⭐ 145 Stars</div>
             <div class="progress-bar">
                 <div class="progress-fill" style="width: 40%;"></div>
@@ -1010,12 +1010,12 @@
 
         <div class="form-group">
             <label class="form-label">Student</label>
-            <input type="text" class="form-input" value="Gabe" readonly>
+            <input type="text" class="form-input" value="Cadet" readonly>
         </div>
 
         <div class="form-group">
             <label class="form-label">Tutor</label>
-            <input type="text" class="form-input" value="Auntie Mia" readonly>
+            <input type="text" class="form-input" value="the tutor" readonly>
         </div>
 
         <div class="form-group">
@@ -1124,7 +1124,7 @@
             </div>
             <div class="practice-header-row">
                 <span class="practice-header-label">Student:</span>
-                <span class="practice-header-value">Gabe</span>
+                <span class="practice-header-value">the student</span>
             </div>
             <div class="practice-header-row">
                 <span class="practice-header-label">Date:</span>
@@ -1163,8 +1163,8 @@
 
         <!-- Upload Student Work Section -->
         <div class="upload-student-section">
-            <div class="upload-student-title">📸 Upload Gabe's Mission Report</div>
-            <div class="upload-student-hint">Once Gabe completes the worksheet on paper, upload a photo of his answers here</div>
+            <div class="upload-student-title">📸 Upload the student's Mission Report</div>
+            <div class="upload-student-hint">Once the student completes the worksheet on paper, upload a photo of his answers here</div>
             <button class="transmit-btn" onclick="document.getElementById('student-work-input').click()">📤 Upload Photo</button>
             <input type="file" id="student-work-input" accept=".jpg,.jpeg,.png,.pdf">
         </div>
@@ -1202,7 +1202,7 @@
 
             <!-- B. Cadet's Work -->
             <div class="review-section">
-                <span class="review-section-title">📸 Gabe's Transmitted Work</span>
+                <span class="review-section-title">📸 the student's Transmitted Work</span>
                 <div class="work-display">
                     <div>
                         <div class="work-icon">🖼️</div>
@@ -1239,7 +1239,7 @@
         <div class="celebration">
             <div class="celebration-icon">🚀</div>
             <div class="celebration-title">Mission Complete!</div>
-            <div class="celebration-subtitle">Outstanding work, Cadet Gabe!</div>
+            <div class="celebration-subtitle">Outstanding work, Cadet!</div>
 
             <div class="stats-grid">
                 <div class="stat-box">
@@ -1269,7 +1269,7 @@
 
             <div class="prize-box">
                 <div class="prize-icon">🎁</div>
-                <div class="prize-text">Prize Unlocked — Claim from Auntie Mia!</div>
+                <div class="prize-text">Prize Unlocked — Claim from the tutor!</div>
             </div>
 
             <button class="final-cta" onclick="show('s-welcome')">🚀 Launch New Mission</button>

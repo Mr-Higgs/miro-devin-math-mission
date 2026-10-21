@@ -1,6 +1,6 @@
 # Database (Supabase)
 
-Linked to the Supabase project **Math Mission** (ref `mnlhcdxsobppgymkwcqi`, US East / Ohio).
+Linked to the Supabase project **Math Mission** (ref `<your-project-ref>`, US East / Ohio).
 
 ## Every database change is a migration file
 Decision 007, "Built for change": what the database stores only changes through numbered SQL files in `supabase/migrations/`, kept in git. **Never change tables by hand in the Supabase dashboard.** The same files build every copy of the database, so they can't drift apart.

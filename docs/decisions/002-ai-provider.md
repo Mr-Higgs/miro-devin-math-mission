@@ -59,7 +59,7 @@ These findings affect the plan regardless of which model wins:
 9. **Partial credit exists.** The "55" score is 55%: 5 right + ½ credit on a choose-all question.
 
 ## What samples 002, 003 and the tutoring session add
-1. **Gabe often writes answers without work,** even when right (sample 003). A strict "work shown" rule would fail correct answers.
+1. **the student often writes answers without work,** even when right (sample 003). A strict "work shown" rule would fail correct answers.
 2. **Work and answer can disagree** (sample 002 photo 6: work shows 21 and 7+7+7, answer says 9 cm). The grader must flag this as "needs tutor check."
 3. **Retries sit next to crossed-out first attempts.** Grade the final answer.
 4. **Unanswered questions** must be skipped, not marked wrong.
@@ -89,7 +89,7 @@ Only a Google key was available, so Claude and OpenAI are not tested yet. One ru
 Both runs used about 24k input tokens and ~5k output tokens per model (cost: cents).
 
 **What happened:**
-- **Reading the quiz:** Flash got every question right, including the ½ credit on Q9. Pro fell into the teacher-mark trap: it read the teacher's blue circle on the *correct* choice as the student's answer, so it thought Gabe got Q2, 7, 8 and 10 right. It also misread 138 as 128.
+- **Reading the quiz:** Flash got every question right, including the ½ credit on Q9. Pro fell into the teacher-mark trap: it read the teacher's blue circle on the *correct* choice as the student's answer, so it thought the student got Q2, 7, 8 and 10 right. It also misread 138 as 128.
 - **Shared grading mistakes (both models):**
   - **Faint or drawing-only answers came back as "skipped"** (sample 002 photo 4, Q4 and Q5; photo 1, Q5) instead of redo or needs check. The grading prompt should say that any marks in the answer area mean "needs check," never "skipped."
   - **Starburst (photo 3, Q4):** both said redo, which follows decision 003's rule for "Explain" questions. The tutor marked it correct, so the rule itself is in question (see the open issue in [sample 002](../../test-data/student-work/002-topic13-perimeter-symmetry/README.md)).
@@ -101,7 +101,7 @@ Both runs used about 24k input tokens and ~5k output tokens per model (cost: cen
 **Next:** fix the "skipped" wording in the grading prompt, resolve the two answer-key questions, repeat runs to check consistency, and add Claude and OpenAI.
 
 ### Round 1b results: Google, 3 runs each (2026-10-15)
-Changes since 1a: grading prompt now counts drawings as work and allows "skipped" only when there are no marks at all; answer key corrected (starburst = pass, Gabe explained by drawing a line; photo 4 Q6 = Gabe marked D); thinking tokens now counted.
+Changes since 1a: grading prompt now counts drawings as work and allows "skipped" only when there are no marks at all; answer key corrected (starburst = pass, the student explained by drawing a line; photo 4 Q6 = the student marked D); thinking tokens now counted.
 
 | Model | Missed questions found (3 runs) | Student answers read | Grading | Wrongful redos | Est. cost (3 runs) |
 |---|---|---|---|---|---|
@@ -114,7 +114,7 @@ Cost estimates use per-token prices from secondary sources (Pro $2/$12, Flash $0
 - **Gemini 3.1 Pro is out for extraction.** It fell into the teacher-mark trap in all 3 runs, reading the teacher's blue circle on the correct choice as the student's answer. It would have left most missed questions off the practice sheet.
 - **Gemini 3.8 Flash is consistent.** It found every missed question in all 3 runs. Its only error was one false alarm (misread 138 as 128 once), and it caught the partial credit in 2 of 3 runs.
 - **Grading is tied at 88%.** The remaining errors are mostly about **faint marks**:
-  - **Starburst:** both models missed Gabe's faint drawn line in all 3 runs, so each marked it redo. These 3 runs are the 3 "wrongful redos."
+  - **Starburst:** both models missed the student's faint drawn line in all 3 runs, so each marked it redo. These 3 runs are the 3 "wrongful redos."
   - **Faint circled choice** (photo 1, Q5): Flash called it "skipped" every time; Pro usually flagged it for the tutor.
   - **Starred questions** (sample 003, Q24 and Q26): Flash flagged them for the tutor every time because of the stars on the page. That's harmless. If the stars are the tutor's, "needs check" is a reasonable answer there.
   - **Pro passed the 9 cm / 7 cm conflict** in 2 of 3 runs, which is a wrongful pass. Flash flagged it.
@@ -140,7 +140,7 @@ Claude and OpenAI were **not** tested; the tutor chose not to run them. The benc
 - **Privacy:** use only the paid tier (no training on data). Before stage 2, confirm Google's API terms for children's data as part of the COPPA review.
 
 ## Revisit if
-- Accuracy drops on new samples (re-run `npm run bench` as Gabe's tests come in), especially missed questions not found
+- Accuracy drops on new samples (re-run `npm run bench` as the student's tests come in), especially missed questions not found
 - Google changes pricing or data terms
 - A newer Gemini model appears; test it with `--models`
 

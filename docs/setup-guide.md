@@ -5,7 +5,7 @@ Everything the tutor needs to create before Claude can set up the project ([road
 **Ground rules**
 - **Do these yourself.** Claude never creates accounts or handles passwords.
 - **Never paste passwords, keys or secret tokens into the chat.** When a key is needed, Claude will create a file for you to paste it into, like the `.env` file for the Google key.
-- **Use the same email for all three** (e.g., miapenbiz@gmail.com). It keeps things simple.
+- **Use the same email for all three** (e.g., <tutor-email>). It keeps things simple.
 - **Save every password in a password manager** (Apple Passwords, 1Password, etc.).
 
 ## Checklist

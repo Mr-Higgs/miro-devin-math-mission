@@ -1,6 +1,6 @@
 # Print reference: Topic 13 practice sheet and answer key
 
-Hand-made in April 2026 from Gabe's Topic 13 homework (the same pages as `test-data/student-work/002-topic13-perimeter-symmetry/`). Copied here on 2026-10-16 from the older planning folder.
+Hand-made in April 2026 from the student's Topic 13 homework (the same pages as `test-data/student-work/002-topic13-perimeter-symmetry/`). Copied here on 2026-10-16 from the older planning folder.
 
 Use as the model for:
 - **The printable practice sheet** (letter size, name/date line, space for work) and the **answer key** (correct answers with explanations)

@@ -1,8 +1,34 @@
-# Gabe's Math Mission
+# Math Mission
+
+## Miro x Devin Buildathon — start here
+
+This repo hosts the December 7, 2026 "Build Your Balanced Team" event in Miami.
+
+| Folder | What it is |
+|---|---|
+| [site/](site/) | Event landing page (`cd site && npm run dev`) |
+| [starter/](starter/) | **The participant app** — a tutoring app you personalize with Devin |
+| [web/](web/) | The original product (Mia's Supabase-backed app — not part of the buildathon) |
+| [.devin/skills/](.devin/skills/) | Devin skills: `customize-mission`, `record-demo-video`, `check-submission` |
+| [docs/buildathon/](docs/buildathon/) | Challenge brief, participant workflow, facilitator notes |
+
+**Participant quickstart:**
+
+```bash
+cd starter
+npm install
+cp .env.example .env.local
+npm run dev        # AI_PROVIDER=mock — no keys needed
+```
+
+Then open http://localhost:3000 and click "Use the sample test". See
+[docs/buildathon/challenge-brief.md](docs/buildathon/challenge-brief.md).
+
+## The original app (web/)
 
 A web app for **adults (18+) supporting a student's math**: parents, tutors, mentors. The adult uploads a photo of a graded test, AI finds the missed questions, and the app creates a practice sheet that mirrors them with new numbers or diagrams. It then grades the student's finished sheet from a photo and prints rewards for the student. Students never use the app themselves ([decision 011](docs/decisions/011-adult-only-audience.md)).
 
-Built first for Gabe and Auntie Mia; designed to grow into a tool for any parent, tutor, or after-school volunteer. There's no grade setting: the uploaded test decides the topics.
+Built first for one family; designed to grow into a tool for any parent, tutor, or after-school volunteer. There's no grade setting: the uploaded test decides the topics.
 
 ## Definition of done
 The app is released online and publicly available. See the [roadmap](docs/roadmap.md) for the remaining work.
@@ -44,6 +70,9 @@ The April prototype, at http://127.0.0.1:3456:
 ```bash
 python3 serve.py
 ```
+
+## Privacy
+This repository contains no student data. Test-data photos and benchmark results are never committed; `test-data/` and `web/benchmark/` outputs stay local and private.
 
 ## Handoffs
 At the end of each work session, add a new file to `handoffs/` named `YYYY-MM-DD-handoff.md` covering what changed, decisions made, and next steps. Don't edit old handoffs.

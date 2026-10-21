@@ -37,7 +37,7 @@ Example from [sample 001](../../test-data/graded-tests/001-topic10-place-value-q
 
 ## Rules for a good practice question
 The new numbers must:
-- **Keep the same skill.** If the original needed regrouping across a zero (308 − 10), the new one must too (e.g., 507 − 10), not an easy one like 358 − 10. This matters because the missed skill is the whole point (see the [tutoring session](../../test-data/tutoring-sessions/README.md): Gabe's misses were all regrouping across zero).
+- **Keep the same skill.** If the original needed regrouping across a zero (308 − 10), the new one must too (e.g., 507 − 10), not an easy one like 358 − 10. This matters because the missed skill is the whole point (see the [tutoring session](../../test-data/tutoring-sessions/README.md): the student's misses were all regrouping across zero).
 - **Keep the same size.** Same number of digits, same kind of numbers (whole numbers, money, measurements).
 - **Have a valid answer.** No negative results, no impossible problems (spec §4.3).
 - **Multiple choice:** keep the original's pattern of wrong choices (e.g., digit only, wrong place value), with exactly one correct answer.

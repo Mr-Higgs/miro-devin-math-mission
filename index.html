@@ -681,7 +681,7 @@
             <div class="card" style="width:100%;margin-top:20px;">
                 <div class="mission-stats">
                     <!-- BUG-09 FIX: names are injected from appState -->
-                    <div id="welcome-cadet-name">COMMANDER GABE</div>
+                    <div id="welcome-cadet-name">COMMANDER</div>
                     <div id="welcome-level" style="font-size:16px;font-weight:700;color:#00FFFF;margin-top:4px;">LEVEL 4</div>
                     <div style="margin-top:8px;">
                         <div class="progress-bar">
@@ -708,12 +708,12 @@
         <div class="form-group">
             <label>Cadet Name</label>
             <!-- BUG-09 FIX: input has ID so JS can read it -->
-            <input type="text" id="cadet-name-input" placeholder="e.g., Gabe">
+            <input type="text" id="cadet-name-input" placeholder="e.g., Alex">
         </div>
 
         <div class="form-group">
             <label>Tutor Name</label>
-            <input type="text" id="tutor-name-input" placeholder="e.g., Auntie Mia">
+            <input type="text" id="tutor-name-input" placeholder="e.g., Ms. Lee">
         </div>
 
         <div class="form-group">
@@ -784,14 +784,14 @@
         <!-- BUG-03 FIX: wired to window.print() with proper print CSS -->
         <div class="action-section cyan">
             <h3 style="color:#00FFFF;margin-bottom:12px;">📄 MATERIALIZE WORKSHEET</h3>
-            <p style="font-size:12px;color:rgba(0,255,255,.6);margin-bottom:12px;">Generates 8×11 printable sheet with calculation fields for Gabe to work on.</p>
+            <p style="font-size:12px;color:rgba(0,255,255,.6);margin-bottom:12px;">Generates 8×11 printable sheet with calculation fields for the student to work on.</p>
             <button class="btn" onclick="window.print()" style="width:100%;border-color:rgba(0,255,255,.6);background:rgba(0,200,255,.2);color:#FFFFFF;">🖨️ GENERATE PRINTABLE</button>
         </div>
 
         <!-- BUG-01 + BUG-04 FIX: real file input + functional beam-up button -->
         <div class="action-section">
             <h3 style="color:#00FFFF;margin-bottom:12px;">📸 UPLOAD CADET'S WORK</h3>
-            <p style="font-size:12px;color:rgba(0,255,255,.6);margin-bottom:12px;">Beam Gabe's completed answers to Mission Computer for instant analysis.</p>
+            <p style="font-size:12px;color:rgba(0,255,255,.6);margin-bottom:12px;">Beam the student's completed answers to Mission Computer for instant analysis.</p>
             <input type="file" id="work-file-input" accept="image/*,.pdf">
             <div class="upload-zone" id="work-upload-zone">
                 <div style="font-size:24px;">📸</div>
@@ -861,7 +861,7 @@
             <!-- BUG-09 FIX: tutor name is dynamic -->
             <div class="prize-beacon">
                 🎁 PRIZE BEACON ACTIVATED<br>
-                Report to <span id="prize-tutor-name">Auntie Mia</span> for rewards!
+                Report to <span id="prize-tutor-name">the tutor</span> for rewards!
             </div>
 
             <button class="btn primary" onclick="show('s-welcome')">🚀 NEW MISSION</button>
@@ -877,8 +877,8 @@
    APP STATE  — single source of truth for all screens
 ═══════════════════════════════════════════════════════════ */
 const appState = {
-    cadetName: 'Gabe',
-    tutorName: 'Auntie Mia',
+    cadetName: 'the student',
+    tutorName: 'the tutor',
     level: 4,
     stars: 0,
     startTime: null,
@@ -1030,7 +1030,7 @@ function renderPracticeQuestions() {
                 </div>
             </div>
             <div class="section-label">CALCULATION FIELD</div>
-            <!-- BUG-02 FIX: contenteditable lets Gabe type his working out -->
+            <!-- BUG-02 FIX: contenteditable lets the student type his working out -->
             <div class="calc-field" contenteditable="true"
                  data-placeholder="Show your work here..."></div>
             <input type="number" class="answer-input" placeholder="Answer">

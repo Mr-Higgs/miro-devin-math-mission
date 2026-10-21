@@ -1,0 +1,149 @@
+/*
+ * The app's look, in one place (decision 007, "Built for change").
+ * Restyle the whole app by editing this file: screens and building blocks
+ * only use these names (bg-surface, text-ink, shadow-card, ...) and the class
+ * hooks at the bottom (.btn, .field-label, .card, .app-bar).
+ *
+ * Look: "HUD style", chosen by the tutor on 2026-10-20 (decision 011,
+ * Amendment 1): the April Hologram HUD prototype's deep-space background,
+ * glowing cyan edges and uppercase cyan headings. Always dark. Wording stays
+ * plain and adult (decision 011); printed pages stay black on white
+ * (web/src/app/sessions/[id]/print/print.css).
+ * Fonts are chosen in fonts.ts; the app name is in brand.ts.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Page and surfaces: deep space and see-through glass panels */
+  --page: #04040e;
+  --surface: rgba(8, 22, 44, 0.72);
+  --surface-muted: rgba(14, 34, 62, 0.8);
+  --line: rgba(34, 211, 238, 0.42);
+
+  /* Text */
+  --ink: #e8faff;
+  --ink-muted: #8ec5d6;
+
+  /* Brand: the app bar, and cyan as the accent */
+  --brand: rgba(4, 10, 24, 0.85);
+  --brand-ink: #67e8f9; /* cyan: headings, labels, app name */
+  --accent: var(--mission-accent, #22d3ee); /* set from mission.config.ts on <html> */
+  --accent-ink: #e8faff; /* text on accent buttons */
+  --accent-soft: rgba(34, 211, 238, 0.1);
+  --glow: rgba(34, 211, 238, 0.5);
+
+  /* Meaning (also used for grading results, decision 003) */
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.12);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.12);
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.12);
+
+  /* Keyboard focus ring */
+  --focus: #67e8f9;
+
+  /* The animated galaxy behind every page (components/GalaxyBackground.tsx) */
+  --galaxy-star: #ffffff;
+  --galaxy-star-tint: #7df9ff;
+  --galaxy-nebula-1: rgba(88, 28, 135, 0.38); /* purple, lower left */
+  --galaxy-nebula-2: rgba(14, 116, 144, 0.3); /* teal, upper right */
+  --galaxy-nebula-3: rgba(37, 99, 235, 0.14); /* blue, middle */
+  --galaxy-glow: rgba(34, 211, 238, 0.1); /* follows the cursor */
+}
+
+/*
+ * Turn the values above into Tailwind classes. Tailwind's built-in color
+ * palette is switched off, so screens can't use colors from outside this file.
+ */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
+
+  /* Fonts (loaded in fonts.ts) */
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-mono: var(--font-code);
+
+  /* Corners */
+  --radius-control: 0.5rem;
+  --radius-card: 0.875rem;
+
+  /* Effects: glass panels with a cyan edge, and the HUD glow */
+  --shadow-card: inset 0 0 0 1px rgba(34, 211, 238, 0.2), 0 0 22px rgba(34, 211, 238, 0.12);
+  --shadow-glow: 0 0 0 1px var(--glow), 0 0 18px var(--glow);
+}
+
+/* ---- HUD effects ---- */
+
+/* Deep space. The stars, nebulae and cursor glow are drawn by
+   components/GalaxyBackground.tsx (colors above); never printed. */
+body {
+  background-color: var(--page);
+}
+@media print {
+  .galaxy { display: none; }
+}
+
+/* Page and panel headings: uppercase cyan with a glow */
+h1,
+h2 {
+  color: var(--brand-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 14px var(--glow);
+}
+
+/* ---- Hooks used by the building blocks (web/src/components/ui) ---- */
+
+.app-bar {
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.15);
+}
+.app-bar .app-name {
+  color: var(--brand-ink);
+  text-shadow: 0 0 12px var(--glow);
+}
+
+.card {
+  backdrop-filter: blur(4px);
+}
+
+.btn {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.btn-primary {
+  background: rgba(34, 211, 238, 0.16);
+  border: 1px solid rgba(34, 211, 238, 0.7);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.35);
+}
+
+/* Short field labels only (checkbox sentences stay in normal case) */
+.field-label {
+  color: var(--brand-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+}

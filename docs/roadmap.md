@@ -11,7 +11,7 @@
 | [0: Decisions](#phase-0--decisions) | Product and technical decisions | ✅ Done (business model deferred to Phase 4) |
 | [1: Foundation](#phase-1--foundation) | Real project setup: repo, app, database, hosting, "Built for change" | ✅ Done 2026-10-19 |
 | [2: Core product](#phase-2--core-product) | The app itself, from upload to celebration | 🟡 **Next** |
-| [3: Invite-only launch](#phase-3--invite-only-launch-stage-1) | Online for Gabe and a few invited families | ⬜ |
+| [3: Invite-only launch](#phase-3--invite-only-launch-stage-1) | Online for the student and a few invited families | ⬜ |
 | [4: Public launch](#phase-4--public-launch-stage-2) | Open to everyone: **definition of done** | ⬜ |
 
 The two launch stages come from [decision 001](decisions/001-launch-audience.md): invite-only first, public later.
@@ -43,10 +43,10 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 - [x] **Accounts:** GitHub, Supabase, Vercel (created by the tutor; step-by-step in the [setup guide](setup-guide.md))
 - [x] **Tools on this Mac:** Node.js 24 (official installer; broken Homebrew Node removed), GitHub CLI installed and signed in as miapen-snail
 - [x] **Tutor signed in to the Vercel and Supabase CLIs** (CLI telemetry turned off). Supabase project "Math Mission" (US East / Ohio) is active, on the tutor's credits account
-- [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `web/benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with Gabe's name in it)
+- [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `web/benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with the student's name in it)
 - [x] **Next.js project** in `web/`: Next.js 16, React 19, TypeScript, Tailwind CSS 4 (telemetry off). Runs locally at http://localhost:3000
 - [x] **Supabase project:** database, logins, private photo storage
-  - [x] Connected: repo linked to project `mnlhcdxsobppgymkwcqi` (`supabase/` folder; confirmed empty), client code in `web/src/lib/supabase/`, keys in `web/.env.local` and Vercel (Production + Preview). Check: `/api/health` returns `{"supabase":"ok"}`
+  - [x] Connected: repo linked to project `<your-project-ref>` (`supabase/` folder; confirmed empty), client code in `web/src/lib/supabase/`, keys in `web/.env.local` and Vercel (Production + Preview). Check: `/api/health` returns `{"supabase":"ok"}`
   - [x] Logins: see the invite-only login item below
   - [x] Private photo storage: `uploads` bucket (private, 20 MB per file, photos/PDF only); each adult can only reach their own folder
 - [x] **Vercel hosting:** project `math-mission` (root directory `web`), connected to GitHub so every push deploys automatically; live at https://math-mission-wheat.vercel.app. Each branch/pull request gets its own preview link
@@ -61,7 +61,7 @@ Set up the real project so building can start. You create the GitHub, Supabase a
   - Privacy: row-level security on every table, each adult sees only their own rows, child rows locked to the same adult, nothing reachable before 18+ and terms are confirmed (011), signed-out visitors get nothing. Checked with 24 tests in a throwaway database; Supabase's security advisor reports no issues
 - [x] **Invite-only login** working, with **18+ confirmation and terms acceptance** at sign-up ([011](decisions/011-adult-only-audience.md))
   - [x] Built: email sign-in link (`/login`, `/auth/callback`), 18+ and terms screen (`/welcome`), draft terms (`/terms`), sign-out, `proxy.ts` keeps logins fresh. Adults are added with `npm run invite -- email` in `web/` (no public sign-up)
-  - [x] `miapenbiz@gmail.com` invited
+  - [x] `<tutor-email>` invited
   - [x] Supabase dashboard: public sign-up off; Site URL and Redirect URLs set
   - [x] Tested on this Mac (sign in, 18+ and terms saved, sign out)
   - [x] Tested on the live site 2026-10-19
@@ -106,12 +106,12 @@ Build the app described in the spec (v1.1) and backend doc.
 - [x] Upload screen tip on good lighting (faint pencil is the main grading weakness)
 - [x] UI for adults: **HUD style** chosen by the tutor 2026-10-20 ([011 Amendment 1](decisions/011-adult-only-audience.md)): the Hologram HUD prototype's dark space look, glowing cyan edges and headings, with plain, professional wording and no on-screen celebrations; responsive on phone and tablet. All in `web/src/theme/`
 
-**Done when:** a full real session with Gabe runs end to end on the staging site.
+**Done when:** a full real session with the student runs end to end on the staging site.
 
 ---
 
 ## Phase 3 — Invite-only launch (stage 1)
-Online at a free Vercel address for Gabe and a few invited families ([001](decisions/001-launch-audience.md), [005](decisions/005-name-and-domain.md)).
+Online at a free Vercel address for the student and a few invited families ([001](decisions/001-launch-audience.md), [005](decisions/005-name-and-domain.md)).
 
 - [ ] **Legal review before launch:** Gemini's 18+ / minors terms and COPPA, against the adult-only design ([011](decisions/011-adult-only-audience.md)). If Gemini isn't allowed, benchmark Claude and switch providers
 - [ ] **Own email service** (custom SMTP) for sign-in emails. Supabase's built-in email only reaches members of the Supabase team (about 2 emails an hour) and its wording can't be changed. Once set up, switch the Magic Link template to `supabase/templates/magic_link.html` (link + code, works on phones)
@@ -120,11 +120,11 @@ Online at a free Vercel address for Gabe and a few invited families ([001](decis
 - [ ] Error tracking
 - [ ] Security basics: secrets server-side only, HTTPS, invite-only access checked on every route
 - [ ] Confirm Gemini paid-tier data terms (no training on uploads)
-- [ ] Real tutoring sessions with Gabe; fix what comes up
+- [ ] Real tutoring sessions with the student; fix what comes up
 - [ ] Invite a few other families/tutors; collect feedback
-- [ ] Re-run the benchmark as Gabe's new tests come in
+- [ ] Re-run the benchmark as the student's new tests come in
 
-**Done when:** several real sessions have been completed by families other than Gabe's.
+**Done when:** several real sessions have been completed by families other than the student's.
 
 ---
 

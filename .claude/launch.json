@@ -4,13 +4,13 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "/Users/miapendergast/Documents/Syrinx-Aruanus/Projects/Gabe's Math Mission/web"],
+      "runtimeArgs": ["run", "dev", "--prefix", "<project folder>/web"],
       "port": 3000
     },
     {
       "name": "prototype",
       "runtimeExecutable": "/usr/bin/python3",
-      "runtimeArgs": ["/Users/miapendergast/Documents/Syrinx-Aruanus/Projects/Gabe's Math Mission/serve.py"],
+      "runtimeArgs": ["<project folder>/serve.py"],
       "port": 3456
     }
   ]

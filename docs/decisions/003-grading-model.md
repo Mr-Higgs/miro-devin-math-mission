@@ -66,15 +66,15 @@ The pass rule now depends on what the question asks for:
 ### Why
 Real samples (see [002](002-ai-provider.md) and [test-data](../../test-data/README.md)) showed:
 - Most school questions are multiple choice or short fill-in, with nothing to show (sample 001).
-- Gabe often writes only the answer even when right (sample 003: 250 − 10 = 240). The original rule would fail correct answers, which is discouraging and doesn't match how his teacher grades.
+- The student often writes only the answer even when right (sample 003: 250 − 10 = 240). The original rule would fail correct answers, which is discouraging and doesn't match how his teacher grades.
 - Sometimes the work shows the right idea and the written answer is wrong (sample 002, photo 6: work shows 21 and 7+7+7, answer says 9 cm). That calls for the tutor's judgment, not an automatic fail.
 
 ### What this means
 - **Generated practice questions carry a `requires_work` flag**, copied from the original question ("Show your work" / "Explain" wording) or set by the tutor during review. The grading prompt receives this flag.
-- **The tutor can change the flag** per question during extraction review, e.g., to require work on a question Gabe keeps guessing on.
+- **The tutor can change the flag** per question during extraction review, e.g., to require work on a question the student keeps guessing on.
 - **Grading prompt (backend doc §8.2)** must: read the final answer, ignoring crossed-out attempts; check for work only when `requires_work` is true; return "unclear" when the work and answer conflict; skip unanswered questions instead of failing them.
 - **Resolves the open issue** raised in 002 about multiple-choice questions and work shown.
-- **Clarification (2026-10-15): drawings count as work.** Work or an explanation can be written words or numbers, or drawings and marks on the figure, even faint ones. Example: Gabe explained a symmetry answer by drawing a dotted line down the center of the shape ([sample 002](../../test-data/student-work/002-topic13-perimeter-symmetry/README.md), photo 3, Q4). The grader must look for these, and never treat a question with any student marks as "skipped."
+- **Clarification (2026-10-15): drawings count as work.** Work or an explanation can be written words or numbers, or drawings and marks on the figure, even faint ones. Example: the student explained a symmetry answer by drawing a dotted line down the center of the shape ([sample 002](../../test-data/student-work/002-topic13-perimeter-symmetry/README.md), photo 3, Q4). The grader must look for these, and never treat a question with any student marks as "skipped."
 
 ---
 

@@ -19,7 +19,7 @@ Math Mission solves this by turning a graded assignment directly into a personal
 
 The impact is two-sided. For the educator, it means being able to show up consistently and confidently — knowing the practice content is directly relevant to what their student is being tested on, without spending hours creating it. For the student, it means more repetitions on the concepts they actually missed, graded in real time, without waiting on anyone. The gap between "got it wrong on the test" and "practiced it enough to get it right next time" gets meaningfully smaller.
 
-The app has no grade-level setting: whatever is on the uploaded test decides the topics and difficulty ([decision 009](decisions/009-no-grade-level.md)). Launch happens in two stages ([decision 001](decisions/001-launch-audience.md)): first **invite-only** for Gabe and a few trusted families, then **open to the public**. The project is done when the app is publicly available. One graded assignment equals one focused practice session.
+The app has no grade-level setting: whatever is on the uploaded test decides the topics and difficulty ([decision 009](decisions/009-no-grade-level.md)). Launch happens in two stages ([decision 001](decisions/001-launch-audience.md)): first **invite-only** for the student and a few trusted families, then **open to the public**. The project is done when the app is publicly available. One graded assignment equals one focused practice session.
 
 ---
 
@@ -42,7 +42,7 @@ The app has no grade-level setting: whatever is on the uploaded test decides the
 **Submission type:** Photos, PDFs or screenshots of handwritten work, on paper or in tablet ink. No typing required.
 
 **Users:** adults only (18+): parents, guardians, tutors, teachers, mentors ([decision 011](decisions/011-adult-only-audience.md)). **Students never use, log in to, or operate the app**; the adult takes the photos and runs the session.
-- **Stage 1 (invite-only):** Gabe's tutor plus a small group of invited adults. Each has their own login, confirms they're 18+, and their data is private to them.
+- **Stage 1 (invite-only):** the student's tutor plus a small group of invited adults. Each has their own login, confirms they're 18+, and their data is private to them.
 - **Stage 2 (public):** open sign-up, with the same 18+ confirmation.
 
 **Session model:** One graded assignment = one session. Text and results from past sessions are kept ([006](decisions/006-upload-retention.md)), but there are no cross-session analytics yet.
@@ -652,7 +652,7 @@ The roadmap lives in **[docs/roadmap.md](roadmap.md)**, the single live plan wit
 | 0: Decisions | Product and technical decisions (✅ done 2026-10-15; business model deferred) |
 | 1: Foundation | Repo, Next.js, Supabase, Vercel, "Built for change" groundwork, schema, invite-only login |
 | 2: Core product | Upload → extraction → review → generation → print → grading → review session → summary |
-| 3: Invite-only launch (stage 1) | Gabe and a few invited families on a free Vercel address |
+| 3: Invite-only launch (stage 1) | the student and a few invited families on a free Vercel address |
 | 4: Public launch (stage 2) | Open sign-up, legal review, final name and domain: the definition of done |
 
 ---

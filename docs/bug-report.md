@@ -1,4 +1,4 @@
-# 🐛 Gabe's Math App — Bug Report
+# 🐛 the earlier prototype — Bug Report
 **Repo:** https://github.com/miapen-snail/gabe-math-app
 **Files audited:** `index.html`, `v2b-hologram.html`
 **Date:** April 6, 2026
@@ -67,7 +67,7 @@
 
 ### BUG-09 — Setup Name Fields Are Never Used
 **Where:** Setup screen (Screen 2) → entire app
-**What:** The "Cadet Name" and "Tutor Name" inputs are never read or stored. "COMMANDER GABE" on the welcome screen and "Auntie Mia" in the prize beacon are hardcoded strings — filling in the setup form has zero effect.
+**What:** The "Cadet Name" and "Tutor Name" inputs are never read or stored. "COMMANDER" on the welcome screen and "the tutor" in the prize beacon are hardcoded strings — filling in the setup form has zero effect.
 **Fix:** Read the input values via `document.querySelector` and store them in variables. Inject them into the relevant screens dynamically.
 
 ---

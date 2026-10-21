@@ -1,0 +1,38 @@
+{
+  "3": {
+    "question_text": "What is 700 − 356?",
+    "choices": { "A": "344", "B": "354", "C": "456", "D": "334" },
+    "picture_spec": null,
+    "correct_answer": "A",
+    "steps_to_solve": "700 − 300 = 400; 400 − 56 = 344.",
+    "hint": "Break 356 into 300 and 56, and take them away one at a time.",
+    "check": { "kind": "arithmetic", "expression": "700 - 356" }
+  },
+  "6": {
+    "question_text": "56 ÷ 7 = ___",
+    "choices": null,
+    "picture_spec": null,
+    "correct_answer": "8",
+    "steps_to_solve": "7 × 8 = 56, so 56 ÷ 7 = 8.",
+    "hint": "What times 7 makes 56?",
+    "check": { "kind": "arithmetic", "expression": "56 / 7" }
+  },
+  "7": {
+    "question_text": "Show your work: 502 − 148 = ___",
+    "choices": null,
+    "picture_spec": null,
+    "correct_answer": "354",
+    "steps_to_solve": "502 − 100 = 402; 402 − 48 = 354.",
+    "hint": "Regroup: take 100 away first, then the 48.",
+    "check": { "kind": "arithmetic", "expression": "502 - 148" }
+  },
+  "default": {
+    "question_text": "Write the number: 4 hundreds + 2 tens + 6 ones = ___",
+    "choices": null,
+    "picture_spec": null,
+    "correct_answer": "426",
+    "steps_to_solve": "400 + 20 + 6 = 426.",
+    "hint": "Read the hundreds, tens and ones in order.",
+    "check": { "kind": "arithmetic", "expression": "4 * 100 + 2 * 10 + 6" }
+  }
+}
