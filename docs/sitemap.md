@@ -285,6 +285,7 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-10-21 | Hosting: one Vercel project with two services (`vercel.json`). The event landing page (`site/`) serves `/`; the app (`web/`) now lives under `/app` (every page path in this map gets the `/app` prefix, e.g. `/app/login`). `starter/` stays local-only. No page or step changes |
 | 2026-10-20 | Interactive galaxy background behind every page (mouse parallax, cursor glow, drifting nebulae) |
 | 2026-10-20 | Whole app switched to the HUD-style look (tutor's choice after comparing on `/blocks`; [011 Amendment 1](decisions/011-adult-only-audience.md)); no page or step changes |
 | 2026-10-20 | Step 3 built: practice set with math checks, retries, flags and Regenerate; pictures drawn from data; printable practice sheet and answer key (the sheet filled in) |

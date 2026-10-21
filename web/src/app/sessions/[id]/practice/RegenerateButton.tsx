@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui";
+import { withBasePath } from "@/config/base-path";
 
 /** New numbers for one practice question. */
 export function RegenerateButton({ id }: { id: string }) {
@@ -19,7 +20,7 @@ export function RegenerateButton({ id }: { id: string }) {
           setBusy(true);
           setFailed(false);
           try {
-            const res = await fetch(`/api/practice/${id}/regenerate`, { method: "POST" });
+            const res = await fetch(withBasePath(`/api/practice/${id}/regenerate`), { method: "POST" });
             if (!res.ok) setFailed(true);
           } catch {
             setFailed(true);

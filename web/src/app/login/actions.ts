@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { basePath } from "@/config/base-path";
 
 export type LoginState =
   | { step: "email"; error?: string }
@@ -34,7 +35,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     const origin = (await headers()).get("origin");
     await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: false, emailRedirectTo: origin ? `${origin}/auth/callback` : undefined },
+      options: { shouldCreateUser: false, emailRedirectTo: origin ? `${origin}${basePath}/auth/callback` : undefined },
     });
     return { step: "code", email };
   }

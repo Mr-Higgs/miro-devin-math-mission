@@ -62,7 +62,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 | [handoffs/](handoffs/) | Dated handoff notes, newest = current state |
 
 ## Running locally
-The app (Next.js), at http://localhost:3000:
+The app (Next.js), at http://localhost:3000/app (it lives under `/app`, see Hosting):
 ```bash
 cd web && npm run dev
 ```
@@ -70,6 +70,9 @@ The April prototype, at http://127.0.0.1:3456:
 ```bash
 python3 serve.py
 ```
+
+## Hosting
+One Vercel project, configured by [vercel.json](vercel.json) at the repo root (Vercel "services"; the project's Root Directory must be empty). `site/` answers `/` (the event landing page) and `web/` answers `/app/*` (the app, with Next.js `basePath: "/app"`). `starter/` is not deployed: participants run it locally. Supabase's Site URL and redirect URLs must point at `/app/auth/callback`.
 
 ## Privacy
 This repository contains no student data. Test-data photos and benchmark results are never committed; `test-data/` and `web/benchmark/` outputs stay local and private.

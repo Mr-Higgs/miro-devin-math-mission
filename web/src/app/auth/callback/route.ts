@@ -6,15 +6,21 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const url = request.nextUrl;
+  const url = request.nextUrl.clone();
   const code = url.searchParams.get("code");
 
   if (code) {
     const supabase = await createClient();
     const flowId = url.searchParams.get("sb_flow_id");
     const { error } = await supabase.auth.exchangeCodeForSession(code, flowId ? { flowId } : undefined);
-    if (!error) return NextResponse.redirect(new URL("/welcome", url.origin));
+    if (!error) {
+      url.pathname = "/welcome";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
   }
 
-  return NextResponse.redirect(new URL("/login?link=failed", url.origin));
+  url.pathname = "/login";
+  url.search = "?link=failed";
+  return NextResponse.redirect(url);
 }

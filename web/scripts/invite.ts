@@ -8,7 +8,7 @@
 import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
 
-const SITE = "https://math-mission-wheat.vercel.app";
+const SITE = (process.env.SITE_URL ?? "https://math-mission-wheat.vercel.app").replace(/\/$/, "") + "/app";
 
 async function main() {
   loadEnvConfig(process.cwd(), false, { info: () => {}, error: console.error });
