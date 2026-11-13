@@ -285,6 +285,7 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-11-13 | Hosting: this repo deploys only the event landing page (`site/`, its own Vercel project, Root Directory `site`). The app (`web/`) is back at `/` with no `/app` prefix (reverts 2026-10-21); it isn't deployed from this repo. `starter/` stays local-only. No page or step changes |
 | 2026-10-21 | Hosting: one Vercel project with two services (`vercel.json`). The event landing page (`site/`) serves `/`; the app (`web/`) now lives under `/app` (every page path in this map gets the `/app` prefix, e.g. `/app/login`). `starter/` stays local-only. No page or step changes |
 | 2026-10-20 | Interactive galaxy background behind every page (mouse parallax, cursor glow, drifting nebulae) |
 | 2026-10-20 | Whole app switched to the HUD-style look (tutor's choice after comparing on `/blocks`; [011 Amendment 1](decisions/011-adult-only-audience.md)); no page or step changes |
