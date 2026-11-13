@@ -3,7 +3,7 @@
 import { mission } from "@mission";
 import { localPrompt } from "./local";
 
-export const READ_MATERIAL_INSTRUCTIONS = `You are preparing study material for a tutoring app.
+export const readMaterialInstructions = () => `You are preparing study material for a tutoring app.
 
 Read the material given (pasted text and/or page images) and return JSON:
 

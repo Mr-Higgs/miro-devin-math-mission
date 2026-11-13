@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Button, ButtonLink, Card, Notice, PageShell, ProgressDots, ResultBadge } from "@/components/ui";
-import { getSession } from "@/lib/store";
+import { getSession, type Session } from "@/lib/store";
 import { features } from "@/features";
 import { EvaluatingAnswers } from "./EvaluatingAnswers";
 import { tryNewSet } from "./actions";
@@ -23,6 +23,15 @@ export default function ResultsPage({ params }: PageProps<"/sessions/[id]/result
       {params.then(({ id }) => <Results id={id} />)}
     </Suspense>
   );
+}
+
+/** The learner's answer, readable: "B. 70" for MC, "I knew it" for flashcards. */
+function learnerAnswer(q: (Session["practice"]["questions"])[number], raw: string | undefined): string {
+  const answer = raw?.trim() ?? "";
+  if (!answer) return "(no answer)";
+  if (q.type === "multiple_choice" && q.choices?.[answer]) return `${answer}. ${q.choices[answer]}`;
+  if (q.type === "flashcard") return answer === "knew" ? "I knew it" : answer === "not_yet" ? "Not yet" : answer;
+  return answer;
 }
 
 async function Results({ id }: { id: string }) {
@@ -48,9 +57,7 @@ async function Results({ id }: { id: string }) {
             </div>
           </Card>
 
-          {resultsFeatures.map((f) => (
-            <f.Results key={f.id} session={session} />
-          ))}
+          {resultsFeatures.map((f) => (f.Results ? <f.Results key={f.id} session={session} /> : null))}
 
           <div className="grid gap-4">
             {questions.map((q) => {
@@ -70,7 +77,7 @@ async function Results({ id }: { id: string }) {
                   <dl className="mt-3 grid gap-1 text-sm">
                     <div>
                       <dt className="inline text-ink-muted">Your answer: </dt>
-                      <dd className="inline text-ink">{item?.learner_answer?.trim() || "(no answer)"}</dd>
+                      <dd className="inline text-ink">{learnerAnswer(q, item?.learner_answer)}</dd>
                     </div>
                     <div>
                       <dt className="inline text-ink-muted">Answer: </dt>

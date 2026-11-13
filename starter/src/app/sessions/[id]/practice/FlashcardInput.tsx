@@ -20,7 +20,7 @@ export function FlashcardInput({ name, answer }: { name: string; answer: string 
           <p className="rounded-control border border-line bg-surface-muted px-3 py-2 text-sm text-ink">{answer}</p>
           <div className="flex flex-wrap gap-4 text-sm text-ink">
             <label className="flex items-center gap-2">
-              <input type="radio" name={name} value="knew" required className="accent-accent" />
+              <input type="radio" name={name} value="knew" className="accent-accent" />
               I knew it
             </label>
             <label className="flex items-center gap-2">

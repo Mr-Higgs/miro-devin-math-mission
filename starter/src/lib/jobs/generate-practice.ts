@@ -6,7 +6,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { mission } from "@mission";
-import { GENERATE_PRACTICE_INSTRUCTIONS, generatePracticeRequest } from "@/prompts/generate-practice";
+import { generatePracticeInstructions, generatePracticeRequest } from "@/prompts/generate-practice";
 import { AiError, GENERATION_SETTINGS, ai, parseJsonReply } from "@/lib/ai";
 import { checkPractice } from "@/lib/checks";
 import { getSession, isUuid, updateSession, type PracticeQuestion } from "@/lib/store";
@@ -44,7 +44,7 @@ export async function generatePractice(sessionId: string): Promise<JobOutcome> {
       try {
         const reply = await ai.ask({
           job: "generate_practice",
-          instructions: GENERATE_PRACTICE_INSTRUCTIONS,
+          instructions: generatePracticeInstructions(),
           parts: [{ text: request + (problems.length ? retryFeedback(problems) : "") }],
           ...GENERATION_SETTINGS,
         });
@@ -82,10 +82,13 @@ export async function generatePractice(sessionId: string): Promise<JobOutcome> {
         questions.push({
           id: randomUUID(),
           position: questions.length + 1,
-          type: (opts.questionTypes.includes(String(q.type)) ? q.type : "short_answer") as PracticeQuestion["type"],
+          type: ((opts.questionTypes as string[]).includes(String(q.type)) ? q.type : "short_answer") as PracticeQuestion["type"],
           key_idea_id: typeof q.key_idea_id === "string" && keyIdeaIds.includes(q.key_idea_id) ? q.key_idea_id : null,
           prompt: q.prompt.trim(),
-          choices: q.choices && typeof q.choices === "object" && !Array.isArray(q.choices) ? (q.choices as Record<string, string>) : null,
+          choices:
+            q.choices && typeof q.choices === "object" && !Array.isArray(q.choices)
+              ? Object.fromEntries(Object.entries(q.choices as Record<string, unknown>).map(([k, v]) => [k, String(v)]))
+              : null,
           answer: q.answer.trim(),
           explanation: typeof q.explanation === "string" && q.explanation.trim() ? q.explanation.trim() : "(No explanation was written.)",
           hint: typeof q.hint === "string" && q.hint.trim() ? q.hint.trim() : null,

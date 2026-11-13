@@ -1,0 +1,40 @@
+{
+  "files": {
+    "scripts/check-submission.ts": "099eb057d4cd09066b4d1f030f6453c7f83bc7402a6a3f960293434b47d691e3",
+    "scripts/core-files.ts": "b42fd9fd3fe5e1ef72d0fa1ff5413eb6cad6174dd8d1ad31a74931e58e5d6db9",
+    "scripts/lock-core.ts": "50df170aad098e94c2000cdd458315cca63a630532d87e8e7a8aca5fad7aaf62",
+    "scripts/record-demo.mjs": "a27dd4ba50c0555231071cd124f872b59449ef229988df97630005dea3e43991",
+    "src/app/api/sessions/[id]/evaluate/route.ts": "7eb77a7067d89e6002ca1ea6a82c3141a204b914f9a8651230792e768fa442ed",
+    "src/app/api/sessions/[id]/pages/[n]/route.ts": "f79f3b22ba529a35c72a5637acd568aef1bee3858e97cf5c251834f0e040d8a1",
+    "src/app/api/sessions/[id]/practice/route.ts": "bd12c8dca56e92b19b0f82e51542ae40b393d8b65f3f34b71b40623731355bc5",
+    "src/app/api/sessions/[id]/read/route.ts": "16b3738f5714852ae5d24ea36900cd805ea1eec7dfc5f23c36f230a87c4fa448",
+    "src/features/types.ts": "9025190b9cc00c1aa1369972a4493350709c9f0d084ecf6471cfa1de6db347de",
+    "src/lib/ai/anthropic.ts": "3dfd23c765e57b7c20e36412fac98304dda8a8b6de64a5d82facec4387ad0133",
+    "src/lib/ai/gemini.ts": "583a16b9ccaa575ec1828a9a2ae18ddf2e73f39aef14bdde570a72b2e1f0695c",
+    "src/lib/ai/index.ts": "0f62013b84d20f972c005cac8540252c88709cd5fa3883e81e823b8433133a24",
+    "src/lib/ai/mock.ts": "52e835e0b3928dae66031b98b65088dfe320dda8f1e1a6d1b2acf98c44272bcd",
+    "src/lib/ai/openai.ts": "b6904e4eb2dc195b468d821525fc0854cc83121d43714d665288fcca61b93461",
+    "src/lib/ai/types.ts": "004ce91a65ed981cf6653d96df6f02582059f2f112104f8fc12a809f98945bf2",
+    "src/lib/checks/evaluate.ts": "92e031efb16c72f17ee8a63bbce21dee2be589afaec041ec0ec76da5ea19312d",
+    "src/lib/checks/grade.ts": "7d775a5389cbd785d16b6140b2a61885a7d90f29dcde51cbf0b168f2d999629e",
+    "src/lib/checks/index.ts": "24710495649e85d896dc6fc42e4f24b68e2d1e85bf9c014d25bb5dba82ea150e",
+    "src/lib/checks/material.ts": "74caeb5a86d5b7699c429631c101c70173c9320fa8b63af16b370432f528d682",
+    "src/lib/checks/practice.ts": "c1dde8b46f81c55fdff200770f02078adb4977923e34ce3b07f7c3e6cce5c0ce",
+    "src/lib/jobs/evaluate-answers.ts": "1da25fdc21f1501b0bed962ac24246fa51d62726950b372a2ccb7d5c8fd1f796",
+    "src/lib/jobs/generate-practice.ts": "dfbb400608232b1107c8710a6b84a368f6248a25cbcdb816a6836a7c328c8811",
+    "src/lib/jobs/job.ts": "6905c332a4a71a8ce3510f7a7d1f2244b8fd5b48ccfb2863071a10965a3a73de",
+    "src/lib/jobs/read-material.ts": "e7ffd5ce0c14b747b03a4cbb7ad9ca80ab3aa8f8d08763da19cc012b2a554420",
+    "src/lib/store/index.ts": "e91ebbac044b7816894915a4d30619f92b16c4999cd96f77204cdf583d6e255c",
+    "src/lib/upload/paths.ts": "0329249a71c9e5185b8d23614c41d21def1740b860fb1793a6f06657e4d17252",
+    "src/lib/upload/prepare.ts": "ed83251e0a2fe78013ce3b3172f19509c781920a9709ecf968d26ac3ec43509e",
+    "src/prompts/README.md": "406642143d9f03215fcd295db798f113672c68e4c585568f05d2585c51c48605",
+    "src/prompts/evaluate-answers.ts": "65bbb3c6fff69b115352df5271c2800478e61c5191e7c8d34e0922d41d0e4432",
+    "src/prompts/generate-practice.ts": "ed6bdd064e614a2167e79ee4dccffe0978cec52c12baac66e3b859de640ec685",
+    "src/prompts/local.ts": "d2601882be10d8af323a63f897bb96f8bf9d68fd484936cf3166a51984a63402",
+    "src/prompts/read-material.ts": "5d95c48d92f5ced130679ce2be39465c259184ab55a0d4f98b8bb0b8464121af"
+  },
+  "templates": {
+    "prompts/teaching-style.md": "ab6cf70c3f8fca18050a9b16ccc01a8f255b15b63db7a032bb325700ab786728",
+    "prompts/feedback.md": "12eea3a2300c5dbf8199088ee29ba5cb5ad396e605b2876db1f5e52e977300d2"
+  }
+}

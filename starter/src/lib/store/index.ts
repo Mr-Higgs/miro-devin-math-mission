@@ -184,9 +184,12 @@ export async function listSessions(): Promise<SessionSummary[]> {
   const out: SessionSummary[] = [];
   for (const id of await readdir(sessionsDir())) {
     const s = await readSession(id);
-    if (s) {
-      out.push({ id: s.id, status: s.status, started_at: s.started_at, updated_at: s.updated_at, title: s.material.title });
+    if (!s) continue;
+    // Abandoned shells: no text and no pages were ever added.
+    if (!s.material.text && s.material.page_count === 0 && (s.material.status === "none" || s.material.status === "failed")) {
+      continue;
     }
+    out.push({ id: s.id, status: s.status, started_at: s.started_at, updated_at: s.updated_at, title: s.material.title });
   }
   return out.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
 }

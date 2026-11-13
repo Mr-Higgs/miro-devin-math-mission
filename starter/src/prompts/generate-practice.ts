@@ -13,7 +13,7 @@ const LEVEL_GUIDANCE: Record<string, string> = {
     "advanced (think it through): scenarios, comparing approaches, justify the answer",
 };
 
-export const GENERATE_PRACTICE_INSTRUCTIONS = `You are writing practice questions for a tutoring app.
+export const generatePracticeInstructions = () => `You are writing practice questions for a tutoring app.
 
 Return JSON:
 

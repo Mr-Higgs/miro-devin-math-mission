@@ -10,7 +10,7 @@
 - [ ] One Miro board template per team, plus the example board for the opening
       demo.
 - [ ] Starter app verified on a fresh clone: `cd starter && npm i && npm run dev`
-      with `AI_PROVIDER=mock` → full flow via "Use the sample test".
+      with `AI_PROVIDER=mock` → full flow via "Use the sample material".
 - [ ] Landing page (`site/`) deploy or local link for the room screen.
 
 ## Timeline (from the landing page)
@@ -35,4 +35,5 @@
 - **No API keys / flaky wifi** — `AI_PROVIDER=mock` runs the entire flow;
   fixtures live in `starter/fixtures/`.
 - **`npm run check` fails** — walk them through the FAIL lines; usually an
-  unedited `mission.config.ts` or README.
+  unedited `mission.config.ts`, README or `prompts/` file, or a touched core
+  file (the FAIL lists them; restore with `git checkout <file>`).

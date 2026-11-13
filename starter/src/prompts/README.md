@@ -10,7 +10,7 @@ Every instruction the app gives the AI lives here, one file per job:
 | `local.ts` | Loads the plain-text files below |
 
 The participant-editable files live at `starter/prompts/` (`teaching-style.md`,
-`feedback.md`) — plain text appended to the core instructions at runtime.
+`feedback.md`) — plain text appended to the core instructions every call — edits apply without a restart.
 Change the wording there to change how the AI writes, no code needed.
 
 The learner's name is never sent to the AI — only persona, goal, topic and

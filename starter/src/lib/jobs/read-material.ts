@@ -2,7 +2,7 @@
 // title, a summary and 2–8 key ideas. Retries with the check problems up to
 // MAX_TRIES times, then marks the material failed (the page offers Try again).
 import "server-only";
-import { READ_MATERIAL_INSTRUCTIONS, readMaterialRequest } from "@/prompts/read-material";
+import { readMaterialInstructions, readMaterialRequest } from "@/prompts/read-material";
 import { AiError, ai, parseJsonReply, type AiPart } from "@/lib/ai";
 import { checkMaterial } from "@/lib/checks";
 import { getSession, isUuid, readPage, updateSession } from "@/lib/store";
@@ -20,7 +20,17 @@ export async function readMaterial(sessionId: string): Promise<JobOutcome> {
   if (!claimable(material.status, material.started_at)) return "busy";
   const text = (material.text ?? "").slice(0, MAX_TEXT);
   const pageCount = Math.min(material.page_count, MAX_PAGES);
-  if (!text && !pageCount) return "failed";
+  if (!text && !pageCount) {
+    await updateSession(sessionId, (s) => ({
+      ...s,
+      material: {
+        ...s.material,
+        status: "failed",
+        error: "There's nothing to read in this session yet. Start a new session and add some text, a photo or a PDF.",
+      },
+    }));
+    return "failed";
+  }
 
   try {
     await updateSession(sessionId, (s) => ({
@@ -42,7 +52,7 @@ export async function readMaterial(sessionId: string): Promise<JobOutcome> {
       if (text) parts.push({ text: `Material text:\n${text}` });
       parts.push(...pages);
       try {
-        const reply = await ai.ask({ job: "read_material", instructions: READ_MATERIAL_INSTRUCTIONS, parts });
+        const reply = await ai.ask({ job: "read_material", instructions: readMaterialInstructions(), parts });
         const parsed = checkMaterial(parseJsonReply(reply.text));
         if (parsed.ok && parsed.value) {
           await updateSession(sessionId, (s) => ({

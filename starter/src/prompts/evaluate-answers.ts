@@ -10,7 +10,7 @@ const TONES: Record<string, string> = {
   playful: "playful — light and fun, but still clear about what to fix",
 };
 
-export const EVALUATE_INSTRUCTIONS = `You are marking a learner's practice answers for a tutoring app.
+export const evaluateInstructions = () => `You are marking a learner's practice answers for a tutoring app.
 
 Return JSON:
 

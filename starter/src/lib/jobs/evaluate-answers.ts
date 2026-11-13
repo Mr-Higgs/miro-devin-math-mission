@@ -5,7 +5,7 @@
 // MAX_TRIES, the app still finishes: AI-marked items become "needs_look" with
 // the model answer, and the summary/next steps are computed by code.
 import "server-only";
-import { EVALUATE_INSTRUCTIONS, evaluateRequest, type AlreadyGradedItem, type ToMarkItem } from "@/prompts/evaluate-answers";
+import { evaluateInstructions, evaluateRequest, type AlreadyGradedItem, type ToMarkItem } from "@/prompts/evaluate-answers";
 import { AiError, ai, parseJsonReply } from "@/lib/ai";
 import { checkEvaluation, gradeByApp } from "@/lib/checks";
 import { getSession, isUuid, updateSession, type AnswerResult, type Session } from "@/lib/store";
@@ -107,7 +107,7 @@ export async function evaluateAnswers(sessionId: string): Promise<JobOutcome> {
       try {
         const reply = await ai.ask({
           job: "evaluate_answers",
-          instructions: EVALUATE_INSTRUCTIONS,
+          instructions: evaluateInstructions(),
           parts: [{ text: request + (problems.length ? retryFeedback(problems) : "") }],
         });
         const parsed = checkEvaluation(parseJsonReply(reply.text), ids);

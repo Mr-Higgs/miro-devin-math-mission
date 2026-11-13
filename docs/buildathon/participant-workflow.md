@@ -17,16 +17,16 @@ On your team's board, fill in:
 Give Devin the repo and your board summary. First prompt to paste:
 
 > I'm building a tutoring app for *[person]* to learn *[topic]*. The repo's
-> `starter/` folder is the app; use the `customize-mission` skill. Here is my
+> `starter/` folder is the app; use the `tutor-kit-rules` skill. Here is my
 > board summary: *[paste persona, topic, and the three changes]*. Plan the
-> personalization — start with `mission.config.ts`, theme, and prompts — and
-> keep the five-step flow intact.
+> personalization — start with `mission.config.ts`, prompts and fixtures — and
+> keep the four screens intact.
 
 Read Devin's plan, adjust on the board or in the chat, then let it execute.
 
 ## 3. Execute
 
-Devin edits the code. You run it:
+Devin edits the code. If you're running it yourself:
 
 ```bash
 cd starter
@@ -35,7 +35,8 @@ cp .env.example .env.local   # AI_PROVIDER=mock works with no keys
 npm run dev
 ```
 
-Click through the whole flow with "Use the sample test" — no photo needed.
+In a Devin preview, just click through the four screens — **"Use the sample
+material"** on screen 2 needs nothing to upload.
 
 ## 4. Iterate
 

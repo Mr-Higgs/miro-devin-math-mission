@@ -1,28 +1,43 @@
 # starter — "Learning Mission"
 
-A tutoring app you personalize: upload a photo of graded work, the AI finds the missed questions, and it writes a checked practice sheet you can print. Four steps: **Onboard → Upload → Generate practice → Print**.
+A small tutoring app that becomes yours. It has four screens:
 
-## Quickstart
+1. **Get to know me** — who the learner is and why they're learning.
+2. **What I'm studying** — paste notes or upload photos/a PDF, and the app picks out the key ideas.
+3. **Practice** — questions written from those ideas, answered right in the app.
+4. **How did I do** — each answer marked, with kind feedback and what to try next.
+
+## Run it
 
 ```bash
 npm install
-cp .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000, fill in onboarding, then "Start a new session" → **"Use the sample test"** — the bundled fixture and the mock AI provider mean the whole flow works with no API keys and no photo.
+Open http://localhost:3000. No accounts, no keys — the built-in mock AI
+(`AI_PROVIDER=mock`, the default) answers from the files in `fixtures/`, so
+everything works offline. On the "What I'm studying" screen, click
+**"Use the sample material"** to try it with nothing to upload.
 
 ## Make it yours
 
-- `mission.config.ts` — app name, learner, topic, level, subject, accent color.
-- `src/subjects/` — checks + picture rendering per subject (`math`, `generic`; add your own).
-- `src/prompts/` — the extraction / generation / grading prompts.
-- `src/theme/` — the look (theme.css, fonts, brand).
+- `mission.config.ts` — the learner, topic, level, question types, colors. Start here.
+- `prompts/teaching-style.md` and `prompts/feedback.md` — how the AI writes, in plain words.
+- `fixtures/` — what the mock AI answers. Rewrite them for your learner so the demo shows your content.
+- `src/features/` — add a feature and switch it on in the config.
+- `src/theme/` — the look.
 
-## Don't change
+## Check your work
 
-- The four-step flow, the store contract in `src/lib/store/`, and the `AiProvider` interface in `src/lib/ai/types.ts` — the submission checker relies on them.
+```bash
+npm run check        # the submission checklist (pass it before you're done)
+npm run demo:record  # records submission/demo.webm of the whole flow
+```
 
-## Env vars
+Some files are locked ("core" — the check will tell you if one changed).
+Add new things in `src/features/` or `src/app/` instead.
 
-See `.env.example`: `AI_PROVIDER` (`mock` default; `gemini`, `anthropic`, `openai`), the matching API key, `AI_MODEL` override, and `DATA_DIR`.
+## Real AI (optional)
+
+Copy `.env.example` to `.env.local`, set `AI_PROVIDER` to `gemini`,
+`anthropic` or `openai`, and add the matching key. The mock works without any.

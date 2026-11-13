@@ -8,15 +8,15 @@
     "start": "next start",
     "lint": "eslint",
     "check": "tsx scripts/check-submission.ts",
-    "demo:record": "node scripts/record-demo.mjs"
+    "demo:record": "node scripts/record-demo.mjs",
+    "core:lock": "tsx scripts/lock-core.ts"
   },
   "dependencies": {
     "next": "16.4.2",
     "pdfjs-dist": "^6.4.299",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1",
-    "sharp": "^0.35.5"
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

@@ -19,7 +19,7 @@ async function sessionHref(id: string): Promise<string> {
   const s = await getSession(id);
   if (!s) return "/";
   if (s.status === "completed" || s.results.status === "ready") return `/sessions/${id}/results`;
-  if (s.practice.status === "ready" || s.practice.status !== "none") return `/sessions/${id}/practice`;
+  if (s.practice.status !== "none") return `/sessions/${id}/practice`;
   return `/sessions/${id}/material`;
 }
 

@@ -21,10 +21,9 @@ const read = (rel: string) => (existsSync(file(rel)) ? readFileSync(file(rel), "
 const sha = (rel: string) => createHash("sha256").update(readFileSync(file(rel))).digest("hex");
 
 // 1. mission.config.ts customized
-const config = read("mission.config.ts");
-check('mission.config: appName customized', /appName:\s*"([^"]+)"/.exec(config)?.[1] !== "Learning Mission" && /appName:\s*"[^"]+"/.test(config), 'appName should no longer be "Learning Mission"');
-check('mission.config: learner.name customized', /name:\s*"([^"]+)"/.exec(config)?.[1] !== "Alex", 'learner.name should no longer be "Alex"');
-check('mission.config: topic customized', /topic:\s*"([^"]+)"/.exec(config)?.[1] !== "place value", 'topic should no longer be "place value"');
+check("mission.config: appName customized", mission.appName !== "Learning Mission", 'appName should no longer be "Learning Mission"');
+check("mission.config: learner.name customized", mission.learner.name !== "Alex", 'learner.name should no longer be "Alex"');
+check("mission.config: topic customized", mission.topic !== "place value", 'topic should no longer be "place value"');
 
 // 2. The route files for the 4 screens exist, and the data-step hooks are present
 for (const rel of [
@@ -151,7 +150,7 @@ check(
       const abs = file(rel);
       try {
         const text = readFileSync(abs, "utf8");
-        if (/AIza[0-9A-Za-z_-]{20,}|sk-ant-[0-9A-Za-z_-]{10,}|sk-[0-9A-Za-z_-]{20,}/.test(text)) keyHits.push(rel);
+        if (/(?<![A-Za-z0-9_-])(AIza[0-9A-Za-z_-]{20,}|sk-ant-[0-9A-Za-z_-]{10,}|sk-(?=[0-9A-Za-z_-]*[0-9])[0-9A-Za-z_-]{20,})/.test(text)) keyHits.push(rel);
       } catch {
         // binary or unreadable — skip
       }
@@ -181,7 +180,7 @@ let failed = 0;
 for (const r of results) {
   const mark = r.ok === true ? "PASS" : r.ok === "warn" ? "WARN" : "FAIL";
   if (r.ok === false) failed++;
-  console.log(`${mark}  ${r.name}${r.note ? ` — ${r.note}` : ""}`);
+  console.log(`${mark}  ${r.name}${r.note && r.ok !== true ? ` — ${r.note}` : ""}`);
 }
 console.log(failed ? `\n${failed} check(s) failed.` : "\nAll required checks passed.");
 process.exit(failed ? 1 : 0);

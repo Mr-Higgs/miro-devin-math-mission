@@ -9,7 +9,7 @@ This repo hosts the December 7, 2026 "Build Your Balanced Team" event in Miami.
 | [site/](site/) | Event landing page (`cd site && npm run dev`) |
 | [starter/](starter/) | **The participant app** — a tutoring app you personalize with Devin |
 | [web/](web/) | The original product (Mia's Supabase-backed app — not part of the buildathon) |
-| [.devin/skills/](.devin/skills/) | Devin skills: `customize-mission`, `record-demo-video`, `check-submission` |
+| [.devin/skills/](.devin/skills/) | Devin skills: `tutor-kit-rules`, `record-demo-video`, `check-submission` |
 | [docs/buildathon/](docs/buildathon/) | Challenge brief, participant workflow, facilitator notes |
 
 **Participant quickstart:**
@@ -21,7 +21,7 @@ cp .env.example .env.local
 npm run dev        # AI_PROVIDER=mock — no keys needed
 ```
 
-Then open http://localhost:3000 and click "Use the sample test". See
+Then open http://localhost:3000 and click "Use the sample material". See
 [docs/buildathon/challenge-brief.md](docs/buildathon/challenge-brief.md).
 
 ## The original app (web/)

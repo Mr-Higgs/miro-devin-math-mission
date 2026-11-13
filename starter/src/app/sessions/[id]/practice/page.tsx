@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import { Badge, Button, Card, PageShell } from "@/components/ui";
+import { Badge, Button, PageShell } from "@/components/ui";
 import { mission } from "@mission";
 import { getSession } from "@/lib/store";
 import { features } from "@/features";
@@ -36,7 +36,7 @@ async function Practice({ id }: { id: string }) {
   const practiceFeatures = features.filter((f) => f.Practice);
 
   return (
-    <PageShell title={session.material.title || "Practice"} intro="Step 3 of 4: answer each question — your try is what counts.">
+    <PageShell title={session.material.title || "Practice"} intro="Step 3 of 4: answer what you can — your try is what counts.">
       {!ready ? (
         <StartingPractice sessionId={id} status={practice.status} error={practice.error} count={mission.practice.count} />
       ) : (
@@ -57,7 +57,7 @@ async function Practice({ id }: { id: string }) {
                     <div className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
                       {Object.entries(q.choices).map(([letter, text]) => (
                         <label key={letter} className="flex items-center gap-2 rounded-control border border-line px-3 py-1.5 text-ink has-checked:border-accent has-checked:bg-accent-soft">
-                          <input type="radio" name={name} value={letter} required className="accent-accent" />
+                          <input type="radio" name={name} value={letter} className="accent-accent" />
                           <span>
                             <span className="font-semibold">{letter}.</span> {text}
                           </span>
@@ -68,7 +68,6 @@ async function Practice({ id }: { id: string }) {
                   {q.type === "fill_in" && (
                     <input
                       name={name}
-                      required
                       autoComplete="off"
                       placeholder="Your answer"
                       className="mt-3 h-11 max-w-xs rounded-control border border-line bg-surface px-3 text-ink placeholder:text-ink-muted focus:border-accent"
@@ -77,7 +76,6 @@ async function Practice({ id }: { id: string }) {
                   {(q.type === "short_answer" || q.type === "scenario") && (
                     <textarea
                       name={name}
-                      required
                       rows={3}
                       placeholder="Your answer"
                       className="mt-3 w-full rounded-control border border-line bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-accent"
@@ -92,9 +90,7 @@ async function Practice({ id }: { id: string }) {
                         <p className="mt-1 text-ink-muted">{q.hint}</p>
                       </details>
                     )}
-                    {practiceFeatures.map((f) => (
-                      <f.Practice key={f.id} question={q} />
-                    ))}
+                    {practiceFeatures.map((f) => (f.Practice ? <f.Practice key={f.id} question={q} /> : null))}
                   </div>
                 </fieldset>
               );

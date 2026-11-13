@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { Card, PageShell } from "@/components/ui";
+import { Button, Card, PageShell } from "@/components/ui";
 import { getProfile } from "@/lib/store";
 import { mission } from "@mission";
 import { MaterialForm } from "./MaterialForm";
 import { useSample } from "./actions";
-import { Button } from "@/components/ui";
 
 export const metadata: Metadata = { title: "What I'm studying" };
 
@@ -28,7 +28,7 @@ export default function NewSessionPage() {
 
 async function MaterialGate() {
   const profile = await getProfile();
-  if (!profile) return null;
+  if (!profile) redirect("/onboard");
   return (
     <div className="grid gap-5">
       <MaterialForm kinds={mission.material.kinds} />

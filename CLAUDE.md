@@ -1,6 +1,6 @@
 # Working on Math Mission
 
-**Buildathon participants:** the rules below apply to the original app in `web/`. For the participant app in `starter/`, use the `customize-mission` skill (`.devin/skills/`) and `starter/README.md` instead; `docs/sitemap.md` and `docs/roadmap.md` describe `web/`, not `starter/`.
+**Buildathon participants:** the rules below apply to the original app in `web/`. For the participant app in `starter/`, use the `tutor-kit-rules` skill (`.devin/skills/`) and `starter/README.md` instead; `docs/sitemap.md` and `docs/roadmap.md` describe `web/`, not `starter/`.
 
 ## Rules for `web/`
 
