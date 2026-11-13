@@ -50,7 +50,7 @@ export async function readMaterial(sessionId: string): Promise<JobOutcome> {
             material: {
               ...s.material,
               status: "ready",
-              title: parsed.value!.title,
+              title: s.material.title || parsed.value!.title,
               summary: parsed.value!.summary,
               key_ideas: parsed.value!.key_ideas.map((k, i) => ({ id: `k${i + 1}`, ...k })),
             },

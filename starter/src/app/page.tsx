@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Badge, ButtonLink, Card, PageShell } from "@/components/ui";
-import { getProfile, listSessions } from "@/lib/store";
+import { getProfile, listSessions, getSession } from "@/lib/store";
 import { APP_NAME, APP_TAGLINE } from "@/theme/brand";
 
 // Home: onboarding until there's a profile, then the sessions list.
@@ -12,6 +12,15 @@ export default function Home() {
       <HomeContent />
     </Suspense>
   );
+}
+
+/** Where a session picks back up: results when done, else its current step. */
+async function sessionHref(id: string): Promise<string> {
+  const s = await getSession(id);
+  if (!s) return "/";
+  if (s.status === "completed" || s.results.status === "ready") return `/sessions/${id}/results`;
+  if (s.practice.status === "ready" || s.practice.status !== "none") return `/sessions/${id}/practice`;
+  return `/sessions/${id}/material`;
 }
 
 async function HomeContent() {
@@ -41,32 +50,30 @@ async function HomeContent() {
         {sessions.length === 0 ? (
           <Card>
             <p className="text-ink-muted">
-              No sessions yet. Start one by uploading a graded test; the app builds a practice sheet from the
-              questions the student missed.
+              No sessions yet. Start one by sharing what&apos;s being studied — the app builds practice from it.
             </p>
           </Card>
         ) : (
           <Card title="Past and current sessions">
             <ul className="divide-y divide-line">
-              {sessions.map((s) => (
-                <li key={s.id}>
-                  <Link
-                    href={s.status === "completed" ? `/sessions/${s.id}/review` : `/sessions/${s.id}/questions`}
-                    className="flex items-center justify-between gap-4 py-3 hover:text-accent"
-                  >
-                    <span>
-                      <span className="font-medium">{s.assignment?.student_nickname}</span>
-                      {s.assignment?.assignment_name && (
-                        <span className="text-ink-muted">: {s.assignment.assignment_name}</span>
-                      )}
-                      <span className="block text-sm text-ink-muted">Started {date(s.started_at)}</span>
-                    </span>
-                    <Badge tone={s.status === "completed" ? "success" : "accent"}>
-                      {s.status === "completed" ? "Completed" : "In progress"}
-                    </Badge>
-                  </Link>
-                </li>
-              ))}
+              {await Promise.all(
+                sessions.map(async (s) => (
+                  <li key={s.id}>
+                    <Link
+                      href={await sessionHref(s.id)}
+                      className="flex items-center justify-between gap-4 py-3 hover:text-accent"
+                    >
+                      <span>
+                        <span className="font-medium">{s.title || "Untitled session"}</span>
+                        <span className="block text-sm text-ink-muted">Started {date(s.started_at)}</span>
+                      </span>
+                      <Badge tone={s.status === "completed" ? "success" : "accent"}>
+                        {s.status === "completed" ? "Completed" : "In progress"}
+                      </Badge>
+                    </Link>
+                  </li>
+                )),
+              )}
             </ul>
           </Card>
         )}

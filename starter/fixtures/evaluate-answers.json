@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "result": "right",
+      "feedback": "You explained it in your own words — that's real understanding. Keep it up!"
+    },
+    {
+      "result": "almost",
+      "feedback": "You've got the right idea, and one small part needs another look. Say the number out loud and try once more."
+    },
+    {
+      "result": "not_yet",
+      "feedback": "This one is still tricky, and that's okay — it's the idea to practice next. Look at the model answer and see where it differs from yours."
+    }
+  ],
+  "summary": "Nice work — you finished the whole set. You clearly know that a digit's place decides what it's worth, and comparing numbers is getting easier.",
+  "next_steps": [
+    "Practice expanded form with 3-digit numbers.",
+    "Try comparing numbers where the ones digit is bigger in the smaller number.",
+    "Say numbers out loud to hear the places."
+  ]
+}

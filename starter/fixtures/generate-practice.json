@@ -1,0 +1,49 @@
+{
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "key_idea_id": "k1",
+      "prompt": "In the number 472, what is the 7 worth?",
+      "choices": { "A": "7", "B": "70", "C": "700", "D": "72" },
+      "answer": "B",
+      "explanation": "The 7 is in the tens place, so it is worth 7 tens, which is 70.",
+      "hint": "Is the 7 in the ones, tens or hundreds place?"
+    },
+    {
+      "type": "fill_in",
+      "key_idea_id": "k2",
+      "prompt": "Write 638 in expanded form: 600 + ___ + 8",
+      "choices": null,
+      "answer": "30",
+      "explanation": "The 3 is in the tens place, so it is worth 30. 638 = 600 + 30 + 8.",
+      "hint": "What is the 3 worth in 638?"
+    },
+    {
+      "type": "multiple_choice",
+      "key_idea_id": "k3",
+      "prompt": "Which number is bigger: 518 or 581?",
+      "choices": { "A": "518", "B": "581", "C": "They are the same" },
+      "answer": "B",
+      "explanation": "Both have 5 hundreds, so compare the tens: 8 tens is more than 1 ten, so 581 is bigger.",
+      "hint": "The hundreds are the same — which place do you compare next?"
+    },
+    {
+      "type": "fill_in",
+      "key_idea_id": "k4",
+      "prompt": "10 tens is the same as ___ hundred.",
+      "choices": null,
+      "answer": "1",
+      "explanation": "Ten tens regroup into one hundred, so 10 tens = 100.",
+      "hint": "10 ones makes 1 ten. What does 10 tens make?"
+    },
+    {
+      "type": "short_answer",
+      "key_idea_id": "k1",
+      "prompt": "A friend says the 9 in 295 is worth 900 because 9 is a big digit. Explain in your own words what it is really worth and why.",
+      "choices": null,
+      "answer": "The 9 is worth 90. It is in the tens place, so it means 9 tens, not 9 hundreds.",
+      "explanation": "The place — not the size of the digit — decides what it is worth.",
+      "hint": "Which place is the 9 sitting in?"
+    }
+  ]
+}

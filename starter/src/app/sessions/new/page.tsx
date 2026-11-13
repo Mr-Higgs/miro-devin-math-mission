@@ -2,27 +2,44 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Card, PageShell } from "@/components/ui";
 import { getProfile } from "@/lib/store";
-import { UploadForm } from "./UploadForm";
+import { mission } from "@mission";
+import { MaterialForm } from "./MaterialForm";
+import { useSample } from "./actions";
+import { Button } from "@/components/ui";
 
-export const metadata: Metadata = { title: "New session" };
+export const metadata: Metadata = { title: "What I'm studying" };
 
-// Step 1 of a session (site map): upload the graded test.
+// Screen 2 of 4: the material to practice from — pasted text and/or photos or
+// a PDF, or the bundled sample material.
 export default function NewSessionPage() {
   return (
     <PageShell
-      title="New session"
-      intro="Step 1 of 5: upload the student's graded test. The app finds the questions they missed."
+      title="What I'm studying"
+      intro={`Step 2 of 4: ${mission.material.prompt}`}
     >
       <Card className="max-w-xl">
         <Suspense fallback={<p className="text-ink-muted">Loading…</p>}>
-          <UploadGate />
+          <MaterialGate />
         </Suspense>
       </Card>
     </PageShell>
   );
 }
 
-async function UploadGate() {
+async function MaterialGate() {
   const profile = await getProfile();
-  return <UploadForm defaultNickname={profile?.learnerName ?? ""} />;
+  if (!profile) return null;
+  return (
+    <div className="grid gap-5">
+      <MaterialForm kinds={mission.material.kinds} />
+      <div className="rounded-control border border-line bg-surface-muted p-4">
+        <p className="mb-2 text-sm text-ink-muted">Nothing handy? Try the bundled sample material.</p>
+        <form action={useSample}>
+          <Button variant="secondary" type="submit" data-step="use-sample">
+            Use the sample material
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
 }

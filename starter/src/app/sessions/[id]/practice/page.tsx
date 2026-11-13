@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import { Badge, ButtonLink, Card, Notice, PageShell, cx } from "@/components/ui";
-import { getPractice } from "@/lib/sessions";
-import { SpecPicture } from "@/components/SpecPicture";
-import { RegenerateButton } from "./RegenerateButton";
-import { RewriteButton } from "./RewriteButton";
-import { WritingPractice } from "./WritingPractice";
+import { Badge, Button, Card, PageShell } from "@/components/ui";
+import { mission } from "@mission";
+import { getSession } from "@/lib/store";
+import { features } from "@/features";
+import { FlashcardInput } from "./FlashcardInput";
+import { StartingPractice } from "./StartingPractice";
+import { submitAnswers } from "./actions";
 
-export const metadata: Metadata = { title: "Practice set" };
+export const metadata: Metadata = { title: "Practice" };
 
-// Step 3 of a session (site map): one practice question per missed question,
-// checked by the app (decision 010). Print pages come next.
+// Screen 3 of 4: the AI-written practice set. The learner answers right here.
 export default function PracticePage({ params }: PageProps<"/sessions/[id]/practice">) {
   return (
     <Suspense
       fallback={
-        <PageShell title="Practice set" >
+        <PageShell title="Practice">
           <p className="text-ink-muted">Loading…</p>
         </PageShell>
       }
@@ -26,129 +26,96 @@ export default function PracticePage({ params }: PageProps<"/sessions/[id]/pract
   );
 }
 
-const letters = (answer: string | null) => new Set(answer?.split("(")[0].match(/\b[A-Z]\b/g) ?? []);
-
 async function Practice({ id }: { id: string }) {
-  const session = await getPractice(id);
+  const session = await getSession(id);
   if (!session) notFound();
-  if (session.assignment.extraction_status !== "done") redirect(`/sessions/${id}/questions`);
-  const { assignment, practice } = session;
-  const ready = session.practice_status === "ready";
-  const flagged = practice.filter((p) => p.check_status === "flagged");
+  if (session.material.status !== "ready") redirect(`/sessions/${id}/material`);
+  const { practice } = session;
+  const ready = practice.status === "ready";
+  const flagged = practice.questions.filter((q) => q.check_status === "flagged");
+  const practiceFeatures = features.filter((f) => f.Practice);
 
   return (
-    <PageShell
-      title={`${assignment.student_nickname}${assignment.assignment_name ? `: ${assignment.assignment_name}` : ""}`}
-      intro="Step 3 of 5: the practice set. One new question for each missed question, in the same order."
-      
-    >
-      <div className="grid gap-6">
-        <div>
-          <ButtonLink href={`/sessions/${id}/questions`} variant="quiet">
-            ← Back to missed questions
-          </ButtonLink>
-        </div>
+    <PageShell title={session.material.title || "Practice"} intro="Step 3 of 4: answer each question — your try is what counts.">
+      {!ready ? (
+        <StartingPractice sessionId={id} status={practice.status} error={practice.error} count={mission.practice.count} />
+      ) : (
+        <form action={submitAnswers.bind(null, id)} className="grid gap-6">
+          <div className="grid gap-4">
+            {practice.questions.map((q) => {
+              const name = `q_${q.id}`;
+              return (
+                <fieldset key={q.id} data-question-type={q.type} className="card rounded-card border border-line bg-surface p-5 sm:p-6">
+                  <legend className="sr-only">Question {q.position}</legend>
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <span className="font-display font-semibold text-ink">Question {q.position}</span>
+                    {q.check_status === "flagged" && <Badge tone="warning">Needs a look</Badge>}
+                  </div>
+                  <p className="text-ink">{q.prompt}</p>
 
-        {!ready ? (
-          <WritingPractice sessionId={id} status={session.practice_status} error={session.practice_error} count={session.missedCount} />
-        ) : practice.length === 0 ? (
-          <Notice tone="success" title="Nothing to practice">
-            No questions are marked missed, so there&apos;s no practice set to write.
-          </Notice>
-        ) : (
-          <>
-            <Notice tone={flagged.length ? "warning" : "success"} title={`${practice.length} practice questions`}>
-              {flagged.length
-                ? `${flagged.length} need${flagged.length === 1 ? "s" : ""} your check: the app couldn't confirm the math. Regenerate ${flagged.length === 1 ? "it" : "them"}, or check by hand.`
-                : "Every question passed the app's math checks. Regenerate any you'd like different numbers for."}
-            </Notice>
-            <div className="flex flex-wrap gap-3">
-              <ButtonLink href={`/sessions/${id}/print/sheet`} size="lg" target="_blank">
-                Print practice sheet
-              </ButtonLink>
-              <ButtonLink href={`/sessions/${id}/print/answer-key`} size="lg" variant="secondary" target="_blank">
-                Print answer key
-              </ButtonLink>
-              <ButtonLink href={`/sessions/${id}/work`} size="lg" variant="secondary">
-                Continue to upload the student&apos;s work
-              </ButtonLink>
-            </div>
-
-            {practice.length !== session.missedCount && (
-              <Notice tone="warning" title="The missed questions have changed">
-                Step 2 now has {session.missedCount} missed questions, but this practice set has {practice.length}.
-                <div>
-                  <RewriteButton sessionId={id} />
-                </div>
-              </Notice>
-            )}
-
-            <div className="grid gap-4">
-              {practice.map((p) => {
-                const right = letters(p.correct_answer);
-                return (
-                  <Card
-                    key={p.id}
-                    title={`Practice ${p.position}`}
-                    aside={p.original ? `From question ${p.original.question_number}` : undefined}
-                  >
-                    <div className="mb-3 flex flex-wrap gap-2">
-                      {p.check_status === "passed" ? <Badge tone="success">Math checked</Badge> : <Badge tone="warning">Needs your check</Badge>}
-                      {p.requires_work && <Badge tone="accent">Work required</Badge>}
-                    </div>
-                    {p.check_status !== "passed" && p.check_notes && (
-                      <p className="mb-3 rounded-control bg-warning-soft px-3 py-2 text-sm text-ink">{p.check_notes}</p>
-                    )}
-                    <p className="text-ink">{p.question_text}</p>
-                    {p.picture_spec && (
-                      <div className="mt-3">
-                        <SpecPicture spec={p.picture_spec as Record<string, unknown>} />
-                      </div>
-                    )}
-                    {p.choices ? (
-                      <ul className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
-                        {Object.entries(p.choices).map(([letter, text]) => (
-                          <li key={letter} className={cx("rounded-control border px-3 py-1.5", right.has(letter) ? "border-success bg-success-soft" : "border-line")}>
+                  {q.type === "multiple_choice" && q.choices && (
+                    <div className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
+                      {Object.entries(q.choices).map(([letter, text]) => (
+                        <label key={letter} className="flex items-center gap-2 rounded-control border border-line px-3 py-1.5 text-ink has-checked:border-accent has-checked:bg-accent-soft">
+                          <input type="radio" name={name} value={letter} required className="accent-accent" />
+                          <span>
                             <span className="font-semibold">{letter}.</span> {text}
-                            {right.has(letter) && <span className="text-ink-muted"> · answer</span>}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="mt-2 text-sm">
-                        <span className="text-ink-muted">Answer:</span> {p.correct_answer}
-                      </p>
-                    )}
-                    <dl className="mt-3 grid gap-1 text-sm">
-                      {p.steps_to_solve && (
-                        <div>
-                          <dt className="inline text-ink-muted">Steps: </dt>
-                          <dd className="inline">{p.steps_to_solve}</dd>
-                        </div>
-                      )}
-                      {p.hint && (
-                        <div>
-                          <dt className="inline text-ink-muted">Hint: </dt>
-                          <dd className="inline">{p.hint}</dd>
-                        </div>
-                      )}
-                      {p.original && (
-                        <div className="text-ink-muted">
-                          <dt className="inline">Original: </dt>
-                          <dd className="inline">{p.original.original_question_text}</dd>
-                        </div>
-                      )}
-                    </dl>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <RegenerateButton id={p.id} />
+                          </span>
+                        </label>
+                      ))}
                     </div>
-                  </Card>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
+                  )}
+                  {q.type === "fill_in" && (
+                    <input
+                      name={name}
+                      required
+                      autoComplete="off"
+                      placeholder="Your answer"
+                      className="mt-3 h-11 max-w-xs rounded-control border border-line bg-surface px-3 text-ink placeholder:text-ink-muted focus:border-accent"
+                    />
+                  )}
+                  {(q.type === "short_answer" || q.type === "scenario") && (
+                    <textarea
+                      name={name}
+                      required
+                      rows={3}
+                      placeholder="Your answer"
+                      className="mt-3 w-full rounded-control border border-line bg-surface px-3 py-2 text-ink placeholder:text-ink-muted focus:border-accent"
+                    />
+                  )}
+                  {q.type === "flashcard" && <FlashcardInput name={name} answer={q.answer} />}
+
+                  <div className="mt-3 flex flex-wrap items-center gap-4">
+                    {q.hint && (
+                      <details className="text-sm">
+                        <summary className="cursor-pointer font-medium text-accent">Show hint</summary>
+                        <p className="mt-1 text-ink-muted">{q.hint}</p>
+                      </details>
+                    )}
+                    {practiceFeatures.map((f) => (
+                      <f.Practice key={f.id} question={q} />
+                    ))}
+                  </div>
+                </fieldset>
+              );
+            })}
+          </div>
+
+          {flagged.length > 0 && (
+            <p className="text-sm text-ink-muted">
+              {flagged.length} question{flagged.length === 1 ? "" : "s"} marked &quot;Needs a look&quot; — the app
+              couldn&apos;t check {flagged.length === 1 ? "it" : "them"}, so an adult may want to glance at{" "}
+              {flagged.length === 1 ? "it" : "them"} later.
+            </p>
+          )}
+
+          <div>
+            <Button type="submit" size="lg" data-step="submit-answers">
+              How did I do?
+            </Button>
+          </div>
+        </form>
+      )}
     </PageShell>
   );
 }

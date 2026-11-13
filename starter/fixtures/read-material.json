@@ -1,0 +1,22 @@
+{
+  "title": "Place value notes",
+  "summary": "These notes explain how each digit in a number has a place that says what it is worth. They cover reading numbers like 345 as 300 + 40 + 5, comparing numbers place by place, and regrouping 10 of one place into 1 of the next.",
+  "key_ideas": [
+    {
+      "title": "Each digit has a place",
+      "explanation": "Where a digit sits in a number tells you what it is worth — hundreds, tens or ones."
+    },
+    {
+      "title": "Expanded form",
+      "explanation": "A number can be written as the sum of what each digit is worth, like 345 = 300 + 40 + 5."
+    },
+    {
+      "title": "Comparing numbers",
+      "explanation": "To see which number is bigger, compare digits starting at the biggest place, not the ones place."
+    },
+    {
+      "title": "Regrouping",
+      "explanation": "Ten of one place makes one of the next place up — 10 ones is 1 ten, 10 tens is 1 hundred."
+    }
+  ]
+}

@@ -3,13 +3,11 @@
 // live site.
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  Badge, Button, ButtonLink, Card, Checkbox, GradeBadge, Notice, PageShell, ProgressDots, QuestionCard, TextField,
-} from "@/components/ui";
-import { GRADE_RESULTS } from "@/lib/grading";
-import { SpecPicture } from "@/components/SpecPicture";
+import { Badge, Button, ButtonLink, Card, Checkbox, Notice, PageShell, ProgressDots, ResultBadge, TextField } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Building blocks", robots: { index: false } };
+
+const RESULTS = ["right", "almost", "not_yet", "skipped", "needs_look"] as const;
 
 export default function BlocksPage() {
   if (process.env.VERCEL_ENV === "production") notFound();
@@ -21,32 +19,32 @@ export default function BlocksPage() {
       actions={<Button variant="secondary">Sign out</Button>}
     >
       <div className="grid gap-6">
-        <Card title="Sample screen: Step 2" aside="How a real page reads">
+        <Card title="Sample screen: Practice" aside="How a real page reads">
           <div className="grid gap-4">
-            <Notice title="5 missed out of 10 questions">Check each question against the paper. Score on the paper: 55.</Notice>
-            <QuestionCard
-              q={{
-                question_number: "10",
-                original_question_text: "Which is the value of the 8 in the number 287?",
-                choices: { A: "800", B: "80", C: "10", D: "8" },
-                picture_description: null,
-                student_answer: "D",
-                correct_answer: "B",
-                points_possible: 1,
-                points_earned: 0,
-                marked_correct: false,
-                requires_work: false,
-                confidence: 0.9,
-              }}
-              actions={
-                <>
-                  <Button variant="secondary">Mark as correct</Button>
-                  <Button variant="quiet">Edit answers</Button>
-                </>
-              }
-            />
+            <fieldset data-question-type="multiple_choice" className="card rounded-card border border-line bg-surface p-5">
+              <legend className="sr-only">Question 1</legend>
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="font-display font-semibold text-ink">Question 1</span>
+                <Badge tone="warning">Needs a look</Badge>
+              </div>
+              <p className="text-ink">Which is the value of the 8 in the number 287?</p>
+              <div className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
+                {["800", "80", "8", "8,000"].map((text, i) => (
+                  <label key={text} className="flex items-center gap-2 rounded-control border border-line px-3 py-1.5 text-ink">
+                    <input type="radio" name="demo" value={String.fromCharCode(65 + i)} className="accent-accent" />
+                    <span>
+                      <span className="font-semibold">{String.fromCharCode(65 + i)}.</span> {text}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <details className="mt-3 text-sm">
+                <summary className="cursor-pointer font-medium text-accent">Show hint</summary>
+                <p className="mt-1 text-ink-muted">Say the number out loud: two hundred eighty-seven.</p>
+              </details>
+            </fieldset>
             <div>
-              <Button size="lg">Continue to practice set (5)</Button>
+              <Button size="lg" data-step="submit-answers">How did I do?</Button>
             </div>
           </div>
         </Card>
@@ -63,46 +61,31 @@ export default function BlocksPage() {
           </div>
         </Card>
 
-        <Card title="Grading results" aside="Badges and progress dots">
+        <Card title="Results" aside="Badges and progress dots">
           <div className="flex flex-wrap gap-2">
-            {GRADE_RESULTS.map((r) => <GradeBadge key={r} result={r} />)}
-            <Badge tone="accent">Work required</Badge>
+            {RESULTS.map((r) => <ResultBadge key={r} result={r} />)}
+            <Badge tone="accent">Feature</Badge>
             <Badge>Question 4</Badge>
           </div>
           <ProgressDots
             className="mt-5"
-            states={["pass", "pass", "redo", "needs_check", "skipped", "current", "upcoming", "upcoming"]}
+            states={["right", "right", "almost", "not_yet", "skipped", "needs_look", "current", "upcoming"]}
           />
         </Card>
 
         <Card title="Messages">
           <div className="grid gap-3">
-            <Notice title="Before you take photos">Cover the student&apos;s name on each page.</Notice>
-            <Notice tone="success">Practice sheet ready to print.</Notice>
-            <Notice tone="warning">Two answers need your check.</Notice>
-            <Notice tone="danger">The photo couldn&apos;t be read. Try again in better light.</Notice>
-          </div>
-        </Card>
-
-        <Card title="Pictures (drawn from data)">
-          <div className="flex flex-wrap items-start gap-8 text-ink">
-            <SpecPicture spec={{ place_value_chart: { hundreds: 3, tens: 8, ones: 5 } }} />
-            <SpecPicture spec={{ underlined: { number: 447, place: "tens" } }} />
-            <SpecPicture spec={{ rectangle: { length: 9, width: 5, units: "cm" } }} />
-            <SpecPicture spec={{ polygon: { sides: [3, 3, 5, 5, 5], units: "cm" } }} />
-            <SpecPicture spec={{ letters: "TOM" }} />
-            <SpecPicture spec={{ blocks: { hundreds: 1, tens: 3, ones: 8 } }} />
-            <SpecPicture spec={{ bundles: { count: 6, each: 100 } }} />
-            <SpecPicture spec={{ symmetry: { shape: "isosceles_trapezoid", line: "vertical" } }} />
-            <SpecPicture spec={{ symmetry: { shape: "heart", line: "horizontal" } }} />
-            <SpecPicture spec={{ other: "a sea star with five arms" }} />
+            <Notice title="Reading the material…">The app is picking out the key ideas to practice.</Notice>
+            <Notice tone="success">You got 4 of 5 right.</Notice>
+            <Notice tone="warning">One question needs a look.</Notice>
+            <Notice tone="danger">The answers couldn&apos;t be marked. Try again.</Notice>
           </div>
         </Card>
 
         <Card title="Form fields">
           <form className="grid max-w-md gap-4">
             <TextField label="Email" type="email" placeholder="you@example.com" hint="We'll send a sign-in link." />
-            <TextField label="Student nickname" defaultValue="G" error="Use at least 2 characters." />
+            <TextField label="Learner's name" defaultValue="Alex" error="Use at least 2 characters." />
             <Checkbox label="I am 18 or older." />
             <Checkbox label="I accept the terms." error="Please accept the terms to continue." />
           </form>
