@@ -4,7 +4,7 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "<project folder>/web"],
+      "runtimeArgs": ["run", "dev", "--prefix", "<project folder>/docs/web"],
       "port": 3000
     },
     {

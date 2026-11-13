@@ -10,7 +10,7 @@ export { AiError, parseJsonReply, type AiPart } from "./gemini-core";
 export const AI_MODEL = "gemini-3.8-flash";
 
 /**
- * Reading a test: settings chosen by benchmark (web/benchmark, 2026-10-19;
+ * Reading a test: settings chosen by benchmark (docs/web/benchmark, 2026-10-19;
  * results in docs/cost-optimization.md). Defaults were the most accurate at
  * the lowest cost; the contrast boost and low thinking did worse, and ultra
  * detail cost more for no gain. Change only after re-running the benchmark.

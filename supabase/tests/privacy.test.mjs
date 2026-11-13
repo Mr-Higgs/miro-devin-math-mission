@@ -4,7 +4,7 @@
 // applies every file in supabase/migrations/ in order, then checks the
 // row-level security rules: each adult sees and changes only their own data.
 //
-// Run from web/:  npm run db:test   (before every npm run db:push)
+// Run from docs/web/:  npm run db:test   (before every npm run db:push)
 // Each new migration's privacy checks get added to this file.
 // Exits non-zero if any check fails.
 
@@ -13,7 +13,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const { PGlite } = createRequire(join(process.cwd(), "package.json"))("@electric-sql/pglite");
-const MIG = process.argv[2] ?? "../supabase/migrations";
+const MIG = process.argv[2] ?? "../../supabase/migrations";
 const db = new PGlite();
 
 // Minimal stand-ins for what Supabase provides.

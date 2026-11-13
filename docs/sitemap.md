@@ -212,7 +212,7 @@ flowchart LR
     AUTH[("Supabase Auth")]:::service
     DB[("Supabase database<br/>11 tables, privacy rules")]:::service
     STORE[("Private photo storage<br/>uploads bucket")]:::service
-    GEMINI[("Google Gemini 3.8 Flash<br/>prompts in web/src/prompts")]:::service
+    GEMINI[("Google Gemini 3.8 Flash<br/>prompts in docs/web/src/prompts")]:::service
     CODE[("App code on Vercel<br/>server routes, checks")]:::service
     CRON[("Vercel daily job")]:::service
     PRINT[("Browser print / PDF")]:::service
@@ -243,14 +243,14 @@ flowchart LR
 
 | Capability | What it does | Used on | Powered by | Decisions | Status |
 |---|---|---|---|---|---|
-| **Sign-in and invites** | Invite-only accounts; email sign-in link; sign-out; keeps logins fresh | `/login`, `/auth/callback`, every signed-in page | Supabase Auth, `npm run invite`, `web/src/proxy.ts` | 001 | ✅ Built (own email service: Phase 3) |
-| **18+ and terms gate** | Nothing works until the adult confirms 18+ and accepts the current terms; the database refuses data until then | `/welcome`, every signed-in page | `profiles` table, database privacy rules, `web/src/lib/auth.ts` | 011 | ✅ Built |
-| **Upload and photo prep** | Takes photos, PDFs, screenshots, several pages; strips GPS and other metadata; fixes rotation; splits PDFs; resizes; shows progress | `/sessions/new`, `/work`, `/review` (redo) | In the browser (`web/src/lib/upload/`), then straight to the private `uploads` bucket; a server action saves the rows | 006 | ✅ Built for `/sessions/new` (reused later by `/work` and `/review`) |
-| **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required", the score on the paper; reports which way each page is turned so pages are shown upright automatically; takes an automatic second look at any photo where a student answer is missing; the app cross-checks the reading and warns the adult | `/questions` | Gemini + `extraction` prompt (`web/src/lib/extraction.ts`); checks in `web/src/lib/checks/extraction.ts`; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ✅ Built |
-| **Write practice questions (generation)** | One mirrored question per miss: same wording and order, new numbers or diagram, a different answer; regenerate | `/practice`, `/bonus` | Gemini (low thinking) + `generation` prompt (`web/src/lib/generation.ts`); `generated_questions` table | 010 | ✅ Built for `/practice` |
-| **Math checks** | Checks each generated question is right before it's shown; retries, then flags for the adult | `/practice`, `/bonus` | App code: `web/src/lib/checks/` | 010 | ✅ Built |
-| **Diagrams as data** | The app draws blocks, charts, shapes and letters from data, so their answers can be checked | `/practice`, print pages, `/review` | App code: `web/src/components/pictures/Picture.tsx` | 010 | ✅ Built |
-| **Printables** | Practice sheet, answer key, certificate, star chart, mission complete page; clean print layout | `print/*` pages | Browser print (shared question layout in `web/src/app/sessions/[id]/print/`); model in `design-explorations/print-reference/` | 011 | 🟡 Sheet and answer key built; rewards later |
+| **Sign-in and invites** | Invite-only accounts; email sign-in link; sign-out; keeps logins fresh | `/login`, `/auth/callback`, every signed-in page | Supabase Auth, `npm run invite`, `docs/web/src/proxy.ts` | 001 | ✅ Built (own email service: Phase 3) |
+| **18+ and terms gate** | Nothing works until the adult confirms 18+ and accepts the current terms; the database refuses data until then | `/welcome`, every signed-in page | `profiles` table, database privacy rules, `docs/web/src/lib/auth.ts` | 011 | ✅ Built |
+| **Upload and photo prep** | Takes photos, PDFs, screenshots, several pages; strips GPS and other metadata; fixes rotation; splits PDFs; resizes; shows progress | `/sessions/new`, `/work`, `/review` (redo) | In the browser (`docs/web/src/lib/upload/`), then straight to the private `uploads` bucket; a server action saves the rows | 006 | ✅ Built for `/sessions/new` (reused later by `/work` and `/review`) |
+| **Read the test (extraction)** | Finds every question, which were missed, the student's answer, partial credit, pictures, "work required", the score on the paper; reports which way each page is turned so pages are shown upright automatically; takes an automatic second look at any photo where a student answer is missing; the app cross-checks the reading and warns the adult | `/questions` | Gemini + `extraction` prompt (`docs/web/src/lib/extraction.ts`); checks in `docs/web/src/lib/checks/extraction.ts`; `assignments`, `extraction_results`, `questions` tables | 002, 009 | ✅ Built |
+| **Write practice questions (generation)** | One mirrored question per miss: same wording and order, new numbers or diagram, a different answer; regenerate | `/practice`, `/bonus` | Gemini (low thinking) + `generation` prompt (`docs/web/src/lib/generation.ts`); `generated_questions` table | 010 | ✅ Built for `/practice` |
+| **Math checks** | Checks each generated question is right before it's shown; retries, then flags for the adult | `/practice`, `/bonus` | App code: `docs/web/src/lib/checks/` | 010 | ✅ Built |
+| **Diagrams as data** | The app draws blocks, charts, shapes and letters from data, so their answers can be checked | `/practice`, print pages, `/review` | App code: `docs/web/src/components/pictures/Picture.tsx` | 010 | ✅ Built |
+| **Printables** | Practice sheet, answer key, certificate, star chart, mission complete page; clean print layout | `print/*` pages | Browser print (shared question layout in `docs/web/src/app/sessions/[id]/print/`); model in `design-explorations/print-reference/` | 011 | 🟡 Sheet and answer key built; rewards later |
 | **Grade student work** | Pass / redo / needs your check / skipped per question, with notes for the adult | `/work`, `/review` | Gemini + `grading` prompt; `student_submissions`, `submission_pages`, `attempts` tables | 003 | ⬜ Phase 2 (prompt benchmarked) |
 | **Review, overrides, stars** | One-tap override; hints; progress dots; stars (+1 pass, +0.5 on a retry); pause and resume | `/review`, `/summary` | `session_progress`, `attempts` tables; building blocks | 003, 011 | ⬜ Phase 2 |
 | **Photo deletion and data controls** | Deletes photos when a session completes or after 30 days; delete one session or everything | `/summary`, `/account` | Vercel daily job, storage, database | 006 | ⬜ Phase 2 |
@@ -260,7 +260,7 @@ flowchart LR
 | What | Why | Status |
 |---|---|---|
 | Database privacy rules | Each adult only ever reaches their own rows and files (checked by `npm run db:test`) | ✅ Built |
-| Theme and building blocks (`web/src/theme/`, `web/src/components/ui/`) | Every page shares one look (HUD style since 2026-10-20); restyle in one place | ✅ Built |
+| Theme and building blocks (`docs/web/src/theme/`, `docs/web/src/components/ui/`) | Every page shares one look (HUD style since 2026-10-20); restyle in one place | ✅ Built |
 | Benchmark (`npm run bench`) | Tests prompts and AI models on real samples before a change goes live: extraction, grading, generation | ✅ Built |
 | Daily photo-deletion job | Decision 006 | ⬜ Phase 2 |
 | Error tracking, spending cap, own email service | Running safely with other families | ⬜ Phase 3 |
@@ -285,6 +285,7 @@ When a proposal is agreed, it moves into the [roadmap](roadmap.md) (and a decisi
 
 | Date | Change |
 |---|---|
+| 2026-11-13 | Repo layout: the app moved from `web/` to `docs/web/` and the participant kit from `starter/` to `docs/starter/`. `site/` stays the only deployed app (Vercel Root Directory `site`) and now builds on every push (the ignored-build step in `site/vercel.json` was removed). No page or step changes |
 | 2026-11-13 | Hosting: this repo deploys only the event landing page (`site/`, its own Vercel project, Root Directory `site`). The app (`web/`) is back at `/` with no `/app` prefix (reverts 2026-10-21); it isn't deployed from this repo. `starter/` stays local-only. No page or step changes |
 | 2026-10-21 | Hosting: one Vercel project with two services (`vercel.json`). The event landing page (`site/`) serves `/`; the app (`web/`) now lives under `/app` (every page path in this map gets the `/app` prefix, e.g. `/app/login`). `starter/` stays local-only. No page or step changes |
 | 2026-10-20 | Interactive galaxy background behind every page (mouse parallax, cursor glow, drifting nebulae) |

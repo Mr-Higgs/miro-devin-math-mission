@@ -1,4 +1,4 @@
-// Supabase settings come from web/.env.local (on this Mac) and from Vercel's
+// Supabase settings come from docs/web/.env.local (on this Mac) and from Vercel's
 // Environment Variables (on the live site). Values are never written in code.
 //
 // The URL and publishable key are safe in the browser: the database's row-level
@@ -23,7 +23,7 @@ export function supabasePublishableKey(): string {
 // value is passed in rather than looked up here.
 function required(name: string, value: string | undefined): string {
   if (!value) {
-    throw new Error(`${name} is missing. Add it to web/.env.local and to Vercel's Environment Variables.`);
+    throw new Error(`${name} is missing. Add it to docs/web/.env.local and to Vercel's Environment Variables.`);
   }
   return value;
 }

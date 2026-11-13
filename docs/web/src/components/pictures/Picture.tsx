@@ -1,6 +1,6 @@
 // Draws a question's picture from data (decision 010: "diagrams are generated
 // as data and drawn by the app, so their answers can be checked"). The forms
-// match the list in web/src/prompts/generation.ts. Everything is drawn in the
+// match the list in docs/web/src/prompts/generation.ts. Everything is drawn in the
 // current text color, so it's the theme ink on screen and black on paper.
 // Anything not recognized is shown as a short description for the adult.
 import type { ReactNode } from "react";

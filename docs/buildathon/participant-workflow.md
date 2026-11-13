@@ -17,7 +17,7 @@ On your team's board, fill in:
 Give Devin the repo and your board summary. First prompt to paste:
 
 > I'm building a tutoring app for *[person]* to learn *[topic]*. The repo's
-> `starter/` folder is the app; use the `tutor-kit-rules` skill. Here is my
+> `docs/starter/` folder is the app; use the `tutor-kit-rules` skill. Here is my
 > board summary: *[paste persona, topic, and the three changes]*. Plan the
 > personalization — start with `mission.config.ts`, prompts and fixtures — and
 > keep the four screens intact.
@@ -29,7 +29,7 @@ Read Devin's plan, adjust on the board or in the chat, then let it execute.
 Devin edits the code. If you're running it yourself:
 
 ```bash
-cd starter
+cd docs/starter
 npm install
 cp .env.example .env.local   # AI_PROVIDER=mock works with no keys
 npm run dev

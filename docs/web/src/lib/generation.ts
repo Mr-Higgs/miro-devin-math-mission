@@ -1,6 +1,6 @@
 // Writing the practice set (site map Step 3; decision 010). One practice
 // question per missed question, in the original order. Every question must
-// pass the app's math checks (web/src/lib/checks); a failure is sent back to
+// pass the app's math checks (docs/web/src/lib/checks); a failure is sent back to
 // the AI with the problems, up to 3 tries, then the question is flagged for
 // the adult. Runs as the signed-in adult, so the privacy rules apply.
 import "server-only";

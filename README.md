@@ -7,15 +7,15 @@ This repo hosts the December 7, 2026 "Build Your Balanced Team" event in Miami.
 | Folder | What it is |
 |---|---|
 | [site/](site/) | Event landing page (`cd site && npm run dev`) |
-| [starter/](starter/) | **The participant app** — a tutoring app you personalize with Devin |
-| [web/](web/) | The original product (Mia's Supabase-backed app — not part of the buildathon) |
+| [docs/starter/](docs/starter/) | **The participant app** — a tutoring app you personalize with Devin |
+| [docs/web/](docs/web/) | The original product (Mia's Supabase-backed app — not part of the buildathon) |
 | [.devin/skills/](.devin/skills/) | Devin skills: `tutor-kit-rules`, `record-demo-video`, `check-submission` |
 | [docs/buildathon/](docs/buildathon/) | Challenge brief, participant workflow, facilitator notes |
 
 **Participant quickstart:**
 
 ```bash
-cd starter
+cd docs/starter
 npm install
 cp .env.example .env.local
 npm run dev        # AI_PROVIDER=mock — no keys needed
@@ -24,7 +24,7 @@ npm run dev        # AI_PROVIDER=mock — no keys needed
 Then open http://localhost:3000 and click "Use the sample material". See
 [docs/buildathon/challenge-brief.md](docs/buildathon/challenge-brief.md).
 
-## The original app (web/)
+## The original app (docs/web/)
 
 A web app for **adults (18+) supporting a student's math**: parents, tutors, mentors. The adult uploads a photo of a graded test, AI finds the missed questions, and the app creates a practice sheet that mirrors them with new numbers or diagrams. It then grades the student's finished sheet from a photo and prints rewards for the student. Students never use the app themselves ([decision 011](docs/decisions/011-adult-only-audience.md)).
 
@@ -55,7 +55,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 | [docs/cost-optimization.md](docs/cost-optimization.md) | **Cost ideas:** where the per-use cost goes and ideas to lower it, with status and measured savings. Feeds decision 004 (business model) |
 | [docs/setup-guide.md](docs/setup-guide.md) | Step-by-step guide to the accounts needed for Phase 1 (GitHub, Vercel, Supabase) |
 | [docs/decisions/](docs/decisions/) | Decision log: one file per product/technical decision, with an index of what's open |
-| [web/benchmark/](web/benchmark/README.md) | Benchmark: tests the app's prompts and AI models on `test-data/` (`npm run bench` in `web/`) |
+| [docs/web/benchmark/](docs/web/benchmark/README.md) | Benchmark: tests the app's prompts and AI models on `test-data/` (`npm run bench` in `docs/web/`) |
 | [test-data/](test-data/) | Real sample photos + hand-checked expected results for testing AI (contains a child's info; keep private) |
 | [design-explorations/](design-explorations/) | Earlier design work: 3 wireframes (option 3 chosen) + feedback, and 8 visual themes `v1`–`v5` (v2b Hologram HUD chosen); `print-reference/` holds the hand-made Topic 13 sheet and key, the model for printables |
 | [serve.py](serve.py) | Tiny local server on port 3456 |
@@ -64,7 +64,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 ## Running locally
 The app (Next.js), at http://localhost:3000:
 ```bash
-cd web && npm run dev
+cd docs/web && npm run dev
 ```
 The April prototype, at http://127.0.0.1:3456:
 ```bash
@@ -72,10 +72,10 @@ python3 serve.py
 ```
 
 ## Hosting
-Only the event landing page is deployed from this repo: one Vercel project with **Root Directory `site`** (Next.js, auto-detected). [site/vercel.json](site/vercel.json) skips the build when a push doesn't change `site/`. `web/` (needs Supabase keys) and `starter/` (participants run it locally) are not deployed. Optional Vercel env var: `NEXT_PUBLIC_LUMA_URL` (defaults to the Luma page in `site/src/content/event.ts`).
+Only the event landing page is deployed from this repo: one Vercel project with **Root Directory `site`** (Next.js, auto-detected), building on every push to `main`. The original app (`docs/web/`, needs Supabase keys) and the participant kit (`docs/starter/`, run locally) are not deployed. Optional Vercel env var: `NEXT_PUBLIC_LUMA_URL` (defaults to the Luma page in `site/src/content/event.ts`).
 
 ## Privacy
-This repository contains no student data. Test-data photos and benchmark results are never committed; `test-data/` and `web/benchmark/` outputs stay local and private.
+This repository contains no student data. Test-data photos and benchmark results are never committed; `test-data/` and `docs/web/benchmark/` outputs stay local and private.
 
 ## Handoffs
 At the end of each work session, add a new file to `handoffs/` named `YYYY-MM-DD-handoff.md` covering what changed, decisions made, and next steps. Don't edit old handoffs.

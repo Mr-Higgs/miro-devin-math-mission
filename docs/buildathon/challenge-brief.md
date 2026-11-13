@@ -2,12 +2,12 @@
 
 **Your sentence:** "I am building a tutoring app for **[person]** to learn **[topic]**."
 
-Fill in the blanks, then fork the `starter/` app ("Learning Mission") into a
+Fill in the blanks, then fork the `docs/starter/` app ("Learning Mission") into a
 working, personalized tutoring tool — with Devin doing the building.
 
 ## What you're given
 
-`starter/` is a complete app with four screens: **Get to know me → What I'm
+`docs/starter/` is a complete app with four screens: **Get to know me → What I'm
 studying → Practice → How did I do**. It runs in a Devin preview with
 `AI_PROVIDER=mock` — no API keys needed — and ships with sample material so
 you never need a real photo or PDF.

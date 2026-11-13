@@ -9,11 +9,11 @@
     "lint": "eslint",
     "bench": "tsx benchmark/src/run.ts",
     "bench:models": "tsx benchmark/src/list-models.ts",
-    "db:new": "npx --yes supabase@2.121.0 --workdir .. migration new",
-    "db:status": "npx --yes supabase@2.121.0 --workdir .. migration list --linked",
-    "db:test": "node ../supabase/tests/privacy.test.mjs ../supabase/migrations",
-    "db:push": "npx --yes supabase@2.121.0 --workdir .. db push --linked",
-    "db:types": "npx --yes supabase@2.121.0 --workdir .. gen types typescript --linked > src/lib/supabase/database.types.ts",
+    "db:new": "npx --yes supabase@2.121.0 --workdir ../.. migration new",
+    "db:status": "npx --yes supabase@2.121.0 --workdir ../.. migration list --linked",
+    "db:test": "node ../../supabase/tests/privacy.test.mjs ../../supabase/migrations",
+    "db:push": "npx --yes supabase@2.121.0 --workdir ../.. db push --linked",
+    "db:types": "npx --yes supabase@2.121.0 --workdir ../.. gen types typescript --linked > src/lib/supabase/database.types.ts",
     "invite": "tsx scripts/invite.ts"
   },
   "dependencies": {

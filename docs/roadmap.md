@@ -43,29 +43,29 @@ Set up the real project so building can start. You create the GitHub, Supabase a
 - [x] **Accounts:** GitHub, Supabase, Vercel (created by the tutor; step-by-step in the [setup guide](setup-guide.md))
 - [x] **Tools on this Mac:** Node.js 24 (official installer; broken Homebrew Node removed), GitHub CLI installed and signed in as miapen-snail
 - [x] **Tutor signed in to the Vercel and Supabase CLIs** (CLI telemetry turned off). Supabase project "Math Mission" (US East / Ohio) is active, on the tutor's credits account
-- [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `web/benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with the student's name in it)
-- [x] **Next.js project** in `web/`: Next.js 16, React 19, TypeScript, Tailwind CSS 4 (telemetry off). Runs locally at http://localhost:3000
+- [x] **Private GitHub repo:** [miapen-snail/math-mission](https://github.com/miapen-snail/math-mission), with `test-data/`, `.env` files and `docs/web/benchmark/results/` excluded. Old `gabe-math-app` made private and archived (it was public with the student's name in it)
+- [x] **Next.js project** in `docs/web/`: Next.js 16, React 19, TypeScript, Tailwind CSS 4 (telemetry off). Runs locally at http://localhost:3000
 - [x] **Supabase project:** database, logins, private photo storage
-  - [x] Connected: repo linked to project `<your-project-ref>` (`supabase/` folder; confirmed empty), client code in `web/src/lib/supabase/`, keys in `web/.env.local` and Vercel (Production + Preview). Check: `/api/health` returns `{"supabase":"ok"}`
+  - [x] Connected: repo linked to project `<your-project-ref>` (`supabase/` folder; confirmed empty), client code in `docs/web/src/lib/supabase/`, keys in `docs/web/.env.local` and Vercel (Production + Preview). Check: `/api/health` returns `{"supabase":"ok"}`
   - [x] Logins: see the invite-only login item below
   - [x] Private photo storage: `uploads` bucket (private, 20 MB per file, photos/PDF only); each adult can only reach their own folder
 - [x] **Vercel hosting:** project `math-mission` (root directory `web`), connected to GitHub so every push deploys automatically; live at https://math-mission-wheat.vercel.app. Each branch/pull request gets its own preview link
 - [x] **"Built for change" groundwork** before any screens ([007](decisions/007-tech-stack.md#built-for-change)):
-  - [x] Theme in one place: `web/src/theme/` (`theme.css` colors and effects, light and dark; `fonts.ts`; `brand.ts` app name). Tailwind's own colors are switched off, so screens can only use theme colors
-  - [x] Shared UI building blocks: `web/src/components/ui/` (button, card, text field, checkbox, message box, badges incl. grading results, progress dots, page frame). All shown at `/blocks` (hidden on the live site)
-  - [x] Prompts folder: `web/src/prompts/` (extraction, grading; text unchanged from the benchmarked versions)
-  - [x] Benchmark moved to `web/benchmark/`, uses the app's prompts and `web/.env.local`: `npm run bench` in `web/`
-  - [x] Database changes as migration files: `npm run db:new / db:status / db:push / db:types` in `web/`; rules in [supabase/README.md](../supabase/README.md)
+  - [x] Theme in one place: `docs/web/src/theme/` (`theme.css` colors and effects, light and dark; `fonts.ts`; `brand.ts` app name). Tailwind's own colors are switched off, so screens can only use theme colors
+  - [x] Shared UI building blocks: `docs/web/src/components/ui/` (button, card, text field, checkbox, message box, badges incl. grading results, progress dots, page frame). All shown at `/blocks` (hidden on the live site)
+  - [x] Prompts folder: `docs/web/src/prompts/` (extraction, grading; text unchanged from the benchmarked versions)
+  - [x] Benchmark moved to `docs/web/benchmark/`, uses the app's prompts and `docs/web/.env.local`: `npm run bench` in `docs/web/`
+  - [x] Database changes as migration files: `npm run db:new / db:status / db:push / db:types` in `docs/web/`; rules in [supabase/README.md](../supabase/README.md)
 - [x] **Database schema** from backend doc §3 as the first migrations (`supabase/migrations/`, applied to the live database 2026-10-16):
-  - 11 tables (profiles + the 10 from §3.1; validation rules are code, problem-area tags wait for v2), types in `web/src/lib/supabase/database.types.ts`
+  - 11 tables (profiles + the 10 from §3.1; validation rules are code, problem-area tags wait for v2), types in `docs/web/src/lib/supabase/database.types.ts`
   - Privacy: row-level security on every table, each adult sees only their own rows, child rows locked to the same adult, nothing reachable before 18+ and terms are confirmed (011), signed-out visitors get nothing. Checked with 24 tests in a throwaway database; Supabase's security advisor reports no issues
 - [x] **Invite-only login** working, with **18+ confirmation and terms acceptance** at sign-up ([011](decisions/011-adult-only-audience.md))
-  - [x] Built: email sign-in link (`/login`, `/auth/callback`), 18+ and terms screen (`/welcome`), draft terms (`/terms`), sign-out, `proxy.ts` keeps logins fresh. Adults are added with `npm run invite -- email` in `web/` (no public sign-up)
+  - [x] Built: email sign-in link (`/login`, `/auth/callback`), 18+ and terms screen (`/welcome`), draft terms (`/terms`), sign-out, `proxy.ts` keeps logins fresh. Adults are added with `npm run invite -- email` in `docs/web/` (no public sign-up)
   - [x] `<tutor-email>` invited
   - [x] Supabase dashboard: public sign-up off; Site URL and Redirect URLs set
   - [x] Tested on this Mac (sign in, 18+ and terms saved, sign out)
   - [x] Tested on the live site 2026-10-19
-- [x] **Local preview:** `.claude/launch.json` updated (entries `web` and `prototype`); dev server also runs with `npm run dev` in `web/`
+- [x] **Local preview:** `.claude/launch.json` updated (entries `web` and `prototype`); dev server also runs with `npm run dev` in `docs/web/`
 
 **Done when:** an invited user can log in on the staging site, and the benchmark runs from inside the project. ✅ Met 2026-10-19.
 
@@ -76,20 +76,20 @@ Build the app described in the spec (v1.1) and backend doc.
 
 **Upload and reading the test**
 - [x] Upload (`/sessions/new`): photos, PDF or screenshots, multi-page; progress indicator; reminder to **cover the student's name** ([006](decisions/006-upload-retention.md)). Pages go straight from the browser to private storage (Vercel's ~4.5 MB request limit rules out sending photos through the server); the session is saved only once every page has arrived
-- [x] Photo prep, **in the browser before upload** (`web/src/lib/upload/prepare.ts`): every page redrawn as a new JPEG, so metadata and GPS never leave the device; EXIF rotation applied; longest side 2400 px; each PDF page becomes an image ([006](decisions/006-upload-retention.md)). PDF upload verified 2026-10-19 (7-page PDF → 7 clean pages). Phone photos 2026-10-19: stored copies have no EXIF/GPS (originals not located to confirm they had GPS). *Pages photographed with the paper turned stay turned: fixed automatically by extraction (below)*
-- [x] Extraction with Gemini 3.8 Flash (`web/src/lib/extraction.ts`, runs from Step 2 with a "Reading the test…" screen; up to 4 minutes; one automatic retry on network errors): missed questions, partial credit, pictures, "work required" ([002](decisions/002-ai-provider.md)). **Also reports which way each page is turned, so pages are shown upright automatically, with no rotate buttons for the adult** (tutor's call 2026-10-19)
+- [x] Photo prep, **in the browser before upload** (`docs/web/src/lib/upload/prepare.ts`): every page redrawn as a new JPEG, so metadata and GPS never leave the device; EXIF rotation applied; longest side 2400 px; each PDF page becomes an image ([006](decisions/006-upload-retention.md)). PDF upload verified 2026-10-19 (7-page PDF → 7 clean pages). Phone photos 2026-10-19: stored copies have no EXIF/GPS (originals not located to confirm they had GPS). *Pages photographed with the paper turned stay turned: fixed automatically by extraction (below)*
+- [x] Extraction with Gemini 3.8 Flash (`docs/web/src/lib/extraction.ts`, runs from Step 2 with a "Reading the test…" screen; up to 4 minutes; one automatic retry on network errors): missed questions, partial credit, pictures, "work required" ([002](decisions/002-ai-provider.md)). **Also reports which way each page is turned, so pages are shown upright automatically, with no rotate buttons for the adult** (tutor's call 2026-10-19)
   - Accuracy work 2026-10-19, after the tutor found misreadings on phone photos: prompt now separates student pencil from teacher pen, decides correct/missed only from teacher marks, and checks against the written total score. Benchmark on samples 001 + 004 (phone photos), Flash, 3 runs each: missed found 73% → 100%, correct/missed calls 80% → 100%, student answers 77% → 100%, pages upright 100%
-  - The app cross-checks every reading on Step 2 (`web/src/lib/checks/extraction.ts`): score on the paper vs points as read, missing student answers, answers that contradict correct/missed. Warnings point the adult at what to check
-  - First live test 2026-10-20 (tutor's phone photos): all 10 correct/missed calls right, score 55 adds up; only Q10's faint pencil "D" not found (flagged). **Built 2026-10-20: automatic second look** (`web/src/lib/second-look.ts`): when a student answer is missing, only that question's photo is sent again with a focused prompt. Found Q10's "D" 3/3 times at about a tenth of a full reading's cost; full benchmark still 100% with no second looks needed (no extra cost when nothing is missing)
+  - The app cross-checks every reading on Step 2 (`docs/web/src/lib/checks/extraction.ts`): score on the paper vs points as read, missing student answers, answers that contradict correct/missed. Warnings point the adult at what to check
+  - First live test 2026-10-20 (tutor's phone photos): all 10 correct/missed calls right, score 55 adds up; only Q10's faint pencil "D" not found (flagged). **Built 2026-10-20: automatic second look** (`docs/web/src/lib/second-look.ts`): when a student answer is missing, only that question's photo is sent again with a focused prompt. Found Q10's "D" 3/3 times at about a tenth of a full reading's cost; full benchmark still 100% with no second looks needed (no extra cost when nothing is missing)
 - [ ] **Ungraded tests** ([012](decisions/012-ungraded-tests.md), proposed 2026-10-19): the app works out the answers (math-checked), reads the student's answers, decides what was missed. Waiting on the tutor's choices; benchmark with student-work samples 002/003
 - [ ] Tutor review: remove, edit or add questions; set "work required". *Done: one-tap Mark as correct / missed, Edit answers. Still to do: edit question text, remove, add, work required*
 
 **Practice set** (Step 3: ✅ complete 2026-10-20)
 - [x] **Generation test first:** `npm run bench -- generation` (13 real missed/redo questions, `test-data/generation/`). First run 2026-10-19 on Gemini 3.8 Flash: 13/13 passed every check, 12/13 with the answer confirmed by math (the 13th is a symmetry drawing); read by hand, all mirror their originals. Prompt then tightened (always give a check; fixed list of picture types) and re-run: same scores, both fixes working
-- [x] Generation (`web/src/lib/generation.ts`, Step 3 `/sessions/[id]/practice`): one practice question per missed question, same wording and order, new numbers ([010](decisions/010-question-generation.md)); written 4 at a time with low thinking (fast, cheap); a "Rewrite practice set" warning if Step 2's missed questions change
-- [x] Math checker (validation rules, `web/src/lib/checks/`) runs on every practice question; failures are sent back with the problems, up to 3 tries, then flagged "Needs your check" with the reason
+- [x] Generation (`docs/web/src/lib/generation.ts`, Step 3 `/sessions/[id]/practice`): one practice question per missed question, same wording and order, new numbers ([010](decisions/010-question-generation.md)); written 4 at a time with low thinking (fast, cheap); a "Rewrite practice set" warning if Step 2's missed questions change
+- [x] Math checker (validation rules, `docs/web/src/lib/checks/`) runs on every practice question; failures are sent back with the problems, up to 3 tries, then flagged "Needs your check" with the reason
 - [x] Regenerate on each practice question (~3 s). *Edit by hand deferred: later, if needed*
-- [x] **Diagram drawing** (`web/src/components/pictures/Picture.tsx`): the app draws pictures from data (place-value charts, underlined digits, rectangles and polygons with side lengths, letters, base-ten blocks, bundles of 100, symmetry shapes with a dashed line); anything else is shown as a description to sketch. Preview at `/blocks`
+- [x] **Diagram drawing** (`docs/web/src/components/pictures/Picture.tsx`): the app draws pictures from data (place-value charts, underlined digits, rectangles and polygons with side lengths, letters, base-ten blocks, bundles of 100, symmetry shapes with a dashed line); anything else is shown as a description to sketch. Preview at `/blocks`
 - [x] Printable practice sheet (`/sessions/[id]/print/sheet`): letter size, black and white, nickname and date line, circled answer letters, answer lines, work boxes (larger where work is required); "Save as PDF" via the print dialog
 - [x] Answer key (`/sessions/[id]/print/answer-key`): the practice sheet filled in, same layout (tutor's request 2026-10-20): right answers marked, worked steps and a hint in each work box
 
@@ -104,7 +104,7 @@ Build the app described in the spec (v1.1) and backend doc.
 - [ ] Daily photo-deletion job; delete-a-session and delete-everything controls ([006](decisions/006-upload-retention.md))
 - [ ] Error handling: unreadable photos, AI failures and timeouts, retry without losing work
 - [x] Upload screen tip on good lighting (faint pencil is the main grading weakness)
-- [x] UI for adults: **HUD style** chosen by the tutor 2026-10-20 ([011 Amendment 1](decisions/011-adult-only-audience.md)): the Hologram HUD prototype's dark space look, glowing cyan edges and headings, with plain, professional wording and no on-screen celebrations; responsive on phone and tablet. All in `web/src/theme/`
+- [x] UI for adults: **HUD style** chosen by the tutor 2026-10-20 ([011 Amendment 1](decisions/011-adult-only-audience.md)): the Hologram HUD prototype's dark space look, glowing cyan edges and headings, with plain, professional wording and no on-screen celebrations; responsive on phone and tablet. All in `docs/web/src/theme/`
 
 **Done when:** a full real session with the student runs end to end on the staging site.
 

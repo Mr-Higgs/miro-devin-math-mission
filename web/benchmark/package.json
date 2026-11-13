@@ -1,5 +1,0 @@
-{
-  "//": "Only here so the benchmark scripts run as modules. Its packages are in web/package.json.",
-  "private": true,
-  "type": "module"
-}

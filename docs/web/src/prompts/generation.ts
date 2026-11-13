@@ -1,6 +1,6 @@
 // Generation: writing one practice question that mirrors a missed question
 // (decision 010 and its amendment; backend doc §8.2). The app checks every
-// result with web/src/lib/checks before showing it.
+// result with docs/web/src/lib/checks before showing it.
 // Edit the wording between the backticks, then run `npm run bench -- generation`.
 
 export const GENERATION_INSTRUCTIONS = `You write practice versions of elementary math questions that a student got wrong. You will get one missed question as JSON. Write ONE new version that mirrors it.

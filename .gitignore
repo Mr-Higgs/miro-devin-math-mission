@@ -7,7 +7,7 @@ test-data/
 !.env.example
 
 # Benchmark outputs describe a child's schoolwork
-web/benchmark/results/
+docs/web/benchmark/results/
 
 # Dependencies and build output
 node_modules/
@@ -22,9 +22,9 @@ dist/
 
 # Screenshots and local run data
 site/screenshots/
-starter/screenshots/
-starter/data/*
-!starter/data/.gitkeep
-!starter/data/README.md
-starter/submission/*.mp4
-starter/submission/*.webm
+docs/starter/screenshots/
+docs/starter/data/*
+!docs/starter/data/.gitkeep
+!docs/starter/data/README.md
+docs/starter/submission/*.mp4
+docs/starter/submission/*.webm

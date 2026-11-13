@@ -9,7 +9,7 @@
 - [ ] Devin credit link ready at the door (devinmiami.com, $200 credit).
 - [ ] One Miro board template per team, plus the example board for the opening
       demo.
-- [ ] Starter app verified on a fresh clone: `cd starter && npm i && npm run dev`
+- [ ] Starter app verified on a fresh clone: `cd docs/starter && npm i && npm run dev`
       with `AI_PROVIDER=mock` → full flow via "Use the sample material".
 - [ ] Landing page (`site/`) deploy or local link for the room screen.
 
@@ -33,7 +33,7 @@
 - **No Playwright for the demo video** — `npm i -D playwright`; the record
   script uses system Chrome (`channel: "chrome"`), no browser download needed.
 - **No API keys / flaky wifi** — `AI_PROVIDER=mock` runs the entire flow;
-  fixtures live in `starter/fixtures/`.
+  fixtures live in `docs/starter/fixtures/`.
 - **`npm run check` fails** — walk them through the FAIL lines; usually an
   unedited `mission.config.ts`, README or `prompts/` file, or a touched core
   file (the FAIL lists them; restore with `git checkout <file>`).

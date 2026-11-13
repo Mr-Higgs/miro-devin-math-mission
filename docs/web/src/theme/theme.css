@@ -8,7 +8,7 @@
  * Amendment 1): the April Hologram HUD prototype's deep-space background,
  * glowing cyan edges and uppercase cyan headings. Always dark. Wording stays
  * plain and adult (decision 011); printed pages stay black on white
- * (web/src/app/sessions/[id]/print/print.css).
+ * (docs/web/src/app/sessions/[id]/print/print.css).
  * Fonts are chosen in fonts.ts; the app name is in brand.ts.
  */
 
@@ -115,7 +115,7 @@ h2 {
   text-shadow: 0 0 14px var(--glow);
 }
 
-/* ---- Hooks used by the building blocks (web/src/components/ui) ---- */
+/* ---- Hooks used by the building blocks (docs/web/src/components/ui) ---- */
 
 .app-bar {
   border-bottom: 1px solid var(--line);

@@ -5,7 +5,7 @@ Linked to the Supabase project **Math Mission** (ref `<your-project-ref>`, US Ea
 ## Every database change is a migration file
 Decision 007, "Built for change": what the database stores only changes through numbered SQL files in `supabase/migrations/`, kept in git. **Never change tables by hand in the Supabase dashboard.** The same files build every copy of the database, so they can't drift apart.
 
-Run these from the `web/` folder:
+Run these from the `docs/web/` folder:
 
 | Command | What it does |
 |---|---|
@@ -13,7 +13,7 @@ Run these from the `web/` folder:
 | `npm run db:status` | Lists which migration files the live database already has |
 | `npm run db:test` | Builds a throwaway copy of the database from the migration files and checks the privacy rules (24 checks). **Run before every `npm run db:push`.** When you add a migration, add its privacy checks to `supabase/tests/privacy.test.mjs` |
 | `npm run db:push` | Applies new migration files to the live database. **Changes real data: only after the tutor says yes** |
-| `npm run db:types` | Rewrites `web/src/lib/supabase/database.types.ts` so the app's code knows the tables. Run after each push |
+| `npm run db:types` | Rewrites `docs/web/src/lib/supabase/database.types.ts` so the app's code knows the tables. Run after each push |
 
 ## Rules for a migration file
 - **Never edit a file that has been pushed.** Fix it with a new file.

@@ -4,7 +4,7 @@
 
 **How to use this list**
 - Add an idea any time: a row in [Ideas](#ideas) with status 💡.
-- Before acting on one, measure it (usually with the benchmark: `npm run bench` in `web/` prints tokens in/out per run) and note the result.
+- Before acting on one, measure it (usually with the benchmark: `npm run bench` in `docs/web/` prints tokens in/out per run) and note the result.
 - When it's done, record what it saved, and move it to [Done](#done).
 - Never trade away accuracy blindly: a cheaper setting must keep benchmark accuracy, or the saving goes into [Rejected](#rejected-or-on-hold) with the reason.
 
@@ -58,14 +58,14 @@ Rough cost assumes output tokens cost several times more than input; check curre
 | – | Photos shrunk to 2400 px in the browser before upload | Smaller uploads and storage; photo tokens stay at the default ~1,100 | 2026-10-19 |
 | – | Reading, rotation detection and score reading in **one** AI call (no separate calls) | Avoided 1–2 extra calls per test | 2026-10-19 |
 | – | Math checks and score cross-checks done in **code**, not by the AI | No AI cost for checking | 2026-10-19 |
-| 9 | **Low thinking for writing practice questions** (`GENERATION_SETTINGS` in `web/src/lib/ai/gemini.ts`) | Output tokens ~20,000 → ~2,500 for 13 questions (about −85%); time per question ~12 s → ~2.6 s, so Regenerate feels near-instant. 11/13 passed the checks first try (the 2 failures were caught and are retried automatically) | 2026-10-20 |
-| 6 | **Second look sends only the affected photo** with a short request, only when a student answer is missing (`web/src/lib/second-look.ts`) | Tests with nothing missing pay nothing extra (0 second looks in 4 benchmark readings); a gap costs ~1,400 in / ~400–900 out tokens, about a tenth of a full reading | 2026-10-20 |
+| 9 | **Low thinking for writing practice questions** (`GENERATION_SETTINGS` in `docs/web/src/lib/ai/gemini.ts`) | Output tokens ~20,000 → ~2,500 for 13 questions (about −85%); time per question ~12 s → ~2.6 s, so Regenerate feels near-instant. 11/13 passed the checks first try (the 2 failures were caught and are retried automatically) | 2026-10-20 |
+| 6 | **Second look sends only the affected photo** with a short request, only when a student answer is missing (`docs/web/src/lib/second-look.ts`) | Tests with nothing missing pay nothing extra (0 second looks in 4 benchmark readings); a gap costs ~1,400 in / ~400–900 out tokens, about a tenth of a full reading | 2026-10-20 |
 
 ## Rejected or on hold
 
 | # | What | Why |
 |---|---|---|
 | 1 | Low thinking for **extraction** | ❌ Rejected 2026-10-19: about 65% cheaper and 3× faster, but put correctly answered questions on the practice sheet (see Measurements). Kept as idea 9 for generation |
-| – | Contrast boost on photos sent to the AI | ❌ Rejected 2026-10-19: slightly worse reading and about +60% cost. Code kept (`web/src/lib/ai/enhance.ts`, off) in case new photo types need it |
+| – | Contrast boost on photos sent to the AI | ❌ Rejected 2026-10-19: slightly worse reading and about +60% cost. Code kept (`docs/web/src/lib/ai/enhance.ts`, off) in case new photo types need it |
 | – | Ultra image detail for extraction | ⏸️ On hold 2026-10-19: no gain over default on current samples, about +30% cost. Candidate for ungraded tests ([012](decisions/012-ungraded-tests.md) Q4) |
 | – | Gemini Pro for extraction | ⏸️ On hold: costs several times more than Flash, and Flash reached 100% on both benchmark samples with the new prompt (2026-10-19). Revisit if accuracy drops on new tests |

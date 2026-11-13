@@ -12,7 +12,7 @@ Every instruction the app gives the AI lives here, one file per job (decision 00
 
 ## Changing a prompt
 1. Edit the text between the backticks.
-2. Run the benchmark from `web/`: `npm run bench -- --models gemini-3.8-flash`
-3. Compare with the last run in `web/benchmark/results/`. Don't ship a change that does worse.
+2. Run the benchmark from `docs/web/`: `npm run bench -- --models gemini-3.8-flash`
+3. Compare with the last run in `docs/web/benchmark/results/`. Don't ship a change that does worse.
 
 Wording rules: feedback is written for the adult, never addressed to the student (decision 011). Never ask the AI to repeat names, schools or other personal details.

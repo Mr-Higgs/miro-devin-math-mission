@@ -5,7 +5,7 @@ import nextEnv from "@next/env";
 
 export const BENCH_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const WEB_DIR = join(BENCH_DIR, "..");
-export const TEST_DATA_DIR = join(WEB_DIR, "..", "test-data");
+export const TEST_DATA_DIR = join(WEB_DIR, "..", "..", "test-data");
 
 export type Provider = "anthropic" | "openai" | "google";
 
@@ -32,7 +32,7 @@ export interface CallResult {
   ms: number;
 }
 
-/** Load the API keys from web/.env.local, the same way the app does. Never logs values. */
+/** Load the API keys from docs/web/.env.local, the same way the app does. Never logs values. */
 export function loadEnv(): void {
   nextEnv.loadEnvConfig(WEB_DIR, false, { info: () => {}, error: console.error });
 }

@@ -18,21 +18,21 @@ The app is four screens:
 
 ## Where to personalize
 
-- `starter/mission.config.ts` — appName, tagline, learner (name/persona/goal),
+- `docs/starter/mission.config.ts` — appName, tagline, learner (name/persona/goal),
   topic, level, material kinds + prompt, practice questionTypes + count,
   feedback tone, features, accent color. **Start here.**
-- `starter/prompts/teaching-style.md` and `starter/prompts/feedback.md` —
+- `docs/starter/prompts/teaching-style.md` and `docs/starter/prompts/feedback.md` —
   plain-text files appended to the AI's instructions. Edit at least one (the
   check requires it).
-- `starter/fixtures/*.json` and `sample-material.md` — **rewrite them whenever
+- `docs/starter/fixtures/*.json` and `sample-material.md` — **rewrite them whenever
   the learner, topic or question types change.** Mock mode
   (`AI_PROVIDER=mock`, the default) answers from these files, so demos and
   the video show the team's own content with no API key. `npm run check`
   validates them against the current config.
-- `starter/src/features/` — the extension slot for new work. A `Feature` can
+- `docs/starter/src/features/` — the extension slot for new work. A `Feature` can
   add a component to each practice question and/or the results screen; turn
   it on by id in `mission.features`. `read-aloud.tsx` is the example.
-- `starter/src/theme/` and page copy in `starter/src/app/**` — the look and
+- `docs/starter/src/theme/` and page copy in `docs/starter/src/app/**` — the look and
   the words.
 
 ## Guardrails — do not change
@@ -56,7 +56,7 @@ the whole board.
 ## Before calling anything done
 
 ```bash
-cd starter && npm run dev        # click through all 4 screens in the preview
+cd docs/starter && npm run dev        # click through all 4 screens in the preview
 npm run check                    # every line PASS (video may WARN)
 npm run demo:record              # records submission/demo.webm
 ```

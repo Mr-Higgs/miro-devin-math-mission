@@ -359,7 +359,7 @@ Decided in [007](decisions/007-tech-stack.md). Built by the product owner with C
 **Supabase Postgres.** The relational model in §3 fits directly. Row-level security keeps each educator's data private. Schema changes are migration files in the repo.
 
 ### 5.3 AI/Vision Services
-**Google Gemini 3.8 Flash** (`gemini-3.8-flash`), chosen in [002](decisions/002-ai-provider.md) after benchmarking on the `test-data/` samples (`web/benchmark/`). Paid tier only (no training on uploads). All prompts live in one folder in the repo; the benchmark re-runs on every prompt or model change.
+**Google Gemini 3.8 Flash** (`gemini-3.8-flash`), chosen in [002](decisions/002-ai-provider.md) after benchmarking on the `test-data/` samples (`docs/web/benchmark/`). Paid tier only (no training on uploads). All prompts live in one folder in the repo; the benchmark re-runs on every prompt or model change.
 
 ### 5.4 File Storage
 **Supabase Storage**, private bucket. Expiring links only. Files deleted per §3.4.
