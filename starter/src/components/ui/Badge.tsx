@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import type { GradeResult } from "@/lib/grading";
+import type { ResultKind } from "@/lib/store";
 import { cx } from "./cx";
 
 type BadgeTone = "neutral" | "accent" | "success" | "warning" | "danger";
@@ -21,15 +21,15 @@ export function Badge({ tone = "neutral", className, ...props }: ComponentProps<
   );
 }
 
-// Wording is for the adult running the session (decision 011).
-const grades: Record<GradeResult, { label: string; tone: BadgeTone }> = {
-  pass: { label: "Pass", tone: "success" },
-  redo: { label: "Redo", tone: "danger" },
-  needs_check: { label: "Needs your check", tone: "warning" },
+const results: Record<ResultKind, { label: string; tone: BadgeTone }> = {
+  right: { label: "Right", tone: "success" },
+  almost: { label: "Almost", tone: "warning" },
+  not_yet: { label: "Not yet", tone: "danger" },
   skipped: { label: "Skipped", tone: "neutral" },
+  needs_look: { label: "Needs a look", tone: "warning" },
 };
 
-export function GradeBadge({ result }: { result: GradeResult }) {
-  const { label, tone } = grades[result];
+export function ResultBadge({ result }: { result: ResultKind }) {
+  const { label, tone } = results[result];
   return <Badge tone={tone}>{label}</Badge>;
 }

@@ -1,7 +1,7 @@
 // The provider-agnostic AI contract. Every provider (Gemini, Anthropic,
 // OpenAI, mock) implements AiProvider; callers only see `ai.ask(...)`.
 
-export type AiJob = "extraction" | "second_look" | "generation" | "grading";
+export type AiJob = "read_material" | "generate_practice" | "evaluate_answers";
 
 export type AiPart =
   | { text: string }

@@ -11,6 +11,7 @@ export async function saveOnboarding(form: FormData): Promise<void> {
   await saveProfile({
     learnerName,
     persona: clean("persona", 200),
+    goal: clean("goal", 200),
     topic: clean("topic", 120),
     level: clean("level", 20),
     createdAt: new Date().toISOString(),

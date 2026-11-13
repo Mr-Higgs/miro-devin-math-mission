@@ -1,23 +1,25 @@
-import type { GradeResult } from "@/lib/grading";
+import type { ResultKind } from "@/lib/store";
 import { cx } from "./cx";
 
-/** Each dot is a question: graded (its result), the current one, or not reached yet. */
-export type DotState = GradeResult | "current" | "upcoming";
+/** Each dot is a question: marked (its result), the current one, or not reached yet. */
+export type DotState = ResultKind | "current" | "upcoming";
 
 const dots: Record<DotState, string> = {
-  pass: "bg-success",
-  redo: "bg-danger",
-  needs_check: "bg-warning",
+  right: "bg-success",
+  almost: "bg-warning",
+  not_yet: "bg-danger",
   skipped: "bg-ink-muted",
+  needs_look: "bg-warning",
   current: "bg-accent shadow-glow scale-125",
   upcoming: "bg-line",
 };
 
 const labels: Record<DotState, string> = {
-  pass: "pass",
-  redo: "redo",
-  needs_check: "needs your check",
+  right: "right",
+  almost: "almost",
+  not_yet: "not yet",
   skipped: "skipped",
+  needs_look: "needs a look",
   current: "current question",
   upcoming: "not reached yet",
 };

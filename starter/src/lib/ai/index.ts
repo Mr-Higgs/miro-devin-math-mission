@@ -22,13 +22,5 @@ export const ai: AiProvider = {
   ask: (options) => chosen.ask(modelOverride ? { ...options, model: modelOverride } : options),
 };
 
-/**
- * Reading a test: settings ported from web's benchmarked defaults.
- * Writing practice questions: low thinking (faster, app retries failures).
- */
-export const EXTRACTION_SETTINGS: Pick<AskOptions, "imageDetail" | "thinkingLevel"> & { enhance: boolean } = {
-  imageDetail: "default",
-  thinkingLevel: "default",
-  enhance: false,
-};
+/** Writing practice questions: low thinking (faster, the app retries failures). */
 export const GENERATION_SETTINGS: Pick<AskOptions, "thinkingLevel"> = { thinkingLevel: "low" };

@@ -5,13 +5,13 @@ import { mission } from "@mission";
 import { getProfile } from "@/lib/store";
 import { saveOnboarding } from "./actions";
 
-export const metadata: Metadata = { title: "Who are you tutoring?" };
+export const metadata: Metadata = { title: "Get to know me" };
 
-// Onboarding: who the app is for. Prefilled from mission.config.ts; saved to
-// data/profile.json. Home redirects here until it's done.
+// Screen 1 of 4: who the app is for. Prefilled from mission.config.ts; saved
+// to data/profile.json. Home redirects here until it's done.
 export default function OnboardPage() {
   return (
-    <PageShell title="Who are you tutoring?" intro="A few details, once. The app uses them to pitch its practice questions.">
+    <PageShell title="Get to know me" intro="Step 1 of 4: a few details, once. The app uses them to pitch its practice questions.">
       <Card className="max-w-xl">
         <Suspense fallback={<p className="text-ink-muted">Loading…</p>}>
           <OnboardForm />
@@ -26,6 +26,7 @@ async function OnboardForm() {
   const defaults = {
     name: profile?.learnerName ?? mission.learner.name,
     persona: profile?.persona ?? mission.learner.persona,
+    goal: profile?.goal ?? mission.learner.goal,
     topic: profile?.topic ?? mission.topic,
     level: (profile?.level ?? mission.level) as string,
   };
@@ -46,6 +47,14 @@ async function OnboardForm() {
         maxLength={200}
         defaultValue={defaults.persona}
         hint="e.g. a 3rd grader who loves dinosaurs — used to pitch the questions."
+        autoComplete="off"
+      />
+      <TextField
+        label="Why are they learning this? (optional)"
+        name="goal"
+        maxLength={200}
+        defaultValue={defaults.goal}
+        hint="e.g. to feel confident on next week's quiz."
         autoComplete="off"
       />
       <TextField
@@ -70,7 +79,7 @@ async function OnboardForm() {
           <option value="advanced">Advanced</option>
         </select>
       </div>
-      <Button type="submit" size="lg">
+      <Button type="submit" size="lg" data-step="save-profile">
         Save and continue
       </Button>
     </form>

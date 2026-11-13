@@ -1,18 +1,17 @@
 # Prompts
 
-Every instruction the app gives the AI lives here, one file per job (decision 007, "Built for change"). The app and the benchmark both read these files, so there's only one copy of each prompt.
+Every instruction the app gives the AI lives here, one file per job:
 
-| File | Job | Status |
-|---|---|---|
-| `extraction.ts` | Read photos of a graded test and list every question | Benchmarked (002) |
-| `second-look.ts` | When a student answer wasn't found, look again at just that question's photo (2026-10-20) | Tested on the faintest mark in sample 004: 3/3 |
-| `grading.ts` | Grade the student's finished work from a photo | Benchmarked (002, 003) |
-| `generation.ts` | Write one mirrored practice question per missed question, with a check the app can work out (010) | Benchmarked 2026-10-19 |
-| *hints* | Hints for the adult during review | Phase 2 |
+| File | Job |
+|---|---|
+| `read-material.ts` | Read the study material → title, summary, 2–8 key ideas |
+| `generate-practice.ts` | Write the practice questions from the key ideas |
+| `evaluate-answers.ts` | Mark the answers that need the AI + write the summary |
+| `local.ts` | Loads the plain-text files below |
 
-## Changing a prompt
-1. Edit the text between the backticks.
-2. Run the benchmark from `web/`: `npm run bench -- --models gemini-3.8-flash`
-3. Compare with the last run in `web/benchmark/results/`. Don't ship a change that does worse.
+The participant-editable files live at `starter/prompts/` (`teaching-style.md`,
+`feedback.md`) — plain text appended to the core instructions at runtime.
+Change the wording there to change how the AI writes, no code needed.
 
-Wording rules: feedback is written for the adult, never addressed to the student (decision 011). Never ask the AI to repeat names, schools or other personal details.
+The learner's name is never sent to the AI — only persona, goal, topic and
+level. Keep it that way when editing these prompts.
