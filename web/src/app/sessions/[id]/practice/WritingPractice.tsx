@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Notice } from "@/components/ui";
-import { withBasePath } from "@/config/base-path";
 
 type Status = "none" | "generating" | "ready" | "failed";
 
@@ -18,7 +17,7 @@ export function WritingPractice({ sessionId, status, error, count }: { sessionId
     setRequestFailed(false);
     setSeconds(0);
     try {
-      const res = await fetch(withBasePath(`/api/sessions/${sessionId}/practice`), { method: "POST" });
+      const res = await fetch(`/api/sessions/${sessionId}/practice`, { method: "POST" });
       if (!res.ok) setRequestFailed(true);
     } catch {
       setRequestFailed(true);

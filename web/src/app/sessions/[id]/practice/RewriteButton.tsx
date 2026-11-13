@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui";
-import { withBasePath } from "@/config/base-path";
 
 /** Writes the whole practice set again (e.g. after the missed questions changed). */
 export function RewriteButton({ sessionId }: { sessionId: string }) {
@@ -15,7 +14,7 @@ export function RewriteButton({ sessionId }: { sessionId: string }) {
       disabled={busy}
       onClick={async () => {
         setBusy(true);
-        await fetch(withBasePath(`/api/sessions/${sessionId}/practice`), { method: "POST" }).catch(() => null);
+        await fetch(`/api/sessions/${sessionId}/practice`, { method: "POST" }).catch(() => null);
         router.refresh();
         setBusy(false);
       }}

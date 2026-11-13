@@ -62,7 +62,7 @@ The app is released online and publicly available. See the [roadmap](docs/roadma
 | [handoffs/](handoffs/) | Dated handoff notes, newest = current state |
 
 ## Running locally
-The app (Next.js), at http://localhost:3000/app (it lives under `/app`, see Hosting):
+The app (Next.js), at http://localhost:3000:
 ```bash
 cd web && npm run dev
 ```
@@ -72,7 +72,7 @@ python3 serve.py
 ```
 
 ## Hosting
-One Vercel project, configured by [vercel.json](vercel.json) at the repo root (Vercel "services"; the project's Root Directory must be empty). `site/` answers `/` (the event landing page) and `web/` answers `/app/*` (the app, with Next.js `basePath: "/app"`). `starter/` is not deployed: participants run it locally. Supabase's Site URL and redirect URLs must point at `/app/auth/callback`.
+Only the event landing page is deployed from this repo: one Vercel project with **Root Directory `site`** (Next.js, auto-detected). [site/vercel.json](site/vercel.json) skips the build when a push doesn't change `site/`. `web/` (needs Supabase keys) and `starter/` (participants run it locally) are not deployed. Optional Vercel env var: `NEXT_PUBLIC_LUMA_URL` (defaults to the Luma page in `site/src/content/event.ts`).
 
 ## Privacy
 This repository contains no student data. Test-data photos and benchmark results are never committed; `test-data/` and `web/benchmark/` outputs stay local and private.

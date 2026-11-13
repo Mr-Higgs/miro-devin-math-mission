@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Notice } from "@/components/ui";
-import { withBasePath } from "@/config/base-path";
 
 type Status = "pending" | "processing" | "done" | "failed";
 
@@ -21,7 +20,7 @@ export function ReadingTest({ sessionId, status, error }: { sessionId: string; s
     setRequestFailed(false);
     setSeconds(0);
     try {
-      const res = await fetch(withBasePath(`/api/sessions/${sessionId}/extract`), { method: "POST" });
+      const res = await fetch(`/api/sessions/${sessionId}/extract`, { method: "POST" });
       if (!res.ok) setRequestFailed(true);
     } catch {
       setRequestFailed(true);

@@ -3,10 +3,11 @@
 // login. Replace this folder only if you change the store contract
 // (the shapes below are what the pages and the checker rely on).
 import "server-only";
-import { mkdir, readFile, readdir, rename, writeFile, copyFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import type { QuestionType } from "@mission";
 
 export const isUuid = (value: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
@@ -16,91 +17,79 @@ const sessionsDir = () => path.join(DATA_DIR, "sessions");
 const sessionDir = (id: string) => path.join(sessionsDir(), id);
 const sessionFile = (id: string) => path.join(sessionDir(id), "session.json");
 const pageFile = (id: string, n: number) => path.join(sessionDir(id), "pages", `page-${n}.jpg`);
-const workPageFile = (id: string, n: number) => path.join(sessionDir(id), "work", `page-${n}.jpg`);
 
 // ---------------------------------------------------------------------------
-// Shapes (mirror web's entities; keep field names the pages already use)
+// Shapes (the four screens rely on these; keep names stable)
 // ---------------------------------------------------------------------------
+
+export type JobStatus = "none" | "working" | "ready" | "failed";
 
 export interface Profile {
   learnerName: string;
   persona: string;
+  goal: string;
   topic: string;
   level: string;
   createdAt: string;
 }
 
-export interface SessionPage {
-  page_order: number;
-  rotation: number;
-  url: string | null;
+export interface KeyIdea {
+  id: string;
+  title: string;
+  explanation: string;
 }
 
-export interface Question {
+/** The material the learner is studying (screen 2): pasted text and/or page photos. */
+export interface Material {
+  kind: "text" | "pages";
+  title: string;
+  text: string | null;
+  page_count: number;
+  status: JobStatus;
+  started_at: string | null;
+  error: string | null;
+  summary: string | null;
+  key_ideas: KeyIdea[];
+}
+
+export interface PracticeQuestion {
   id: string;
   position: number;
-  question_number: string;
-  original_question_text: string;
-  format: "multiple_choice" | "multiple_select" | "fill_in" | "open_response";
+  type: QuestionType;
+  key_idea_id: string | null;
+  prompt: string;
   choices: Record<string, string> | null;
-  picture_description: string | null;
-  question_type: string | null;
-  student_answer: string | null;
-  correct_answer: string | null;
-  points_possible: number | null;
-  points_earned: number | null;
-  marked_correct: boolean;
-  requires_work: boolean;
-  confidence: number | null;
-}
-
-export type GradeResult = "pass" | "redo" | "needs_check" | "skipped";
-
-export interface Grade {
-  result: GradeResult;
-  student_answer_read: string | null;
-  work_shown: boolean | null;
-  feedback: string | null;
-  overridden: boolean;
-}
-
-export interface GeneratedQuestionRecord {
-  id: string;
-  question_id: string | null;
-  position: number;
-  question_text: string;
-  choices: Record<string, string> | null;
-  picture_spec: Record<string, unknown> | null;
-  correct_answer: string;
-  steps_to_solve: string | null;
+  answer: string;
+  explanation: string;
   hint: string | null;
-  requires_work: boolean;
   check_status: "passed" | "flagged";
   check_notes: string | null;
-  answer_check: unknown;
-  generation_attempts: number;
-  grade: Grade | null;
 }
 
-export interface WorkUpload {
-  page_count: number;
-  grading_status: "none" | "grading" | "done" | "failed";
-  grading_started_at: string | null;
-  grading_error: string | null;
+export type ResultKind = "right" | "almost" | "not_yet" | "skipped" | "needs_look";
+
+export interface AnswerResult {
+  question_id: string;
+  learner_answer: string;
+  result: ResultKind;
+  feedback: string;
+  graded_by: "app" | "ai" | "self";
 }
 
-export interface Assignment {
-  id: string;
-  student_nickname: string;
-  assignment_name: string | null;
-  extraction_status: "pending" | "processing" | "done" | "failed";
-  extraction_started_at: string | null;
-  extraction_error: string | null;
-  page_count: number;
-  page_rotations: Record<number, number>;
-  questions: Question[];
-  notes: string | null;
-  scoreAsWritten: string | null;
+export interface PracticeJob {
+  status: JobStatus;
+  started_at: string | null;
+  error: string | null;
+  questions: PracticeQuestion[];
+}
+
+export interface ResultsJob {
+  status: JobStatus;
+  started_at: string | null;
+  error: string | null;
+  items: AnswerResult[];
+  summary: string | null;
+  next_steps: string[];
 }
 
 export interface Session {
@@ -108,12 +97,10 @@ export interface Session {
   status: "in_progress" | "completed";
   started_at: string;
   updated_at: string;
-  practice_status: "none" | "generating" | "ready" | "failed";
-  practice_started_at: string | null;
-  practice_error: string | null;
-  work: WorkUpload;
-  assignment: Assignment;
-  practice: GeneratedQuestionRecord[];
+  material: Material;
+  practice: PracticeJob;
+  answers: Record<string, string>;
+  results: ResultsJob;
 }
 
 export interface SessionSummary {
@@ -121,7 +108,7 @@ export interface SessionSummary {
   status: Session["status"];
   started_at: string;
   updated_at: string;
-  assignment: { student_nickname: string; assignment_name: string | null };
+  title: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -142,34 +129,9 @@ export async function savePage(id: string, n: number, buf: Buffer) {
   await rename(file + ".tmp", file);
 }
 
-export async function copyPage(id: string, n: number, from: string) {
-  const file = pageFile(id, n);
-  await mkdir(path.dirname(file), { recursive: true });
-  await copyFile(from, file);
-}
-
 export async function readPage(id: string, n: number): Promise<Buffer> {
   return readFile(pageFile(id, n));
 }
-
-export async function saveWorkPage(id: string, n: number, buf: Buffer) {
-  const file = workPageFile(id, n);
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file + ".tmp", buf);
-  await rename(file + ".tmp", file);
-}
-
-export async function copyWorkPage(id: string, n: number, from: string) {
-  const file = workPageFile(id, n);
-  await mkdir(path.dirname(file), { recursive: true });
-  await copyFile(from, file);
-}
-
-export async function readWorkPage(id: string, n: number): Promise<Buffer> {
-  return readFile(workPageFile(id, n));
-}
-
-export const workPageUrl = (id: string, n: number) => `/api/sessions/${id}/work-pages/${n}`;
 
 export async function pageCountOnDisk(id: string): Promise<number> {
   const dir = path.join(sessionDir(id), "pages");
@@ -185,7 +147,9 @@ export const pageUrl = (id: string, n: number) => `/api/sessions/${id}/pages/${n
 
 export async function getProfile(): Promise<Profile | null> {
   try {
-    return JSON.parse(await readFile(path.join(DATA_DIR, "profile.json"), "utf8")) as Profile;
+    const p = JSON.parse(await readFile(path.join(DATA_DIR, "profile.json"), "utf8")) as Profile;
+    p.goal ??= "";
+    return p;
   } catch {
     return null;
   }
@@ -203,9 +167,7 @@ async function readSession(id: string): Promise<Session | null> {
   if (!isUuid(id)) return null;
   try {
     const s = JSON.parse(await readFile(sessionFile(id), "utf8")) as Session;
-    // Default fields added after older sessions were written.
-    s.work ??= { page_count: 0, grading_status: "none", grading_started_at: null, grading_error: null };
-    for (const p of s.practice ?? []) p.grade ??= null;
+    if (!s.material || typeof s.material !== "object") return null; // old-shape session
     return s;
   } catch {
     return null;
@@ -223,37 +185,21 @@ export async function listSessions(): Promise<SessionSummary[]> {
   for (const id of await readdir(sessionsDir())) {
     const s = await readSession(id);
     if (s) {
-      out.push({
-        id: s.id,
-        status: s.status,
-        started_at: s.started_at,
-        updated_at: s.updated_at,
-        assignment: {
-          student_nickname: s.assignment.student_nickname,
-          assignment_name: s.assignment.assignment_name,
-        },
-      });
+      out.push({ id: s.id, status: s.status, started_at: s.started_at, updated_at: s.updated_at, title: s.material.title });
     }
   }
   return out.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
 }
 
-/** One session, with each page's view URL filled in (pages live on disk). */
-export async function getSession(id: string): Promise<(Session & { assignment: Assignment & { pages: SessionPage[] } }) | null> {
-  const s = await readSession(id);
-  if (!s) return null;
-  const pages: SessionPage[] = Array.from({ length: s.assignment.page_count }, (_, i) => ({
-    page_order: i + 1,
-    rotation: s.assignment.page_rotations?.[i + 1] ?? 0,
-    url: pageUrl(id, i + 1),
-  }));
-  return { ...s, assignment: { ...s.assignment, pages } };
+export async function getSession(id: string): Promise<Session | null> {
+  return readSession(id);
 }
 
 export async function createSession(input: {
-  studentNickname: string;
-  assignmentName: string;
-  pageCount: number;
+  kind: Material["kind"];
+  title: string;
+  text?: string | null;
+  pageCount?: number;
 }): Promise<Session> {
   const now = new Date().toISOString();
   const session: Session = {
@@ -261,24 +207,20 @@ export async function createSession(input: {
     status: "in_progress",
     started_at: now,
     updated_at: now,
-    practice_status: "none",
-    practice_started_at: null,
-    practice_error: null,
-    work: { page_count: 0, grading_status: "none", grading_started_at: null, grading_error: null },
-    assignment: {
-      id: randomUUID(),
-      student_nickname: input.studentNickname,
-      assignment_name: input.assignmentName || null,
-      extraction_status: "pending",
-      extraction_started_at: null,
-      extraction_error: null,
-      page_count: input.pageCount,
-      page_rotations: {},
-      questions: [],
-      notes: null,
-      scoreAsWritten: null,
+    material: {
+      kind: input.kind,
+      title: input.title,
+      text: input.text ?? null,
+      page_count: input.pageCount ?? 0,
+      status: "none",
+      started_at: null,
+      error: null,
+      summary: null,
+      key_ideas: [],
     },
-    practice: [],
+    practice: { status: "none", started_at: null, error: null, questions: [] },
+    answers: {},
+    results: { status: "none", started_at: null, error: null, items: [], summary: null, next_steps: [] },
   };
   await writeSession(session);
   return session;
@@ -291,14 +233,4 @@ export async function updateSession(id: string, fn: (s: Session) => Session): Pr
   const next = fn(s);
   await writeSession(next);
   return next;
-}
-
-/** The session that owns a question or generated question, if any. */
-export async function findSessionFor(pred: (s: Session) => boolean): Promise<Session | null> {
-  if (!existsSync(sessionsDir())) return null;
-  for (const id of await readdir(sessionsDir())) {
-    const s = await readSession(id);
-    if (s && pred(s)) return s;
-  }
-  return null;
 }
